@@ -19,6 +19,11 @@
     "vite": "^5.4.1"
   },
   "dependencies": {
-    "@monaco-editor/react": "^4.6.0"
+    "@monaco-editor/react": "^4.6.0",
+    "monaco-languageclient": "^3.0.0",
+    "vscode-ws-jsonrpc": "^1.0.2",
+    "normalize-url": "^8.0.1",
+    "reconnecting-websocket": "^4.4.0",
+    "vscode": "npm:@codingame/monaco-vscode-api@~8.0.4"
   }
 }
