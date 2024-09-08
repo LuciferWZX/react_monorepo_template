@@ -19,11 +19,16 @@
     "vite": "^5.4.1"
   },
   "dependencies": {
+    "@codingame/monaco-vscode-textmate-service-override": "^8.0.4",
+    "@codingame/monaco-vscode-theme-service-override": "^8.0.4",
     "@monaco-editor/react": "^4.6.0",
-    "monaco-languageclient": "^3.0.0",
-    "vscode-ws-jsonrpc": "^1.0.2",
-    "normalize-url": "^8.0.1",
-    "reconnecting-websocket": "^4.4.0",
-    "vscode": "npm:@codingame/monaco-vscode-api@~8.0.4"
+    "monaco-editor": "^0.20.0",
+    "monaco-editor-wrapper": "^5.5.3",
+    "monaco-languageclient": "^8.8.3",
+    "reconnecting-websocket": "^3.2.2",
+    "vscode": "npm:@codingame/monaco-vscode-api@~8.0.4",
+    "vscode-jsonrpc": "^8.2.1",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-ws-jsonrpc": "^3.3.2"
   }
 }

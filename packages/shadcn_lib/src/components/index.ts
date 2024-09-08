@@ -2,3 +2,6 @@ export * from "./ui/button.tsx";
 export * from "./ui/popover.tsx";
 export * from "./ui/command.tsx";
 export * from "./ui/input-otp.tsx";
+export * from "./ui/theme-provider.tsx";
+export * from "./ui/scroll-area.tsx";
+export * from "./ui/select.tsx";
