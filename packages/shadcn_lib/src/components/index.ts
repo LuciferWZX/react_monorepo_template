@@ -5,3 +5,6 @@ export * from "./ui/input-otp.tsx";
 export * from "./ui/theme-provider.tsx";
 export * from "./ui/scroll-area.tsx";
 export * from "./ui/select.tsx";
+export * from "./ui/resizable.tsx";
+export * from "./ui/tooltip.tsx";
+export * from "./ui/separator.tsx";

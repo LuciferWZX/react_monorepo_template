@@ -1,0 +1,32 @@
+{
+  "name": "browser-laptop",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "tauri-dev": "tauri dev",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "peerDependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "dependencies": {
+    "@zhixin/shadcn_lib": "workspace:*",
+    "ahooks": "^3.8.1",
+    "lucide-react": "^0.438.0",
+    "react-router-dom": "^6.26.1",
+    "storejs": "^2.1.0",
+    "ts-pattern": "^5.3.1",
+    "umi-request": "^1.4.0",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.6.1",
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.1"
+  }
+}
