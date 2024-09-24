@@ -1,8 +1,6 @@
-//
-//
-// export class APIManagerManager {
-//   private constructor() {}
-//   public static userService = UserServiceManager;
-//   public static agentService = AgentServiceManager;
-//   public static skillFileService = SkillFileServiceManager;
-// }
+import { AuthServiceManager } from "@/managers/api/AuthServiceManager.ts";
+
+export class APIManagerManager {
+  private constructor() {}
+  public static authService = AuthServiceManager;
+}

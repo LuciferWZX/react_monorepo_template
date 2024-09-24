@@ -4,6 +4,8 @@ import BaseLayout from "@/layouts/base";
 import HomePage from "@/pages/home";
 import WorkspacePage from "@/pages/workspace";
 import SettingsPage from "@/pages/settings";
+import AuthLayout from "@/layouts/auth";
+import LoginPage from "@/pages/auth/login";
 
 export const useRouter = () => {
   const router: RouteObject[] = [
@@ -20,6 +22,11 @@ export const useRouter = () => {
             { path: "workspace", element: <WorkspacePage /> },
             { path: "settings", element: <SettingsPage /> },
           ],
+        },
+        {
+          path: "/login",
+          element: <AuthLayout />,
+          children: [{ path: "", element: <LoginPage /> }],
         },
       ],
     },
