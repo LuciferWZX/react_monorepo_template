@@ -11,6 +11,9 @@ const useWorkspace = () => {
     },
   );
   const initial = async () => {
+    await initialWorkspace();
+  };
+  const initialWorkspace = async () => {
     const response = await getWorkspaces();
     if (response.code === ResponseCode.success) {
       useWorkspaceStore.setState({ workspaces: response.data });
@@ -18,6 +21,7 @@ const useWorkspace = () => {
   };
   return {
     initial,
+    initialWorkspace,
     getWorkspaces,
     getWorkspacesLoading,
   };

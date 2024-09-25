@@ -12,9 +12,14 @@ import { FileText, Folder } from "lucide-react";
 import DirectoryTree from "@/pages/workspace/Directory/DirectoryTree.tsx";
 import { useWorkspaceStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
+import WorkspaceDialog from "@/pages/workspace/Directory/WorkspaceDialog.tsx";
+import { useState } from "react";
+import { WorkspaceType } from "@/types/workspace.ts";
 
 const Directory = () => {
   const workspaces = useWorkspaceStore(useShallow((state) => state.workspaces));
+  const [open, setOpen] = useState<boolean>(false);
+  const [openType, setOpenType] = useState<WorkspaceType>(WorkspaceType.file);
   return (
     <div className={"h-full flex flex-col overflow-auto"}>
       <div className={"h-8"}>header</div>
@@ -25,18 +30,34 @@ const Directory = () => {
             breakAll={false}
             hideHorizontal={false}
           >
-            <DirectoryTree className={"p-1"} data={workspaces} />
+            <DirectoryTree
+              rightClick={(data) => {
+                console.log("右击:", data);
+              }}
+              className={"p-1"}
+              data={workspaces}
+            />
           </ScrollArea>
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuSub>
-            <ContextMenuSubTrigger inset>新建</ContextMenuSubTrigger>
+            <ContextMenuSubTrigger>新建</ContextMenuSubTrigger>
             <ContextMenuSubContent className="w-48">
-              <ContextMenuItem>
+              <ContextMenuItem
+                onClick={() => {
+                  setOpen(true);
+                  setOpenType(WorkspaceType.file);
+                }}
+              >
                 <FileText className={"w-4 h-4 mr-2"} />
                 文件
               </ContextMenuItem>
-              <ContextMenuItem>
+              <ContextMenuItem
+                onClick={() => {
+                  setOpen(true);
+                  setOpenType(WorkspaceType.dir);
+                }}
+              >
                 <Folder className={"w-4 h-4 mr-2"} />
                 文件夹
               </ContextMenuItem>
@@ -44,6 +65,7 @@ const Directory = () => {
           </ContextMenuSub>
         </ContextMenuContent>
       </ContextMenu>
+      <WorkspaceDialog openType={openType} open={open} onOpenChange={setOpen} />
     </div>
   );
 };

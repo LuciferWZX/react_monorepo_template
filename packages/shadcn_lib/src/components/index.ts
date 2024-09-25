@@ -3,6 +3,7 @@ export * from "./ui/popover.tsx";
 export * from "./ui/command.tsx";
 export * from "./ui/collapsible.tsx";
 export * from "./ui/context-menu.tsx";
+export * from "./ui/dialog.tsx";
 export * from "./ui/dropdown-menu.tsx";
 export * from "./ui/alert-dialog.tsx";
 export * from "./ui/input.tsx";

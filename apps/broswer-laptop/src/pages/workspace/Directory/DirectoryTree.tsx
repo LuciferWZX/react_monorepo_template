@@ -10,6 +10,7 @@ import { FileTerminal, Folder, FolderOpen } from "lucide-react";
 interface DirectoryTreeProps {
   data: IWorkspace[];
   className?: string;
+  rightClick?: (data: IWorkspaceTree) => void;
 }
 function convertToTree(workspaces: IWorkspace[]) {
   const map = new Map();
@@ -30,12 +31,19 @@ function convertToTree(workspaces: IWorkspace[]) {
   return result;
 }
 const DirectoryTree = (props: DirectoryTreeProps) => {
-  const { data, className } = props;
+  const { data, className, rightClick } = props;
   const treeData = useMemo(() => convertToTree(data), [data]);
   return (
     <div className={cn("min-w-fit overflow-auto", className)}>
       {treeData.map((_treeData) => {
-        return <TreeLeaf ml={2} key={_treeData.id} data={_treeData} />;
+        return (
+          <TreeLeaf
+            rightClick={rightClick}
+            ml={2}
+            key={_treeData.id}
+            data={_treeData}
+          />
+        );
       })}
     </div>
   );
@@ -44,10 +52,11 @@ interface TreeLeafProps {
   data: IWorkspaceTree;
   ml: number;
   className?: string;
+  rightClick?: (data: IWorkspaceTree) => void;
 }
 const TreeLeaf = (props: TreeLeafProps) => {
   const [open, setOpen] = useState<boolean>(false);
-  const { data, className, ml } = props;
+  const { data, className, ml, rightClick } = props;
   const renderIcon = () => {
     if (data.type === WorkspaceType.file) {
       return <FileTerminal className={"w-4 h-4 text-blue-500"} />;
@@ -65,6 +74,9 @@ const TreeLeaf = (props: TreeLeafProps) => {
           "block w-full p-1 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         )}
         onClick={() => setOpen(!open)}
+        onContextMenu={() => {
+          rightClick?.(data);
+        }}
       >
         <div
           className={cn("flex gap-1 items-center text-sm", className)}

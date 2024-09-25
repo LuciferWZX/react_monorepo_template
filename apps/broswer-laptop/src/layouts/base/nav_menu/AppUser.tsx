@@ -27,13 +27,20 @@ const AppUser = () => {
             <img
               src={user?.avatar}
               alt={"头像"}
-              className="h-full w-full object-fill"
+              className="h-full w-full object-cover"
             />
             <span className="sr-only">Toggle user menu</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side={"right"} align="end">
-          <DropdownMenuLabel className={"max-w-36 break-words"}>
+          <DropdownMenuLabel className={"flex flex-col gap-1 w-40 break-words"}>
+            <div className={"w-full"}>
+              <img
+                src={user?.avatar}
+                alt={"头像"}
+                className="h-20 w-full object-cover rounded select-none pointer-events-none"
+              />
+            </div>
             <div>{user?.nickname}</div>
             <div className={"text-muted-foreground text-sm"}>
               {user?.username}
