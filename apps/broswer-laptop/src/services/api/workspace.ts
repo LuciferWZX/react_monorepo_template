@@ -26,3 +26,15 @@ export const addWorkspace = async (data: {
     data,
   });
 };
+/**
+ * 批量删除文件或者文件夹
+ * @param data
+ */
+export const batchDeleteWorkspace = async (data: {
+  ids: string[];
+}): Promise<ResponseDataType<null>> => {
+  return request(`${PREFIX}/delete`, {
+    method: "post",
+    data,
+  });
+};

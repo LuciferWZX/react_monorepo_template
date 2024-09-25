@@ -7,8 +7,8 @@ import {
   Input,
   SToast,
 } from "@zhixin/shadcn_lib";
-import { WorkspaceType } from "@/types/workspace.ts";
-import { useState } from "react";
+import { IWorkspaceTree, WorkspaceType } from "@/types/workspace.ts";
+import { useEffect, useState } from "react";
 import { useRequest } from "ahooks";
 import { APIManager } from "@/managers";
 import { ResponseCode } from "@/types";
@@ -17,10 +17,11 @@ import useWorkspace from "@/pages/workspace/useWorkspace.ts";
 interface WorkspaceDialogProps {
   open: boolean;
   openType: WorkspaceType;
+  parentWorkspace: IWorkspaceTree | null;
   onOpenChange: (_open: boolean) => void;
 }
 const WorkspaceDialog = (props: WorkspaceDialogProps) => {
-  const { open, onOpenChange, openType } = props;
+  const { open, onOpenChange, openType, parentWorkspace } = props;
   const isFile = openType === WorkspaceType.file;
   const [name, setName] = useState<string>("");
   const { initialWorkspace } = useWorkspace();
@@ -30,6 +31,11 @@ const WorkspaceDialog = (props: WorkspaceDialogProps) => {
       manual: true,
     },
   );
+  useEffect(() => {
+    if (open) {
+      setName("");
+    }
+  }, [open]);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -46,6 +52,7 @@ const WorkspaceDialog = (props: WorkspaceDialogProps) => {
                 const response = await addWorkspace({
                   name: name,
                   type: openType,
+                  parentId: parentWorkspace?.id,
                 });
                 if (response.code === ResponseCode.success) {
                   await initialWorkspace();

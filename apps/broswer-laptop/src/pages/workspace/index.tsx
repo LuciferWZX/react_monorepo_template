@@ -15,10 +15,15 @@ const WorkspacePage = () => {
   return (
     <div className={"h-full"}>
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={30}>
+        <ResizablePanel
+          collapsible={true}
+          defaultSize={30}
+          minSize={20}
+          maxSize={40}
+        >
           <Directory />
         </ResizablePanel>
-        <ResizableHandle />
+        <ResizableHandle withHandle />
         <ResizablePanel>
           <div>right</div>
         </ResizablePanel>

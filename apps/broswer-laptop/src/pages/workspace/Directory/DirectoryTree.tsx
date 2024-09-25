@@ -3,35 +3,24 @@ import {
   IWorkspaceTree,
   WorkspaceType,
 } from "@/types/workspace.ts";
-import { useMemo, useState } from "react";
+import { MouseEvent, useMemo, useState } from "react";
 import { cn, Collapsible, CollapsibleContent } from "@zhixin/shadcn_lib";
 import { FileTerminal, Folder, FolderOpen } from "lucide-react";
+import { useWorkspaceStore } from "@/stores";
+import { useShallow } from "zustand/react/shallow";
+import { convertToTree } from "@/libs";
 
 interface DirectoryTreeProps {
   data: IWorkspace[];
   className?: string;
   rightClick?: (data: IWorkspaceTree) => void;
 }
-function convertToTree(workspaces: IWorkspace[]) {
-  const map = new Map();
-  const result: IWorkspaceTree[] = [];
-  workspaces.forEach((workspace) => {
-    map.set(workspace.id, { ...workspace, children: [] });
-  });
-  workspaces.forEach((workspace) => {
-    if (workspace.parentId) {
-      const parent = map.get(workspace.parentId);
-      if (parent) {
-        parent.children.push(map.get(workspace.id));
-      }
-    } else {
-      result.push(map.get(workspace.id));
-    }
-  });
-  return result;
-}
+
 const DirectoryTree = (props: DirectoryTreeProps) => {
   const { data, className, rightClick } = props;
+  const ids = useWorkspaceStore(
+    useShallow((state) => state.selectedWorkspaceIds),
+  );
   const treeData = useMemo(() => convertToTree(data), [data]);
   return (
     <div className={cn("min-w-fit overflow-auto", className)}>
@@ -39,6 +28,22 @@ const DirectoryTree = (props: DirectoryTreeProps) => {
         return (
           <TreeLeaf
             rightClick={rightClick}
+            selectedIds={ids}
+            click={(event, _data) => {
+              if (event.altKey) {
+                if (ids.includes(_data.id)) {
+                  useWorkspaceStore.setState({
+                    selectedWorkspaceIds: ids.filter((id) => id !== _data.id),
+                  });
+                } else {
+                  useWorkspaceStore.setState({
+                    selectedWorkspaceIds: ids.concat(_data.id),
+                  });
+                }
+                return;
+              }
+              useWorkspaceStore.setState({ selectedWorkspaceIds: [_data.id] });
+            }}
             ml={2}
             key={_treeData.id}
             data={_treeData}
@@ -53,10 +58,12 @@ interface TreeLeafProps {
   ml: number;
   className?: string;
   rightClick?: (data: IWorkspaceTree) => void;
+  click?: (event: MouseEvent<HTMLButtonElement>, data: IWorkspaceTree) => void;
+  selectedIds: string[];
 }
 const TreeLeaf = (props: TreeLeafProps) => {
   const [open, setOpen] = useState<boolean>(false);
-  const { data, className, ml, rightClick } = props;
+  const { data, className, ml, rightClick, click, selectedIds } = props;
   const renderIcon = () => {
     if (data.type === WorkspaceType.file) {
       return <FileTerminal className={"w-4 h-4 text-blue-500"} />;
@@ -71,9 +78,13 @@ const TreeLeaf = (props: TreeLeafProps) => {
     <Collapsible open={open} className={"select-none w-full whitespace-nowrap"}>
       <button
         className={cn(
-          "block w-full p-1 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "block w-full p-1 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded",
+          {
+            "!bg-primary": selectedIds.includes(data.id),
+          },
         )}
-        onClick={() => setOpen(!open)}
+        onDoubleClick={() => setOpen(!open)}
+        onClick={(event) => click?.(event, data)}
         onContextMenu={() => {
           rightClick?.(data);
         }}
@@ -89,7 +100,16 @@ const TreeLeaf = (props: TreeLeafProps) => {
       <CollapsibleContent>
         {data.children.length > 0 &&
           data.children.map((_data) => {
-            return <TreeLeaf ml={ml + 20} key={_data.id} data={_data} />;
+            return (
+              <TreeLeaf
+                selectedIds={selectedIds}
+                rightClick={rightClick}
+                click={click}
+                ml={ml + 20}
+                key={_data.id}
+                data={_data}
+              />
+            );
           })}
       </CollapsibleContent>
     </Collapsible>
