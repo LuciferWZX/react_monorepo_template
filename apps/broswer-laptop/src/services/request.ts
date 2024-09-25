@@ -1,6 +1,6 @@
 import { extend, ResponseError } from "umi-request";
-import { APPManager } from "@/managers";
-import { match } from "ts-pattern";
+import { APPManager, StorageManager } from "@/managers";
+import { APP_STORAGE_KEY } from "@/types";
 
 export interface ServerError {
   data: null;
@@ -11,8 +11,9 @@ export interface ServerError {
 const errorHandler = function (error: ResponseError<ServerError>) {
   if (error.response) {
     if (error.data) {
-      match(error.data.code).with(401, () => APPManager.shared.shutdown());
-      throw error;
+      return error.data;
+      // match(error.data.code).with(401, () => APPManager.shared.shutdown());
+      // throw error;
     }
     //从服务器返回的错误
     const status = error.response.status;
@@ -46,13 +47,11 @@ const request = extend({
   errorHandler: errorHandler,
 });
 request.interceptors.request.use((url, options) => {
-  // const user: BaseUser | null = StorageManager.shared.get(
-  //   APP_STORAGE_KEY.enterprise_user,
-  // );
+  const token = StorageManager.shared.get<string>(APP_STORAGE_KEY.token);
   const headers: Record<string, any> = options.headers || {};
-  // if (user) {
-  //   headers["authorization"] = `Bearer ${user.accessToken}`;
-  // }
+  if (token) {
+    headers["authorization"] = `Bearer ${token}`;
+  }
   return {
     url,
     options: {

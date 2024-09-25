@@ -1,11 +1,14 @@
 import { useRequest } from "ahooks";
-import { APIManagerManager } from "@/managers";
+import { APIManager } from "@/managers";
 
 const useLogin = () => {
   const { runAsync: login, loading: loginLoading } = useRequest(
-    APIManagerManager.authService.login,
+    APIManager.authService.login,
     {
       manual: true,
+      onError: (err) => {
+        console.log(111, err);
+      },
     },
   );
   return {

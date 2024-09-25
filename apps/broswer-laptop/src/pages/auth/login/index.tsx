@@ -7,11 +7,17 @@ import {
   FormItem,
   FormLabel,
   FormControl,
+  SToast,
 } from "@zhixin/shadcn_lib";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import useLogin from "@/pages/auth/login/useLogin.ts";
+import { APP_STORAGE_KEY, ResponseCode } from "@/types";
+import { LoaderCircle } from "lucide-react";
+import { useAppStore } from "@/stores";
+import { useNavigate } from "react-router-dom";
+import { StorageManager } from "@/managers";
 const FormSchema = z.object({
   username: z.string().min(2, {
     message: "用户名至少2个字符",
@@ -28,12 +34,30 @@ const LoginPage = () => {
       password: "",
     },
   });
-  const { login } = useLogin();
+  const { login, loginLoading } = useLogin();
+  const navigate = useNavigate();
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
     const response = await login({
       username: data.username,
       password: data.password,
+    });
+    if (response.code === ResponseCode.success) {
+      StorageManager.shared.set(
+        APP_STORAGE_KEY.token,
+        response.data.access_token,
+      );
+      useAppStore.setState({ user: response.data });
+      navigate("/", { replace: true });
+      SToast.success(`欢迎 ${response.data.username} 登录`, {
+        position: "top-center",
+        id: "login",
+      });
+      return;
+    }
+    SToast.error(response.message, {
+      position: "top-center",
+      id: "login",
+      duration: 1000,
     });
   }
 
@@ -95,9 +119,13 @@ const LoginPage = () => {
           </Form>
           <div className="grid gap-4">
             <Button
+              disabled={loginLoading}
               onClick={() => form.handleSubmit(onSubmit)()}
               className="w-full"
             >
+              {loginLoading && (
+                <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+              )}
               登录
             </Button>
             <Button variant="outline" className="w-full">

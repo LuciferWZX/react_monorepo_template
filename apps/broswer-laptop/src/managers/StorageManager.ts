@@ -6,7 +6,7 @@ export class StorageManager {
   set(key: string, data: unknown) {
     this._set_single(key, data);
   }
-  get(key: string) {
+  get<T>(key: string): T | null {
     return this._get(key);
   }
   gets(...args: string[]) {

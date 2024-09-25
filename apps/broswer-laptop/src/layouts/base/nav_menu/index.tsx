@@ -10,6 +10,7 @@ import {
 } from "@zhixin/shadcn_lib";
 import { MouseEventHandler, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import AppUser from "@/layouts/base/nav_menu/AppUser.tsx";
 
 interface LinkProps {
   icon: LucideIcon;
@@ -56,6 +57,8 @@ const NavMenu = () => {
   ];
   return (
     <div className={"border-r h-full flex flex-col"}>
+      <AppUser />
+      <Separator orientation={"horizontal"} />
       <div className={"py-2"}>
         <nav className="px-2 grid gap-1">
           {links.map((link) => {

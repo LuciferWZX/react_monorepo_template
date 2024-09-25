@@ -11,6 +11,7 @@ export default defineConfig({
     },
   },
   server: {
+    port: 1994,
     proxy: {
       "/api": {
         target: "http://localhost:3000", // 要代理的目标接口地址

@@ -1,5 +1,5 @@
 import request from "@/services/request.ts";
-import { ResponseDataType } from "@/types";
+import { AppUser, ResponseDataType } from "@/types";
 
 const PREFIX = "/api/auth";
 /**
@@ -9,9 +9,14 @@ const PREFIX = "/api/auth";
 export const login = async (data: {
   username: string;
   password: string;
-}): Promise<ResponseDataType<any>> => {
+}): Promise<ResponseDataType<AppUser>> => {
   return request(`${PREFIX}/login`, {
     method: "post",
     data: data,
+  });
+};
+export const profile = async (): Promise<ResponseDataType<AppUser>> => {
+  return request(`${PREFIX}/profile`, {
+    method: "get",
   });
 };
