@@ -21,6 +21,7 @@ const DirectoryTree = (props: DirectoryTreeProps) => {
   const ids = useWorkspaceStore(
     useShallow((state) => state.selectedWorkspaceIds),
   );
+
   const treeData = useMemo(() => convertToTree(data), [data]);
   return (
     <div className={cn("min-w-fit overflow-auto", className)}>
@@ -64,6 +65,7 @@ interface TreeLeafProps {
 const TreeLeaf = (props: TreeLeafProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const { data, className, ml, rightClick, click, selectedIds } = props;
+
   const renderIcon = () => {
     if (data.type === WorkspaceType.file) {
       return <FileTerminal className={"w-4 h-4 text-blue-500"} />;
@@ -83,7 +85,16 @@ const TreeLeaf = (props: TreeLeafProps) => {
             "!bg-primary": selectedIds.includes(data.id),
           },
         )}
-        onDoubleClick={() => setOpen(!open)}
+        onDoubleClick={() => {
+          setOpen(!open);
+          if (data.type === WorkspaceType.file) {
+            useWorkspaceStore.setState((oldState) => {
+              return {
+                worksMap: new Map(oldState.worksMap).set(data.id, "aaaa"),
+              };
+            });
+          }
+        }}
         onClick={(event) => click?.(event, data)}
         onContextMenu={() => {
           rightClick?.(data);

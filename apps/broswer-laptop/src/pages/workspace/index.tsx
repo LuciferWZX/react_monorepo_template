@@ -6,6 +6,7 @@ import {
 import Directory from "@/pages/workspace/Directory";
 import useWorkspace from "@/pages/workspace/useWorkspace.ts";
 import { useEffect } from "react";
+import WorkSheets from "@/pages/workspace/WorkSheets";
 
 const WorkspacePage = () => {
   const { initial } = useWorkspace();
@@ -25,7 +26,7 @@ const WorkspacePage = () => {
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel>
-          <div>right</div>
+          <WorkSheets />
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

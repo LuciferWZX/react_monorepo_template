@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
+    "@xyflow/react": "^12.3.0",
     "@zhixin/shadcn_lib": "workspace:*",
     "ahooks": "^3.8.1",
     "lucide-react": "^0.438.0",
