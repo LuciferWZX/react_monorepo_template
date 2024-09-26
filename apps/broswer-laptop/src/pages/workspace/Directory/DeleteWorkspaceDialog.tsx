@@ -16,6 +16,7 @@ import { useWorkspaceStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { ResponseCode } from "@/types";
 import { LoaderCircle } from "lucide-react";
+import { convertToTree, getDeletedWorksId } from "@/libs";
 
 interface WorkspaceDialogProps {
   open: boolean;
@@ -39,7 +40,6 @@ const DeleteWorkspaceDialog = (props: WorkspaceDialogProps) => {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>删除</AlertDialogTitle>
-
           <AlertDialogDescription>
             所选目录中的所有文件和子目录都将被删除。您可能无法完全撤消此操作！
           </AlertDialogDescription>
@@ -51,6 +51,21 @@ const DeleteWorkspaceDialog = (props: WorkspaceDialogProps) => {
             onClick={async () => {
               const response = await batchDeleteWorkspace({ ids: ids });
               if (response.code === ResponseCode.success) {
+                useWorkspaceStore.setState((oldState) => {
+                  const { deletedIds, leftIds } = getDeletedWorksId(
+                    ids,
+                    Array.from(oldState.worksMap.keys()),
+                    convertToTree(oldState.workspaces),
+                  );
+                  const newMap = new Map(oldState.worksMap);
+                  deletedIds.forEach((deletedId) => {
+                    newMap.delete(deletedId);
+                  });
+                  return {
+                    workIds: leftIds,
+                    worksMap: newMap,
+                  };
+                });
                 initialWorkspace();
                 onOpenChange(false);
                 SToast.success("删除成功", {
@@ -58,6 +73,7 @@ const DeleteWorkspaceDialog = (props: WorkspaceDialogProps) => {
                   id: "delete",
                   duration: 1000,
                 });
+
                 return;
               }
               SToast.error(response.message, {
