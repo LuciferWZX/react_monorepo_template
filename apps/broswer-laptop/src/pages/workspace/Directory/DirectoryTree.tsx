@@ -91,6 +91,7 @@ const TreeLeaf = (props: TreeLeafProps) => {
             useWorkspaceStore.setState((oldState) => {
               return {
                 worksMap: new Map(oldState.worksMap).set(data.id, "aaaa"),
+                builderId: data.id,
               };
             });
           }

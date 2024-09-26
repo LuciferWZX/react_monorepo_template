@@ -1,4 +1,10 @@
+import { AgentFlow } from "@/components";
+
 const FileContent = () => {
-  return <div>aa</div>;
+  return (
+    <div className={" h-full w-full overflow-auto"}>
+      <AgentFlow />
+    </div>
+  );
 };
 export default FileContent;

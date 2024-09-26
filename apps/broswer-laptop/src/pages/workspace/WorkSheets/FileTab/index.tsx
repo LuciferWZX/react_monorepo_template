@@ -1,7 +1,13 @@
 import { useWorkspaceStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
-import { cn, ScrollArea, TabsList, TabsTrigger } from "@zhixin/shadcn_lib";
-import { X } from "lucide-react";
+import {
+  Button,
+  cn,
+  ScrollArea,
+  TabsList,
+  TabsTrigger,
+} from "@zhixin/shadcn_lib";
+import { MoreHorizontal, X } from "lucide-react";
 import { IWorkspace } from "@/types/workspace.ts";
 const FileTab = () => {
   const [files, buildId] = useWorkspaceStore(
@@ -13,34 +19,62 @@ const FileTab = () => {
       return [files, state.builderId];
     }),
   );
+
   return (
-    <ScrollArea
-      classes={{
-        thumb: {
-          horizontal: "rounded-none opacity-80",
-        },
-      }}
-      className={"p-1"}
-    >
-      {files.length > 0 && (
-        <TabsList className={"justify-start gap-1"}>
-          {files.map((file) => {
-            return <Trigger buildId={buildId} file={file} key={file.id} />;
-          })}
-        </TabsList>
-      )}
-    </ScrollArea>
+    <div>
+      <TabsList
+        className={
+          "w-full rounded-none justify-start h-10 p-0 border-b bg-muted/40 "
+        }
+      >
+        <ScrollArea
+          className={"w-full"}
+          classes={{
+            viewport: "p-1",
+            thumb: {
+              horizontal: "rounded-none opacity-80",
+            },
+          }}
+        >
+          <div className={"whitespace-nowrap"}>
+            {files.map((file) => {
+              return (
+                <Trigger
+                  className={"mr-1 "}
+                  buildId={buildId}
+                  file={file}
+                  key={file.id}
+                />
+              );
+            })}
+          </div>
+        </ScrollArea>
+        <div className={"sticky right-0 px-1 bg-background"}>
+          <Button variant={"ghost"} size={"icon"}>
+            <MoreHorizontal className={"w-4 h-4"} />
+          </Button>
+        </div>
+      </TabsList>
+    </div>
   );
 };
 interface TriggerProps {
   file: IWorkspace;
+  className?: string;
   buildId: string | undefined;
 }
 const Trigger = (props: TriggerProps) => {
-  const { file, buildId } = props;
+  const { file, buildId, className } = props;
   return (
     <TabsTrigger
-      className={"group hover:bg-background/30"}
+      className={cn(
+        "group rounded-none hover:bg-background relative",
+        {
+          "after:content-[''] after:absolute after:bottom-0 after:h-0.5 after:w-full after:bg-blue-600":
+            buildId === file.id,
+        },
+        className,
+      )}
       value={file.id}
       onClick={() => {
         useWorkspaceStore.setState({
@@ -55,6 +89,15 @@ const Trigger = (props: TriggerProps) => {
             event.stopPropagation();
             useWorkspaceStore.setState((oldState) => {
               oldState.worksMap.delete(file.id);
+              if (buildId === file.id) {
+                const ids = Array.from(oldState.worksMap.keys());
+                if (ids.length > 0) {
+                  return {
+                    builderId: ids[0],
+                    worksMap: new Map(oldState.worksMap),
+                  };
+                }
+              }
               return {
                 worksMap: new Map(oldState.worksMap),
               };
