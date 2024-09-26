@@ -4,14 +4,16 @@ import {
   ColorMode,
   Controls,
   MiniMap,
+  Node,
   OnConnect,
   ReactFlow,
-  Node,
+  ReactFlowProvider,
   useEdgesState,
   useNodesState,
+  useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/base.css";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import DevTools from "@/components/agent-flow/devtools";
 import {
   ContextMenu,
@@ -23,6 +25,10 @@ import {
   ContextMenuTrigger,
 } from "@zhixin/shadcn_lib";
 import { FileText } from "lucide-react";
+import { FlowManager } from "@/managers";
+import { FlowNodeType } from "@/types";
+import nodeTypes from "@/components/agent-flow/nodeTypes.ts";
+import "./index.css";
 interface AgentFlowProps {
   theme?: ColorMode;
 }
@@ -34,17 +40,19 @@ const initialNodes: Node[] = [
     position: { x: 125, y: 0 },
   },
 ];
-const AgentFlow = (props: AgentFlowProps) => {
+const BaseAgentFlow = (props: AgentFlowProps) => {
   const { theme } = props;
-  const [nodes, _, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { screenToFlowPosition } = useReactFlow();
+  const ref = useRef<HTMLDivElement>(null);
   const onConnect: OnConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
     [],
   );
   return (
     <ContextMenu modal={true}>
-      <ContextMenuTrigger className="flex-1 overflow-auto">
+      <ContextMenuTrigger>
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -52,18 +60,46 @@ const AgentFlow = (props: AgentFlowProps) => {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           colorMode={theme}
+          nodeTypes={nodeTypes}
         >
-          <DevTools />
-          <Background />
-          <Controls />
-          <MiniMap />
+          <div
+            onContextMenu={(event) => {
+              event.preventDefault();
+            }}
+          >
+            <DevTools />
+            <Background />
+            <Controls />
+            <MiniMap
+              className={"!bottom-8 !-right-2"}
+              pannable={true}
+              zoomable={true}
+            />
+          </div>
         </ReactFlow>
       </ContextMenuTrigger>
-      <ContextMenuContent>
+      <ContextMenuContent ref={ref}>
         <ContextMenuSub>
           <ContextMenuSubTrigger>添加</ContextMenuSubTrigger>
           <ContextMenuSubContent className="w-48">
-            <ContextMenuItem>
+            <ContextMenuItem
+              onClick={() => {
+                if (ref.current) {
+                  const rect = ref.current.getBoundingClientRect();
+                  const position = screenToFlowPosition({
+                    x: rect.x,
+                    y: rect.y,
+                  });
+                  const node = FlowManager.shared.create(FlowNodeType.llm, {
+                    position: position,
+                  });
+                  if (!node) {
+                    throw Error("该节点类型不存在");
+                  }
+                  setNodes((oldNodes) => oldNodes.concat(node));
+                }
+              }}
+            >
               <FileText className={"w-4 h-4 mr-2"} />
               LLM
             </ContextMenuItem>
@@ -71,6 +107,13 @@ const AgentFlow = (props: AgentFlowProps) => {
         </ContextMenuSub>
       </ContextMenuContent>
     </ContextMenu>
+  );
+};
+export const AgentFlow = (props: AgentFlowProps) => {
+  return (
+    <ReactFlowProvider>
+      <BaseAgentFlow {...props} />
+    </ReactFlowProvider>
   );
 };
 export default AgentFlow;

@@ -12,11 +12,14 @@ type BaseSchemaType<T = SchemaType> = {
   description?: string | undefined;
   type?: T;
 };
-type ObjectSchemaType<T = SchemaType.object> = BaseSchemaType<T> & {
+export type ObjectSchemaType<
+  T = SchemaType.object,
+  D = unknown,
+> = BaseSchemaType<T> & {
   /**
    * @description 定义属性
    */
-  properties: Record<string, any>;
+  properties: Record<string, D>;
   /**
    * @description 必填属性
    */
