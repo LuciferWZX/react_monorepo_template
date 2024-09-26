@@ -12,6 +12,17 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/base.css";
 import { useCallback } from "react";
+import DevTools from "@/components/agent-flow/devtools";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "@zhixin/shadcn_lib";
+import { FileText } from "lucide-react";
 interface AgentFlowProps {
   theme?: ColorMode;
 }
@@ -32,18 +43,34 @@ const AgentFlow = (props: AgentFlowProps) => {
     [],
   );
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      colorMode={theme}
-    >
-      <Background />
-      <Controls />
-      <MiniMap />
-    </ReactFlow>
+    <ContextMenu modal={true}>
+      <ContextMenuTrigger className="flex-1 overflow-auto">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          colorMode={theme}
+        >
+          <DevTools />
+          <Background />
+          <Controls />
+          <MiniMap />
+        </ReactFlow>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuSub>
+          <ContextMenuSubTrigger>添加</ContextMenuSubTrigger>
+          <ContextMenuSubContent className="w-48">
+            <ContextMenuItem>
+              <FileText className={"w-4 h-4 mr-2"} />
+              LLM
+            </ContextMenuItem>
+          </ContextMenuSubContent>
+        </ContextMenuSub>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 };
 export default AgentFlow;
