@@ -11,7 +11,7 @@ const WorkSheets = () => {
   );
 
   return (
-    <Tabs value={builderId ?? ""} className={"h-full w-full"}>
+    <Tabs value={builderId ?? ""} className={"h-full w-full flex flex-col"}>
       <FileTab />
       <FileContent />
     </Tabs>

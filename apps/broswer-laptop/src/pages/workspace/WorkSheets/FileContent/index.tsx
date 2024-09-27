@@ -4,7 +4,7 @@ import { useTheme } from "@zhixin/shadcn_lib";
 const FileContent = () => {
   const { theme } = useTheme();
   return (
-    <div className={" h-full w-full overflow-auto"}>
+    <div className={"flex-1 h-full w-full relative overflow-hidden"}>
       <AgentFlow theme={theme} />
     </div>
   );

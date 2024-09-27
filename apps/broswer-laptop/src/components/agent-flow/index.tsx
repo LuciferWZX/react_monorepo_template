@@ -19,16 +19,16 @@ import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuLabel,
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "@zhixin/shadcn_lib";
-import { FileText } from "lucide-react";
 import { FlowManager } from "@/managers";
-import { FlowNodeType } from "@/types";
 import nodeTypes from "@/components/agent-flow/nodeTypes.ts";
 import "./index.css";
+import { FLOW_COMPONENTS } from "@/components/agent-flow/constants";
 interface AgentFlowProps {
   theme?: ColorMode;
 }
@@ -50,6 +50,59 @@ const BaseAgentFlow = (props: AgentFlowProps) => {
     (params) => setEdges((eds) => addEdge(params, eds)),
     [],
   );
+  const renderContextMenu = () => {
+    return (
+      <ContextMenuSub>
+        <ContextMenuSubTrigger>添加</ContextMenuSubTrigger>
+        <ContextMenuSubContent className="w-48">
+          {FLOW_COMPONENTS.map((group) => {
+            return (
+              <div key={group.group}>
+                <ContextMenuLabel className={"flex gap-2 items-center"}>
+                  {group.icon && <group.icon className={"w-4 h-4"} />}
+                  {group.group}
+                </ContextMenuLabel>
+                {group.components.map((component) => {
+                  const ComponentIcon = component.icon;
+                  return (
+                    <ContextMenuItem
+                      inset={true}
+                      key={component.type}
+                      onClick={() => {
+                        if (ref.current) {
+                          const rect = ref.current.getBoundingClientRect();
+                          const position = screenToFlowPosition({
+                            x: rect.x,
+                            y: rect.y,
+                          });
+                          const node = FlowManager.shared.create(
+                            component.type,
+                            {
+                              icon: ComponentIcon,
+                              position: position,
+                            },
+                          );
+                          if (!node) {
+                            throw Error(`该节点类型:${component.type}不存在`);
+                          }
+                          setNodes((oldNodes) => oldNodes.concat(node));
+                        }
+                      }}
+                    >
+                      {ComponentIcon && (
+                        <ComponentIcon className={"w-4 h-4 mr-2"} />
+                      )}
+                      {component.name}
+                    </ContextMenuItem>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </ContextMenuSubContent>
+      </ContextMenuSub>
+    );
+  };
   return (
     <ContextMenu modal={true}>
       <ContextMenuTrigger>
@@ -61,6 +114,7 @@ const BaseAgentFlow = (props: AgentFlowProps) => {
           onConnect={onConnect}
           colorMode={theme}
           nodeTypes={nodeTypes}
+          deleteKeyCode={["Delete"]}
         >
           <div
             onContextMenu={(event) => {
@@ -71,41 +125,15 @@ const BaseAgentFlow = (props: AgentFlowProps) => {
             <Background />
             <Controls />
             <MiniMap
-              className={"!bottom-8 !-right-2"}
+              maskStrokeColor={"#2563eb"}
+              maskStrokeWidth={1}
               pannable={true}
               zoomable={true}
             />
           </div>
         </ReactFlow>
       </ContextMenuTrigger>
-      <ContextMenuContent ref={ref}>
-        <ContextMenuSub>
-          <ContextMenuSubTrigger>添加</ContextMenuSubTrigger>
-          <ContextMenuSubContent className="w-48">
-            <ContextMenuItem
-              onClick={() => {
-                if (ref.current) {
-                  const rect = ref.current.getBoundingClientRect();
-                  const position = screenToFlowPosition({
-                    x: rect.x,
-                    y: rect.y,
-                  });
-                  const node = FlowManager.shared.create(FlowNodeType.llm, {
-                    position: position,
-                  });
-                  if (!node) {
-                    throw Error("该节点类型不存在");
-                  }
-                  setNodes((oldNodes) => oldNodes.concat(node));
-                }
-              }}
-            >
-              <FileText className={"w-4 h-4 mr-2"} />
-              LLM
-            </ContextMenuItem>
-          </ContextMenuSubContent>
-        </ContextMenuSub>
-      </ContextMenuContent>
+      <ContextMenuContent ref={ref}>{renderContextMenu()}</ContextMenuContent>
     </ContextMenu>
   );
 };

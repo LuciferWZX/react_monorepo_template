@@ -1,3 +1,5 @@
+import { LucideIcon } from "lucide-react";
+
 export enum SchemaType {
   object = "object",
   array = "array",
@@ -10,11 +12,12 @@ type BaseSchemaType<T = SchemaType> = {
   $id: string;
   title?: string | undefined;
   description?: string | undefined;
-  type?: T;
+  icon?: LucideIcon;
+  type: T;
 };
 export type ObjectSchemaType<
   T = SchemaType.object,
-  D = unknown,
+  D = StringSchemaType | NumberSchemaType | EnumSchemaType,
 > = BaseSchemaType<T> & {
   /**
    * @description 定义属性
@@ -65,7 +68,7 @@ type StringSchemaType<T = SchemaType.string> = BaseSchemaType<T> & {
   /**
    * @description 用正则表达式约束字符串
    */
-  pattern: RegExp;
+  pattern?: RegExp;
 };
 type NumberSchemaType<T = SchemaType.number> = BaseSchemaType<T> & {
   /**

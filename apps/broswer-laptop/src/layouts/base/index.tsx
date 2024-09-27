@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { TooltipProvider } from "@zhixin/shadcn_lib";
+import { SToast, TooltipProvider } from "@zhixin/shadcn_lib";
 import { useEffect } from "react";
 import { APPManager } from "@/managers";
 import { useAppStore } from "@/stores";
@@ -35,6 +35,11 @@ const useInitUser = () => {
       .initApp({
         failed: (reason) => {
           console.log(reason);
+          SToast.error(reason, {
+            position: "top-center",
+            id: "init",
+            duration: 1000,
+          });
           navigate("/login");
         },
       })

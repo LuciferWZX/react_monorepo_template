@@ -21,7 +21,7 @@ const FileTab = () => {
   );
 
   return (
-    <div>
+    <div className={"flex-shrink"}>
       <TabsList
         className={
           "w-full rounded-none justify-start h-10 p-0 border-b bg-muted/40 "
