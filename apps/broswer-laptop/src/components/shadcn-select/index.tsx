@@ -33,7 +33,11 @@ export const ShadcnSelect = forwardRef<HTMLButtonElement, ShadcnSelectProps>(
     return (
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger ref={ref} className={cn("w-fit", className)}>
-          <SelectValue placeholder={placeholder} />
+          <SelectValue
+            placeholder={
+              <span className={"text-muted-foreground/60"}>{placeholder}</span>
+            }
+          />
         </SelectTrigger>
         <SelectContent
           onKeyDown={(event) => {

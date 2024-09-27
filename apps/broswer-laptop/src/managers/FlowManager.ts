@@ -1,6 +1,7 @@
 import {
   FlowNode,
   FlowNodeType,
+  NodeFormItem,
   ObjectSchemaType,
   Schema,
   SchemaType,
@@ -9,6 +10,7 @@ import { match } from "ts-pattern";
 import { nanoid } from "nanoid";
 import { Node } from "@xyflow/react";
 import { LucideIcon } from "lucide-react";
+import { Rule } from "antd/lib/form";
 
 interface BaseNodeConfig {
   icon?: LucideIcon;
@@ -27,6 +29,78 @@ export class FlowManager {
         return this._LLM(config) as FlowNode;
       })
       .otherwise(() => null);
+  }
+
+  /**
+   * @description 将data转为数组的形式
+   * @param nodeData
+   */
+  getFormItems(nodeData: Schema) {
+    const formItems: Array<NodeFormItem> = [];
+    match(nodeData).with({ type: SchemaType.object }, (_data) => {
+      const { properties, required } = _data;
+      for (const key in properties) {
+        const dataObject = properties[key];
+        if (!dataObject) {
+          return [];
+        }
+        const name = key;
+        const label = dataObject.title ?? "";
+        let rules: Rule[] = [];
+        if (required && required.includes(name)) {
+          rules = rules.concat({
+            required: true,
+            message: `${label}是必填项`,
+          });
+        }
+        match(dataObject)
+          .with({ type: SchemaType.string }, (stringObject) => {
+            formItems.push({
+              label: label,
+              id: stringObject.$id,
+              name: name,
+              type: SchemaType.string,
+              rules: rules,
+              defaultValue: stringObject.value,
+            });
+          })
+          .with({ type: SchemaType.enum }, (enumObject) => {
+            formItems.push({
+              label: label,
+              id: enumObject.$id,
+              name: name,
+              type: SchemaType.enum,
+              rules: rules,
+              enum: enumObject.enum,
+            });
+          })
+          .with({ type: SchemaType.array }, (arrayObject) => {
+            formItems.push({
+              label: label,
+              id: arrayObject.$id,
+              name: name,
+              type: SchemaType.array,
+              rules: rules,
+              option: arrayObject.items,
+              defaultValue: arrayObject.value,
+            });
+          });
+      }
+    });
+    return formItems;
+  }
+
+  /**
+   * @description 将data转为form的value形式
+   * @param nodeData
+   */
+  getFormItemValues(nodeData: Schema) {
+    const formItems = this.getFormItems(nodeData);
+    const valuesObj: Record<string, any> = {};
+    formItems.forEach((item) => {
+      valuesObj[item.name] = item.defaultValue;
+    });
+    return valuesObj;
   }
   _LLM(
     config: BaseNodeConfig,
@@ -47,13 +121,15 @@ export class FlowManager {
             $id: nanoid(8),
             title: "提示词",
             type: SchemaType.string,
+            value: "xx",
           },
           model: {
             $id: nanoid(8),
             title: "模型",
-            type: SchemaType.enum,
+            type: SchemaType.array,
+            value: "general",
             //目前使用的星火大模型
-            enum: [
+            items: [
               "general",
               "generalv3",
               "pro-128k",

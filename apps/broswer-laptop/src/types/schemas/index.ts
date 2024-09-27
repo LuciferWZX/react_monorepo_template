@@ -17,7 +17,7 @@ type BaseSchemaType<T = SchemaType> = {
 };
 export type ObjectSchemaType<
   T = SchemaType.object,
-  D = StringSchemaType | NumberSchemaType | EnumSchemaType,
+  D = StringSchemaType | NumberSchemaType | EnumSchemaType | ArraySchemaType,
 > = BaseSchemaType<T> & {
   /**
    * @description 定义属性
@@ -36,13 +36,22 @@ export type ObjectSchemaType<
    */
   minProperties?: number;
 };
-type ArraySchemaType<T = SchemaType.array> = BaseSchemaType<T> & {
+type ArraySchemaType<
+  T = SchemaType.array,
+  D = { value: string; label: string } | string | number,
+> = BaseSchemaType<T> & {
   /**
    * @description 每个元素的类型
    */
-  items: {
-    type: SchemaType;
-  };
+  items: D[];
+  /**
+   * @description 值
+   */
+  value?: string | string[];
+  /**
+   * @description 是否多选
+   */
+  isMultiple?: boolean;
   /**
    * @description 数组最小的元素个数
    */
@@ -69,6 +78,10 @@ type StringSchemaType<T = SchemaType.string> = BaseSchemaType<T> & {
    * @description 用正则表达式约束字符串
    */
   pattern?: RegExp;
+  /**
+   * @description 值
+   */
+  value?: string;
 };
 type NumberSchemaType<T = SchemaType.number> = BaseSchemaType<T> & {
   /**

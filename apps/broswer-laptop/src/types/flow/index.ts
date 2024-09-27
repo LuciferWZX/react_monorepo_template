@@ -19,15 +19,23 @@ export enum FlowNodeType {
   llm = "llm",
 }
 export type FlowNode = Node<Schema>;
-interface BaseFormItemProps<T extends SchemaType> {
+interface BaseFormItemProps<T extends SchemaType, D = any> {
   id: string;
   name: string;
   label: string;
   rules?: Rule[];
   type: T;
+  defaultValue?: D;
 }
-export type StringFormItem = BaseFormItemProps<SchemaType.string>;
-export type EnumFormItem = BaseFormItemProps<SchemaType.enum> & {
+export type StringFormItem = BaseFormItemProps<SchemaType.string, string>;
+export type EnumFormItem = BaseFormItemProps<SchemaType.enum, string> & {
   enum: Array<string | number>;
 };
-export type NodeFormItem = StringFormItem | EnumFormItem;
+export type ArrayFormItem = BaseFormItemProps<
+  SchemaType.array,
+  string | string[]
+> & {
+  isMultiple?: boolean;
+  option: Array<string | number | { value: string; label: string }>;
+};
+export type NodeFormItem = StringFormItem | EnumFormItem | ArrayFormItem;
