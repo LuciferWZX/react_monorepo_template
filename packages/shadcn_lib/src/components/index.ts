@@ -18,3 +18,5 @@ export * from "./ui/sonner.tsx";
 export * from "./ui/label.tsx";
 export * from "./ui/tabs.tsx";
 export * from "./ui/form.tsx";
+
+export * from "./editor";

@@ -1,9 +1,10 @@
 import { Schema, SchemaType } from "@/types";
 import { useMemo } from "react";
 import { FlowManager } from "@/managers";
-import { Form, Input } from "antd";
+import { Form } from "antd";
 import { match, P } from "ts-pattern";
 import { ShadcnSelect } from "@/components";
+import { SlateProEditor } from "@zhixin/shadcn_lib";
 
 interface NodeDataItemBoxProps {
   data: Schema;
@@ -25,10 +26,14 @@ const NodeDataItemBox = (props: NodeDataItemBoxProps) => {
         {match(item)
           .with({ type: SchemaType.string }, (_item) => {
             return (
-              <Input
-                className={"nodrag nopan nowheel "}
+              <SlateProEditor
+                className={"w-full nodrag nopan nowheel"}
                 placeholder={`请输入 ${_item.label}`}
               />
+              // <ShadcnInput
+              //   className={"nodrag nopan nowheel "}
+              //   placeholder={`请输入 ${_item.label}`}
+              // />
             );
           })
           .with({ type: SchemaType.enum }, (_item) => {

@@ -8,8 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@zhixin/shadcn_lib";
-import { forwardRef, ReactNode } from "react";
+import { forwardRef, ReactNode, useContext, useMemo } from "react";
 import { match, P } from "ts-pattern";
+import DisabledContext from "antd/es/config-provider/DisabledContext";
 
 export interface ShadcnOption {
   value: string;
@@ -26,12 +27,18 @@ interface ShadcnSelectProps {
   option: Array<ShadcnOption | ShadcnGroupOption>;
   placeholder?: string;
   className?: string;
+  disabled?: boolean;
 }
 export const ShadcnSelect = forwardRef<HTMLButtonElement, ShadcnSelectProps>(
   (props, ref) => {
-    const { value, onChange, className, placeholder, option } = props;
+    const { value, disabled, onChange, className, placeholder, option } = props;
+    const disabledContent = useContext(DisabledContext);
+    const mergedDisabled = useMemo(
+      () => disabled || disabledContent,
+      [disabledContent, disabled],
+    );
     return (
-      <Select value={value} onValueChange={onChange}>
+      <Select value={value} onValueChange={onChange} disabled={mergedDisabled}>
         <SelectTrigger ref={ref} className={cn("w-fit", className)}>
           <SelectValue
             placeholder={

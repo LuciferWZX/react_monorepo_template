@@ -35,6 +35,10 @@ export type ObjectSchemaType<
    * @description 最小属性数量
    */
   minProperties?: number;
+  /**
+   * @description 当title为空的时候需要重置成的值
+   */
+  setTitleWhenEmpty?: string;
 };
 type ArraySchemaType<
   T = SchemaType.array,
@@ -92,10 +96,18 @@ type NumberSchemaType<T = SchemaType.number> = BaseSchemaType<T> & {
    * @description 最大值
    */
   maximum?: number;
+  /**
+   * @description 值
+   */
+  value?: number;
 };
 type BooleanSchemaType<T = SchemaType.boolean> = BaseSchemaType<T> & {};
 type EnumSchemaType<T = SchemaType.enum> = BaseSchemaType<T> & {
   enum: (string | number)[];
+  /**
+   * @description 值
+   */
+  value?: string | number;
 };
 export type Schema =
   | ObjectSchemaType

@@ -29,8 +29,11 @@ import { FlowManager } from "@/managers";
 import nodeTypes from "@/components/agent-flow/nodeTypes.ts";
 import "./index.css";
 import { FLOW_COMPONENTS } from "@/components/agent-flow/constants";
+import Test from "@/components/agent-flow/Test.tsx";
 interface AgentFlowProps {
   theme?: ColorMode;
+  devTools?: boolean;
+  miniMap?: boolean;
 }
 const initialNodes: Node[] = [
   {
@@ -41,7 +44,7 @@ const initialNodes: Node[] = [
   },
 ];
 const BaseAgentFlow = (props: AgentFlowProps) => {
-  const { theme } = props;
+  const { theme, devTools, miniMap } = props;
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { screenToFlowPosition } = useReactFlow();
@@ -121,15 +124,18 @@ const BaseAgentFlow = (props: AgentFlowProps) => {
               event.preventDefault();
             }}
           >
-            <DevTools />
+            {devTools && <DevTools />}
             <Background />
             <Controls />
-            <MiniMap
-              maskStrokeColor={"#2563eb"}
-              maskStrokeWidth={1}
-              pannable={true}
-              zoomable={true}
-            />
+            {miniMap && (
+              <MiniMap
+                maskStrokeColor={"#2563eb"}
+                maskStrokeWidth={1}
+                pannable={true}
+                zoomable={true}
+              />
+            )}
+            <Test />
           </div>
         </ReactFlow>
       </ContextMenuTrigger>

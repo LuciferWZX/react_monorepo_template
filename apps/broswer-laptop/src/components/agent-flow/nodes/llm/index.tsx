@@ -9,7 +9,6 @@ const LLMNodes = (
   props: NodeProps<Node<ObjectSchemaType<SchemaType.object, Schema>>>,
 ) => {
   const { data, selected, id } = props;
-  console.log(123, props);
   return (
     <NodeBox selected={selected}>
       <LLMNodeData nodeId={id} data={data} />

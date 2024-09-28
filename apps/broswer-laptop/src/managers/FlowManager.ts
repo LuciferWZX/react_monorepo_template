@@ -11,6 +11,7 @@ import { nanoid } from "nanoid";
 import { Node } from "@xyflow/react";
 import { LucideIcon } from "lucide-react";
 import { Rule } from "antd/lib/form";
+import { FormInstance } from "antd";
 
 interface BaseNodeConfig {
   icon?: LucideIcon;
@@ -20,6 +21,7 @@ interface BaseNodeConfig {
   };
 }
 export class FlowManager {
+  forms: Map<string, FormInstance> = new Map();
   private constructor() {}
   public static shared = new FlowManager();
 
@@ -102,6 +104,30 @@ export class FlowManager {
     });
     return valuesObj;
   }
+  updateObjectProperties(
+    orgValues: Record<string, any>,
+    objectData: ObjectSchemaType,
+  ) {
+    const values = { ...orgValues };
+    delete values._name_;
+    const { properties } = objectData;
+    const newProperties = { ...properties };
+    for (const key in newProperties) {
+      const object = newProperties[key];
+      const { title } = object;
+      if (key in values && title) {
+        object.value = values[key];
+      }
+      // match(object).with({ type: SchemaType.string }, (stringObject) => {
+      //   const {title}=stringObject
+      //   if (title){
+      //     stringObject.value = values[title]
+      //   }
+      //
+      // });
+    }
+    return newProperties;
+  }
   _LLM(
     config: BaseNodeConfig,
   ): Node<ObjectSchemaType<SchemaType.object, Schema>> {
@@ -109,25 +135,24 @@ export class FlowManager {
       position: config.position,
       type: FlowNodeType.llm,
       id: nanoid(8),
-
       data: {
         $id: nanoid(8),
         icon: config.icon,
         type: SchemaType.object,
         title: "LLM",
+        setTitleWhenEmpty: "LLM",
         required: ["prompt", "model"],
         properties: {
           prompt: {
             $id: nanoid(8),
             title: "提示词",
             type: SchemaType.string,
-            value: "xx",
+            value: "",
           },
           model: {
             $id: nanoid(8),
             title: "模型",
             type: SchemaType.array,
-            value: "general",
             //目前使用的星火大模型
             items: [
               "general",
@@ -142,4 +167,7 @@ export class FlowManager {
       },
     };
   }
+  addFormInstance = (nodeId: string, form: FormInstance) => {
+    this.forms.set(nodeId, form);
+  };
 }

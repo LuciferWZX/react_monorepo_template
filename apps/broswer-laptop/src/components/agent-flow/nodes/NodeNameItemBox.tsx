@@ -1,7 +1,9 @@
-import { Form, Input } from "antd";
+import { Form } from "antd";
 import { LucideIcon } from "lucide-react";
+import ShadcnInput from "@/components/shadcn-input";
 interface NodeNameItemBoxProps {
   icon?: LucideIcon;
+  onBlur?: (val: string) => void;
 }
 const NodeNameItemBox = (props: NodeNameItemBoxProps) => {
   const Icon = props.icon;
@@ -17,9 +19,10 @@ const NodeNameItemBox = (props: NodeNameItemBoxProps) => {
         </span>
       )}
       <Form.Item name={"_name_"} noStyle={true}>
-        <Input
+        <ShadcnInput
+          onBlur={(event) => props.onBlur?.(event.target.value)}
           className={"nodrag nopan nowheel p-1"}
-          variant={"borderless"}
+          border={false}
           placeholder={"节点名称"}
         />
       </Form.Item>
