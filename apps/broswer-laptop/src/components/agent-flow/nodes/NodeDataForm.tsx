@@ -22,6 +22,7 @@ const NodeDataForm = (props: NodeDataFormProps) => {
       form={form}
       requiredMark={false}
       colon={false}
+      // disabled={true}
       autoComplete={"off"}
       layout={"vertical"}
       initialValues={{

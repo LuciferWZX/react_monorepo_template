@@ -3,8 +3,7 @@ import { useMemo } from "react";
 import { FlowManager } from "@/managers";
 import { Form } from "antd";
 import { match, P } from "ts-pattern";
-import { ShadcnSelect } from "@/components";
-import { SlateProEditor } from "@zhixin/shadcn_lib";
+import { ShadcnSelect, SlateInput } from "@/components";
 
 interface NodeDataItemBoxProps {
   data: Schema;
@@ -26,7 +25,9 @@ const NodeDataItemBox = (props: NodeDataItemBoxProps) => {
         {match(item)
           .with({ type: SchemaType.string }, (_item) => {
             return (
-              <SlateProEditor
+              <SlateInput
+                maxLength={_item.maxLength}
+                showCount={true}
                 className={"w-full nodrag nopan nowheel"}
                 placeholder={`请输入 ${_item.label}`}
               />

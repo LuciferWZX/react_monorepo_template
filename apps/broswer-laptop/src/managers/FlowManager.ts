@@ -12,6 +12,7 @@ import { Node } from "@xyflow/react";
 import { LucideIcon } from "lucide-react";
 import { Rule } from "antd/lib/form";
 import { FormInstance } from "antd";
+import { SlateEditorManager } from "@zhixin/shadcn_lib";
 
 interface BaseNodeConfig {
   icon?: LucideIcon;
@@ -49,7 +50,11 @@ export class FlowManager {
         const name = key;
         const label = dataObject.title ?? "";
         let rules: Rule[] = [];
-        if (required && required.includes(name)) {
+        if (
+          required &&
+          required.includes(name) &&
+          ![SchemaType.string].includes(dataObject.type)
+        ) {
           rules = rules.concat({
             required: true,
             message: `${label}是必填项`,
@@ -57,6 +62,18 @@ export class FlowManager {
         }
         match(dataObject)
           .with({ type: SchemaType.string }, (stringObject) => {
+            rules = rules.concat(() => ({
+              validator(_, value: string) {
+                if (required?.includes(name)) {
+                  const pureText = SlateEditorManager.shared.getPureText(value);
+                  if (pureText) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error(`${label}是必填项`));
+                }
+                return Promise.resolve();
+              },
+            }));
             formItems.push({
               label: label,
               id: stringObject.$id,
@@ -64,6 +81,7 @@ export class FlowManager {
               type: SchemaType.string,
               rules: rules,
               defaultValue: stringObject.value,
+              maxLength: stringObject.maxLength,
             });
           })
           .with({ type: SchemaType.enum }, (enumObject) => {
@@ -148,6 +166,7 @@ export class FlowManager {
             title: "提示词",
             type: SchemaType.string,
             value: "",
+            maxLength: 20,
           },
           model: {
             $id: nanoid(8),

@@ -1,9 +1,11 @@
-import { cn, Input, InputProps } from "@zhixin/shadcn_lib";
-import { useContext, useMemo } from "react";
+import { ComponentPropsWithRef, useContext, useMemo } from "react";
+import { cn, SlateProEditor } from "@zhixin/shadcn_lib";
 import DisabledContext from "antd/es/config-provider/DisabledContext";
 import { Form } from "antd";
 
-const ShadcnInput = (props: InputProps) => {
+interface SlateInputProps
+  extends ComponentPropsWithRef<typeof SlateProEditor> {}
+const SlateInput = (props: SlateInputProps) => {
   const { disabled, className, ...restProps } = props;
   const disabledContent = useContext(DisabledContext);
   const { status } = Form.Item.useStatus();
@@ -14,16 +16,16 @@ const ShadcnInput = (props: InputProps) => {
     [disabledContent, disabled],
   );
   return (
-    <Input
-      disabled={mergedDisabled}
+    <SlateProEditor
       className={cn(
         {
-          "border-error focus-visible:ring-error": isError,
+          "border-error focus-within:ring-error": isError,
         },
         className,
       )}
       {...restProps}
+      disabled={mergedDisabled}
     />
   );
 };
-export default ShadcnInput;
+export default SlateInput;

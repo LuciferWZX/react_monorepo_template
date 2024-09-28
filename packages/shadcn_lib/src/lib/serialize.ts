@@ -1,6 +1,6 @@
 import { Descendant, Text as SlateText } from "slate";
 import { match } from "ts-pattern";
-import { CustomElementType } from "@/types/element.ts";
+import { CustomElementType } from "../types/element.ts";
 
 export const serializeNodes = (nodes: Descendant[]): string => {
   return nodes

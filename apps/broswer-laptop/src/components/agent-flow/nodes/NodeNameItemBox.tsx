@@ -21,7 +21,7 @@ const NodeNameItemBox = (props: NodeNameItemBoxProps) => {
       <Form.Item name={"_name_"} noStyle={true}>
         <ShadcnInput
           onBlur={(event) => props.onBlur?.(event.target.value)}
-          className={"nodrag nopan nowheel p-1"}
+          className={"nodrag nopan nowheel p-1 w-fit"}
           border={false}
           placeholder={"节点名称"}
         />

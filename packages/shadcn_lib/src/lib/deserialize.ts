@@ -1,7 +1,7 @@
 import { Descendant } from "slate";
 import { jsx } from "slate-hyperscript";
 import { match } from "ts-pattern";
-import { CustomElementType } from "@/types/element.ts";
+import { CustomElementType } from "../types/element.ts";
 export const isParagraphTag = (text: string) => {
   return /^<p\b[^>]*>(.*?)<\/p>$/i.test(text);
 };

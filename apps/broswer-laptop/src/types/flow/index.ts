@@ -27,7 +27,9 @@ interface BaseFormItemProps<T extends SchemaType, D = any> {
   type: T;
   defaultValue?: D;
 }
-export type StringFormItem = BaseFormItemProps<SchemaType.string, string>;
+export type StringFormItem = BaseFormItemProps<SchemaType.string, string> & {
+  maxLength?: number;
+};
 export type EnumFormItem = BaseFormItemProps<SchemaType.enum, string> & {
   enum: Array<string | number>;
 };
