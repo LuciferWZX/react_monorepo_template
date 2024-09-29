@@ -66,10 +66,22 @@ export class FlowManager {
               validator(_, value: string) {
                 if (required?.includes(name)) {
                   const pureText = SlateEditorManager.shared.getPureText(value);
-                  if (pureText) {
-                    return Promise.resolve();
+                  if (!pureText) {
+                    return Promise.reject(new Error(`${label}是必填项`));
                   }
-                  return Promise.reject(new Error(`${label}是必填项`));
+                }
+                if (stringObject.maxLength !== undefined) {
+                  const pureText = SlateEditorManager.shared.getPureText(
+                    value,
+                    { withBreakLine: true },
+                  );
+                  if (pureText.length > stringObject.maxLength) {
+                    return Promise.reject(
+                      new Error(
+                        `${label}的长度不能超过${stringObject.maxLength}`,
+                      ),
+                    );
+                  }
                 }
                 return Promise.resolve();
               },
@@ -165,8 +177,8 @@ export class FlowManager {
             $id: nanoid(8),
             title: "提示词",
             type: SchemaType.string,
-            value: "",
-            maxLength: 20,
+            // value: "<p></p>",
+            maxLength: 100,
           },
           model: {
             $id: nanoid(8),

@@ -3,10 +3,10 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@zhixin/shadcn_lib";
-import Directory from "@/pages/workspace/Directory";
 import useWorkspace from "@/pages/workspace/useWorkspace.ts";
 import { useEffect } from "react";
 import WorkSheets from "@/pages/workspace/WorkSheets";
+import LeftPanel from "@/pages/workspace/LeftPanel";
 
 const WorkspacePage = () => {
   const { initial } = useWorkspace();
@@ -22,7 +22,7 @@ const WorkspacePage = () => {
           minSize={20}
           maxSize={40}
         >
-          <Directory />
+          <LeftPanel />
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel>

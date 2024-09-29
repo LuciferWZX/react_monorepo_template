@@ -23,6 +23,11 @@ const SlateInput = (props: SlateInputProps) => {
         },
         className,
       )}
+      classes={{
+        count: cn({
+          "text-error-foreground": isError,
+        }),
+      }}
       {...restProps}
       disabled={mergedDisabled}
     />

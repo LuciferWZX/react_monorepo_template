@@ -82,7 +82,6 @@ const Directory = () => {
   };
   return (
     <div className={"h-full flex flex-col overflow-auto"}>
-      <div className={"h-8"}>header</div>
       <ContextMenu modal={true}>
         <ContextMenuTrigger className="flex-1 overflow-auto">
           <ScrollArea

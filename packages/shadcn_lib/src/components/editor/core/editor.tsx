@@ -1,5 +1,5 @@
 import { Editable, ReactEditor, Slate } from "slate-react";
-import { useCallback, useState } from "react";
+import { useMemo, useState } from "react";
 import { Descendant } from "slate";
 import RenderElement from "./RenderElement.tsx";
 import { cn, getDefaultContent } from "../../../lib/utils.ts";
@@ -15,35 +15,50 @@ interface SlateProEditorProps {
   onChange?: (newValue: string) => void;
   className?: string;
   maxLength?: number;
+  classes?: {
+    count?: string;
+  };
   showCount?: boolean;
 }
 const SlateProEditor = (props: SlateProEditorProps) => {
-  const { placeholder, className, value, onChange, disabled, maxLength } =
-    props;
-  const [initialValue, setInitialValue] = useState<Descendant[]>(
-    value ? deserializeHtmlString(value) : getDefaultContent(),
-  );
+  const {
+    placeholder,
+    className,
+    value,
+    onChange,
+    classes,
+    disabled,
+    maxLength,
+    showCount,
+  } = props;
+  const [_initialValue] = useState<Descendant[]>(getDefaultContent());
+  const initialValue = useMemo(() => {
+    if (value === undefined) {
+      return _initialValue;
+    }
+    return deserializeHtmlString(value);
+  }, [value, _initialValue]);
+
   const [editor] = useSlateEditor();
-  const renderCount = useCallback(() => {
+
+  const count = useMemo(() => {
+    if (maxLength === undefined) {
+      return 0;
+    }
     const text = SlateEditorManager.shared.getNodePureText(initialValue, {
       withBreakLine: true,
     });
+
     return text.length;
-  }, [initialValue]);
+  }, [maxLength, initialValue]);
   return (
     <Slate
       onValueChange={(val) => {
         const isComposing = ReactEditor.isComposing(editor);
         if (!isComposing) {
-          let canInput = true;
-          if (maxLength !== undefined && renderCount() >= maxLength) {
-            canInput = false;
-          }
-          if (canInput) {
-            const htmlStr = serializeNodes(val);
-            onChange?.(htmlStr);
-            setInitialValue(val);
-          }
+          const htmlStr = serializeNodes(val);
+          onChange?.(htmlStr);
+          // setInitialValue(val);
         }
       }}
       editor={editor}
@@ -68,9 +83,16 @@ const SlateProEditor = (props: SlateProEditorProps) => {
           placeholder={placeholder}
         />
       </ScrollArea>
-      <div className={"absolute right-0 text-muted-foreground"}>
-        {renderCount()} / {maxLength}
-      </div>
+      {showCount && (
+        <div
+          className={cn(
+            "absolute right-0 text-muted-foreground",
+            classes?.count,
+          )}
+        >
+          {count} / {maxLength}
+        </div>
+      )}
     </Slate>
   );
 };

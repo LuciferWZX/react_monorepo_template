@@ -2,12 +2,20 @@ import { Descendant } from "slate";
 import { jsx } from "slate-hyperscript";
 import { match } from "ts-pattern";
 import { CustomElementType } from "../types/element.ts";
-export const isParagraphTag = (text: string) => {
-  return /^<p\b[^>]*>(.*?)<\/p>$/i.test(text);
-};
+
+// /**
+//
+//  * @param text
+//  */
+// export const isParagraphTag = (text: string) => {
+//   return /^<p\b[^>]*>(.*?)<\/p>$/i.test(text);
+// };
+// function isHTMLTag(text: string) {
+//   const htmlTagRegex = /^<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)$/i;
+//   return htmlTagRegex.test(text);
+// }
 export function deserializeHtmlString(text?: string) {
-  let htmlStr = text ?? "";
-  htmlStr = isParagraphTag(htmlStr) ? htmlStr : `<p>${htmlStr}</p>`;
+  const htmlStr = text ?? "";
   const replacedHtml = htmlStr.replace(/<br\s*\/?>/g, "</p><p>");
   const document = new DOMParser().parseFromString(replacedHtml, "text/html");
   return deserialize(document.body);
@@ -33,11 +41,12 @@ export function deserialize(
   if (children.length === 0) {
     children.push(jsx("text", nodeAttributes, ""));
   }
+
   return match(el)
     .with({ nodeName: "BODY" }, (_el) => {
       return jsx("fragment", {}, children);
     })
-    .with({ nodeName: "P" }, (_el) => {
+    .with({ nodeName: "P" }, { nodeName: "DIV" }, (_el) => {
       return jsx("element", { type: CustomElementType.paragraph }, children);
     })
     .with({ nodeName: "MENTION" }, (__el) => {
