@@ -1,9 +1,11 @@
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  ScrollArea,
 } from "@zhixin/shadcn_lib";
 import { Form, Radio } from "antd";
 import { BaseVariable, VariableDataType, VariableScope } from "@/types";
@@ -15,6 +17,7 @@ import {
 import ShadcnInput from "@/components/shadcn-input";
 import { match } from "ts-pattern";
 import { Fragment } from "react";
+import { CircleX } from "lucide-react";
 
 interface VariableDialogProps {
   open: boolean;
@@ -34,7 +37,7 @@ const VariableDialog = (props: VariableDialogProps) => {
   const [form] = Form.useForm<VariableFormType>();
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[625px] max-h-screen overflow-auto outline-none">
         <DialogHeader>
           <DialogTitle>新建变量</DialogTitle>
           <DialogDescription>
@@ -47,6 +50,7 @@ const VariableDialog = (props: VariableDialogProps) => {
           requiredMark={false}
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 16 }}
+          onValuesChange={console.log}
           initialValues={
             {
               scope: VariableScope.local,
@@ -120,10 +124,14 @@ const VariableDialog = (props: VariableDialogProps) => {
                 .with(VariableDataType.boolean, () => {
                   return (
                     <Fragment>
-                      <Form.Item label={"选项"} initialValue={"是"}>
+                      <Form.Item
+                        className={"mb-0"}
+                        label={"选项"}
+                        initialValue={"是"}
+                      >
                         <Form.Item
                           label={"true"}
-                          name={"option.true"}
+                          name={["option", "true"]}
                           initialValue={"是"}
                           rules={[
                             { required: true, message: "请输入真对应的名称" },
@@ -134,7 +142,7 @@ const VariableDialog = (props: VariableDialogProps) => {
                         </Form.Item>
                         <Form.Item
                           label={"false"}
-                          name={"option.false"}
+                          name={["option", "false"]}
                           initialValue={"否"}
                           rules={[
                             { required: true, message: "请输入假对应的名称" },
@@ -149,6 +157,150 @@ const VariableDialog = (props: VariableDialogProps) => {
                           options={[{ value: "true" }, { value: "false" }]}
                         />
                       </Form.Item>
+                    </Fragment>
+                  );
+                })
+                .with(VariableDataType.array, () => {
+                  return (
+                    <Fragment>
+                      <Form.Item
+                        label={"子类型"}
+                        preserve={false}
+                        name={"subType"}
+                        initialValue={VariableDataType.string}
+                      >
+                        <ShadcnSelect
+                          className={"w-full "}
+                          placeholder={`请选择数据类型`}
+                          onChange={(_type) => {
+                            match(_type).otherwise(() => {
+                              form.resetFields(["defaultValue"]);
+                            });
+                          }}
+                          option={DATA_TYPE.filter((dataType) =>
+                            [
+                              VariableDataType.string,
+                              VariableDataType.boolean,
+                              VariableDataType.number,
+                            ].includes(dataType.value),
+                          ).map((_op) => {
+                            return {
+                              value: _op.value.toString(),
+                              label: _op.label,
+                            };
+                          })}
+                        />
+                      </Form.Item>
+                      <Form.Item label={"默认值"}>
+                        <Form.List name={"defaultValue"} initialValue={[""]}>
+                          {(fields, { add, remove }) => {
+                            const subType: VariableDataType =
+                              form.getFieldValue("subType");
+                            return (
+                              <Fragment>
+                                <div className={"text-sm mb-1"}>
+                                  已创建{" "}
+                                  <span className={"text-primary"}>
+                                    {fields.length}
+                                  </span>{" "}
+                                  项
+                                </div>
+                                <ScrollArea
+                                  type={"always"}
+                                  className={"mb-2"}
+                                  classes={{
+                                    viewport: "h-64 pr-4 pl-1",
+                                  }}
+                                >
+                                  {fields.map(({ key, ...field }, index) => {
+                                    return (
+                                      <div
+                                        key={key}
+                                        className={"relative group mt-2"}
+                                      >
+                                        {fields.length > 1 && (
+                                          <CircleX
+                                            onClick={(event) => {
+                                              event.preventDefault();
+                                              remove(index);
+                                            }}
+                                            className={
+                                              "fill-muted text-muted-foreground hover:text-primary hidden w-4 h-4 absolute -top-2 -right-1 z-10 cursor-pointer group-hover:block"
+                                            }
+                                          />
+                                        )}
+                                        <Form.Item
+                                          dependencies={["subType"]}
+                                          label={index + 1}
+                                          {...field}
+                                        >
+                                          {match(subType)
+                                            .with(
+                                              VariableDataType.string,
+                                              () => {
+                                                return (
+                                                  <ShadcnInput
+                                                    placeholder={"请输入"}
+                                                  />
+                                                );
+                                              },
+                                            )
+                                            .with(
+                                              VariableDataType.number,
+                                              () => {
+                                                return (
+                                                  <ShadcnNumberInput
+                                                    placeholder={"请输入"}
+                                                  />
+                                                );
+                                              },
+                                            )
+                                            .with(
+                                              VariableDataType.boolean,
+                                              () => {
+                                                return (
+                                                  <ShadcnRadioGroup
+                                                    direction={"horizontal"}
+                                                    options={[
+                                                      { value: "true" },
+                                                      { value: "false" },
+                                                    ]}
+                                                  />
+                                                );
+                                              },
+                                            )
+                                            .otherwise(() => null)}
+                                        </Form.Item>
+                                      </div>
+                                    );
+                                  })}
+                                </ScrollArea>
+                                <Form.Item>
+                                  <Button
+                                    className={"w-full"}
+                                    onClick={() =>
+                                      add(
+                                        subType === VariableDataType.string
+                                          ? ""
+                                          : subType === VariableDataType.number
+                                            ? 0
+                                            : "true",
+                                      )
+                                    }
+                                  >
+                                    添加
+                                  </Button>
+                                </Form.Item>
+                              </Fragment>
+                            );
+                          }}
+                        </Form.List>
+                      </Form.Item>
+                      {/*<Form.Item label={"默认值"} name={"defaultValue"}>*/}
+                      {/*  <ShadcnRadioGroup*/}
+                      {/*    options={[{ value: "true" }, { value: "false" }]}*/}
+                      {/*  />*/}
+                      {/*</Form.Item>*/}
                     </Fragment>
                   );
                 })
