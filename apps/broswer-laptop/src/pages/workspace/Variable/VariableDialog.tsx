@@ -7,9 +7,14 @@ import {
 } from "@zhixin/shadcn_lib";
 import { Form, Radio } from "antd";
 import { BaseVariable, VariableDataType, VariableScope } from "@/types";
-import { ShadcnSelect } from "@/components";
+import {
+  ShadcnNumberInput,
+  ShadcnRadioGroup,
+  ShadcnSelect,
+} from "@/components";
 import ShadcnInput from "@/components/shadcn-input";
 import { match } from "ts-pattern";
+import { Fragment } from "react";
 
 interface VariableDialogProps {
   open: boolean;
@@ -72,6 +77,11 @@ const VariableDialog = (props: VariableDialogProps) => {
             <ShadcnSelect
               className={"w-full "}
               placeholder={`请选择数据类型`}
+              onChange={(_type) => {
+                match(_type).otherwise(() => {
+                  form.resetFields(["defaultValue"]);
+                });
+              }}
               option={DATA_TYPE.map((_op) => {
                 return {
                   value: _op.value.toString(),
@@ -87,7 +97,6 @@ const VariableDialog = (props: VariableDialogProps) => {
                 .with(
                   VariableDataType.string,
                   VariableDataType.number,
-                  VariableDataType.boolean,
                   (_type) => {
                     return (
                       <Form.Item label={"默认值"} name={"defaultValue"}>
@@ -97,10 +106,8 @@ const VariableDialog = (props: VariableDialogProps) => {
                           })
                           .with(VariableDataType.number, () => {
                             return (
-                              <ShadcnInput
-                                max={5}
-                                min={0}
-                                type={"number"}
+                              <ShadcnNumberInput
+                                aria-label={"数字输入框"}
                                 placeholder={"请输入默认值"}
                               />
                             );
@@ -110,6 +117,41 @@ const VariableDialog = (props: VariableDialogProps) => {
                     );
                   },
                 )
+                .with(VariableDataType.boolean, () => {
+                  return (
+                    <Fragment>
+                      <Form.Item label={"选项"} initialValue={"是"}>
+                        <Form.Item
+                          label={"true"}
+                          name={"option.true"}
+                          initialValue={"是"}
+                          rules={[
+                            { required: true, message: "请输入真对应的名称" },
+                            { whitespace: true, message: "请输入真对应的名称" },
+                          ]}
+                        >
+                          <ShadcnInput placeholder={"真"} />
+                        </Form.Item>
+                        <Form.Item
+                          label={"false"}
+                          name={"option.false"}
+                          initialValue={"否"}
+                          rules={[
+                            { required: true, message: "请输入假对应的名称" },
+                            { whitespace: true, message: "请输入假对应的名称" },
+                          ]}
+                        >
+                          <ShadcnInput placeholder={"假"} />
+                        </Form.Item>
+                      </Form.Item>
+                      <Form.Item label={"默认值"} name={"defaultValue"}>
+                        <ShadcnRadioGroup
+                          options={[{ value: "true" }, { value: "false" }]}
+                        />
+                      </Form.Item>
+                    </Fragment>
+                  );
+                })
                 .otherwise(() => null);
             }}
           </Form.Item>
