@@ -395,6 +395,31 @@ importers:
         specifier: ^5.4.1
         version: 5.4.3(@types/node@20.4.6)
 
+  packages/zeek_design:
+    dependencies:
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@vitejs/plugin-react':
+        specifier: ^4.3.2
+        version: 4.3.2(vite@5.4.8)
+      autoprefixer:
+        specifier: ^10.4.20
+        version: 10.4.20(postcss@8.4.45)
+      postcss:
+        specifier: ^8.4.45
+        version: 8.4.45
+      tailwindcss:
+        specifier: ^3.4.10
+        version: 3.4.10
+      vite:
+        specifier: ^5.4.8
+        version: 5.4.8
+
 packages:
 
   /@alloc/quick-lru@5.2.0:
@@ -4702,6 +4727,22 @@ packages:
       - supports-color
     dev: true
 
+  /@vitejs/plugin-react@4.3.2(vite@5.4.8):
+    resolution: {integrity: sha512-hieu+o05v4glEBucTcKMK3dlES0OeJlD9YVOAPraVMOInBCwzumaIFiUjr4bHK7NPgnAHgiskUoceKercrN8vg==}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    peerDependencies:
+      vite: ^4.2.0 || ^5.0.0
+    dependencies:
+      '@babel/core': 7.25.2
+      '@babel/plugin-transform-react-jsx-self': 7.24.7(@babel/core@7.25.2)
+      '@babel/plugin-transform-react-jsx-source': 7.24.7(@babel/core@7.25.2)
+      '@types/babel__core': 7.20.5
+      react-refresh: 0.14.2
+      vite: 5.4.8
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
   /@vscode/iconv-lite-umd@0.7.0:
     resolution: {integrity: sha512-bRRFxLfg5dtAyl5XyiVWz/ZBPahpOpPrNYnnHpOpUZvam4tKH35wdhP4Kj6PbM0+KdliOsPzbGWpkxcdpNB/sg==}
     dev: false
@@ -6878,6 +6919,16 @@ packages:
       scheduler: 0.23.2
     dev: false
 
+  /react-dom@18.3.1(react@18.3.1):
+    resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
+    peerDependencies:
+      react: ^18.3.1
+    dependencies:
+      loose-envify: 1.4.0
+      react: 18.3.1
+      scheduler: 0.23.2
+    dev: false
+
   /react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
     dev: false
@@ -7069,6 +7120,13 @@ packages:
 
   /react@18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      loose-envify: 1.4.0
+    dev: false
+
+  /react@18.3.1:
+    resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
@@ -7660,6 +7718,44 @@ packages:
         optional: true
     dependencies:
       '@types/node': 20.4.6
+      esbuild: 0.21.5
+      postcss: 8.4.45
+      rollup: 4.21.2
+    optionalDependencies:
+      fsevents: 2.3.3
+    dev: true
+
+  /vite@5.4.8:
+    resolution: {integrity: sha512-FqrItQ4DT1NC4zCUqMB4c4AZORMKIa0m8/URVCZ77OZ/QSNeJ54bU1vrFADbDsuwfIPcgknRkmqakQcgnL4GiQ==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': ^18.0.0 || >=20.0.0
+      less: '*'
+      lightningcss: ^1.21.0
+      sass: '*'
+      sass-embedded: '*'
+      stylus: '*'
+      sugarss: '*'
+      terser: ^5.4.0
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      less:
+        optional: true
+      lightningcss:
+        optional: true
+      sass:
+        optional: true
+      sass-embedded:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+    dependencies:
       esbuild: 0.21.5
       postcss: 8.4.45
       rollup: 4.21.2
