@@ -15,4 +15,4 @@ export const SizeContextProvider = (props: SizeContextProps) => {
     </SizeContext.Provider>
   );
 };
-export default SizeContextProvider;
+export default SizeContext;

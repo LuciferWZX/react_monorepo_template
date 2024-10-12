@@ -1,10 +1,11 @@
 import ButtonPage from "@/pages/button";
+import { ThemeProvider } from "@/components";
 
 const App = () => {
   return (
-    <div>
+    <ThemeProvider defaultTheme={"light"}>
       <ButtonPage />
-    </div>
+    </ThemeProvider>
   );
 };
 export default App;
