@@ -28,6 +28,7 @@ const Flex = (props: FlexProps) => {
     justify,
     style,
     className,
+    vertical,
     gap,
     ...restProps
   } = props;
@@ -35,6 +36,7 @@ const Flex = (props: FlexProps) => {
     <div
       {...restProps}
       className={cn(`flex w-fit`, {
+        "flex-col": vertical === "vertical",
         "flex-wrap": wrap,
       })}
       style={{

@@ -7,20 +7,22 @@ export const buttonVariants = cva(
         default:
           "border border-border hover:text-primary hover:border-primary hover:bg-background/80",
         primary: "bg-primary text-primary-foreground hover:bg-primary/80",
+        danger:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/80",
       },
       size: {
         small: " h-6 min-w-6 text-xs px-2 ",
         middle: " h-8 min-w-8 py-1 px-4",
         large: " h-10 min-w-10 text-base py-2 px-4",
       },
-      // variant: {
-      //   solid: "border-solid",
-      //   outlined: "",
-      //   dashed: "border-dashed",
-      //   filled: "bg-muted border-none hover:text-foreground hover:bg-muted/80",
-      //   text: "",
-      //   link: "",
-      // },
+      variant: {
+        solid: "border-none",
+        outlined: "border border-border bg-unset text-unset hover:bg-unset ",
+        dashed: "border border-dashed bg-unset text-unset hover:bg-unset ",
+        filled: "border-none hover:text-unset hover:bg-unset",
+        text: "border-none bg-unset text-unset hover:text-unset hover:bg-unset",
+        link: "border-none bg-unset text-unset hover:bg-inherit",
+      },
     },
     defaultVariants: {
       type: "default",
