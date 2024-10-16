@@ -35,14 +35,18 @@ const Flex = (props: FlexProps) => {
   return (
     <div
       {...restProps}
-      className={cn(`flex w-fit`, {
-        "flex-col": vertical === "vertical",
-        "flex-wrap": wrap,
-      })}
+      className={cn(
+        `flex w-fit`,
+        {
+          "flex-col": vertical === "vertical",
+          "flex-wrap": wrap,
+        },
+        className,
+      )}
       style={{
-        alignItems: align,
+        alignItems: align ?? "center",
         justifyContent: justify,
-        gap: gap,
+        gap: gap ?? 5,
         ...style,
       }}
     >

@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext } from "react";
 
 export type SizeType = "small" | "middle" | "large" | undefined;
-const SizeContext = createContext<SizeType>(undefined);
+export const SizeContext = createContext<SizeType>(undefined);
 export interface SizeContextProps {
   size?: SizeType;
   children?: ReactNode;

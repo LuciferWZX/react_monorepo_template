@@ -1,10 +1,10 @@
 import { ThemeProvider } from "@/components";
-import ChainPage from "@/pages/chain";
+import ConfigProviderPage from "@/pages/config-provider";
 
 const App = () => {
   return (
     <ThemeProvider defaultTheme={"light"}>
-      <ChainPage />
+      <ConfigProviderPage />
       {/*<ButtonPage />*/}
     </ThemeProvider>
   );

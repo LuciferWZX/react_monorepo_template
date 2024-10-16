@@ -4,6 +4,7 @@ import {
   HTMLAttributes,
   isValidElement,
   ReactNode,
+  useContext,
 } from "react";
 import { Slot, Slottable } from "@radix-ui/react-slot";
 import { VariantProps } from "class-variance-authority";
@@ -12,6 +13,7 @@ import { cn } from "@/lib/utils.ts";
 import useSize from "@/components/config-provider/hooks/useSize.ts";
 import { buttonIconVariants } from "@/components/styles/variants/button.ts";
 import { LoaderCircle } from "lucide-react";
+import { DisabledContext } from "@/components/config-provider/DisabledContext.tsx";
 type MergedHTMLAttributes = Omit<
   HTMLAttributes<HTMLElement> & ButtonHTMLAttributes<HTMLElement>,
   "type"
@@ -41,24 +43,25 @@ const Button = (props: ButtonProps) => {
     type = "default",
     variant,
     icon,
-    size = "middle",
+    size,
     iconPosition,
     block,
     htmlType = "button",
-    disabled,
+    disabled: customDisabled,
     ...restProps
   } = props;
   const Comp = asChild ? Slot : "button";
-  const mergedSize = useSize((ctxSize) => size ?? ctxSize);
-  const mergedDisabled = !!(disabled || loading);
+  const mergedSize = useSize((ctxSize) => size ?? ctxSize) ?? "middle";
+  const disabled = useContext(DisabledContext);
+  const mergedDisabled = loading === true ? true : (customDisabled ?? disabled);
   const iconType = loading ? "loading" : icon;
   const iconOnly = !children && children !== 0 && !!iconType;
-
   return (
     <Comp
       disabled={mergedDisabled}
       type={htmlType}
       className={cn(
+        "transition-all duration-150",
         buttonVariants({ type: type, className, variant, size: mergedSize }),
         {
           "px-0": iconOnly,
@@ -92,7 +95,7 @@ const Button = (props: ButtonProps) => {
       )}
       {...restProps}
     >
-      {icon && (
+      {(icon || loading) && (
         <span className={cn(buttonIconVariants({ size: mergedSize }))}>
           {loading ? (
             <LoaderCircle
