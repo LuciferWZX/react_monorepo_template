@@ -1,6 +1,7 @@
 import {
   ButtonHTMLAttributes,
   cloneElement,
+  forwardRef,
   HTMLAttributes,
   isValidElement,
   ReactNode,
@@ -34,7 +35,7 @@ export interface ButtonProps
   autoInsertSpace?: boolean;
   asChild?: boolean;
 }
-const Button = (props: ButtonProps) => {
+const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const {
     asChild,
     className,
@@ -58,11 +59,17 @@ const Button = (props: ButtonProps) => {
   const iconOnly = !children && children !== 0 && !!iconType;
   return (
     <Comp
+      ref={ref}
       disabled={mergedDisabled}
       type={htmlType}
       className={cn(
         "transition-all duration-150",
-        buttonVariants({ type: type, className, variant, size: mergedSize }),
+        buttonVariants({
+          type: type ?? "default",
+          className,
+          variant,
+          size: mergedSize,
+        }),
         {
           "px-0": iconOnly,
           "bg-foreground text-background hover:text-background hover:bg-foreground/80":
@@ -119,5 +126,5 @@ const Button = (props: ButtonProps) => {
       <Slottable>{children}</Slottable>
     </Comp>
   );
-};
+});
 export default Button;
