@@ -63,7 +63,7 @@ const NumberInput = (
     <span
       {...groupProps}
       className={cn(
-        '"outline-none inline-flex items-center h-8 w-full rounded-md border border-border  text-sm shadow-sm transition-colors  placeholder:text-muted-foreground  has-[input:disabled]:cursor-not-allowed has-[input:disabled]:text-muted-foreground  has-[input:disabled]:bg-muted',
+        '"outline-none inline-flex items-center h-8 w-fit rounded-md border border-border  text-sm shadow-sm transition-colors  placeholder:text-muted-foreground  has-[input:disabled]:cursor-not-allowed has-[input:disabled]:text-muted-foreground  has-[input:disabled]:bg-muted',
         "has-[input:focus]:border-primary ",
         {
           "h-6": mergedSize === "small",

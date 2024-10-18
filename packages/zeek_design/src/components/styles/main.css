@@ -78,6 +78,6 @@
     @apply bg-background text-foreground;
   }
   .zeek-outline{
-    @apply outline-none transition-colors focus-visible:outline-none focus-visible:ring-offset-0 focus-visible:ring-4 focus-visible:ring-primary/60;
+    @apply  transition-colors focus-visible:outline-none focus-visible:ring-offset-0 focus-visible:ring-4 focus-visible:ring-primary/60;
   }
 }

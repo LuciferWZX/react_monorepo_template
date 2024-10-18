@@ -123,7 +123,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
           )}
         </span>
       )}
-      <Slottable>{children}</Slottable>
+      <Slottable>
+        <span className={"flex-1 text-start truncate"}>{children}</span>
+      </Slottable>
     </Comp>
   );
 });
