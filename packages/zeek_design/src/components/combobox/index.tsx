@@ -56,6 +56,8 @@ interface ComboboxProps {
   showSearch?: boolean;
   popupMatchSelectWidth?: boolean;
   size?: SizeType;
+  align?: "center" | "start" | "end" | undefined;
+  side?: "left" | "right" | "top" | "bottom" | undefined;
   labelRender?: (
     value: any,
     selectedItem: SelectItemType | undefined,
@@ -70,6 +72,8 @@ export function Combobox(props: ComboboxProps) {
     placeholder = "请选择",
     searchPlaceholder = "请输入关键词",
     renderEmpty,
+    align,
+    side,
     size,
     loading,
     disabled: customDisabled,
@@ -192,6 +196,8 @@ export function Combobox(props: ComboboxProps) {
         )}
       </PopoverTrigger>
       <PopoverContent
+        align={align}
+        side={side}
         className={cn("p-0", {
           "w-fit": !popupMatchSelectWidth,
         })}
@@ -224,6 +230,7 @@ export function Combobox(props: ComboboxProps) {
             <CommandEmpty
               className={cn({
                 "p-0": !!renderEmpty,
+                "py-1 text-xs": mergedSize === "small",
               })}
             >
               {renderEmpty ? renderEmpty : "暂无数据"}

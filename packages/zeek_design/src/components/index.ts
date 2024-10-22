@@ -1,9 +1,13 @@
 export { default as Flex } from "@/components/flex";
 export { default as Button } from "@/components/button";
 export { Combobox } from "@/components/combobox";
-export { Checkbox } from "@/components/checkbox";
+export { Checkbox, CheckBoxGroup } from "@/components/checkbox";
 export { Select } from "@/components/select";
 export { ScrollArea } from "@/components/scroll-area";
 export { ThemeProvider, useTheme } from "@/components/theme-provider";
+export * from "@/components/sidebar";
+export * from "@/components/layout";
 export { default as ConfigProvider } from "@/components/config-provider";
 export { TextInput, NumberInput } from "./input";
+export * from "./dropdown-menu";
+export * from "./collapsible";
