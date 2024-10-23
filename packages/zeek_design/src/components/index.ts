@@ -9,5 +9,6 @@ export * from "@/components/sidebar";
 export * from "@/components/layout";
 export { default as ConfigProvider } from "@/components/config-provider";
 export { TextInput, NumberInput } from "./input";
+export * from "./avatar";
 export * from "./dropdown-menu";
 export * from "./collapsible";
