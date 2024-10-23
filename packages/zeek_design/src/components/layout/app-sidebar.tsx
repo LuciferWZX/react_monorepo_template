@@ -187,7 +187,7 @@ const data = {
 export function AppSidebar() {
   const [activeTeam, setActiveTeam] = useState(data.teams[0]);
   return (
-    <Sidebar collapsible="icon" variant={"inset"}>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
