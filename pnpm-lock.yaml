@@ -137,6 +137,73 @@ importers:
         specifier: ^5.4.1
         version: 5.4.3(@types/node@20.4.6)
 
+  apps/social-hub:
+    dependencies:
+      '@radix-ui/react-avatar':
+        specifier: ^1.1.0
+        version: 1.1.0(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-collapsible':
+        specifier: ^1.1.0
+        version: 1.1.0(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-dialog':
+        specifier: ^1.1.1
+        version: 1.1.1(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-dropdown-menu':
+        specifier: ^2.1.1
+        version: 2.1.1(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-icons':
+        specifier: ^1.3.0
+        version: 1.3.0(react@18.3.1)
+      '@radix-ui/react-scroll-area':
+        specifier: ^1.1.0
+        version: 1.1.0(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-separator':
+        specifier: ^1.1.0
+        version: 1.1.0(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-slot':
+        specifier: ^1.1.0
+        version: 1.1.0(@types/react@18.2.18)(react@18.3.1)
+      '@radix-ui/react-tooltip':
+        specifier: ^1.1.2
+        version: 1.1.2(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1)(react@18.3.1)
+      class-variance-authority:
+        specifier: ^0.7.0
+        version: 0.7.0
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      lucide-react:
+        specifier: ^0.438.0
+        version: 0.438.0(react@18.3.1)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+      react-router-dom:
+        specifier: ^6.26.1
+        version: 6.26.1(react-dom@18.3.1)(react@18.3.1)
+      tailwind-merge:
+        specifier: ^2.5.2
+        version: 2.5.2
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.10)
+      ts-pattern:
+        specifier: ^5.3.1
+        version: 5.3.1
+      zustand:
+        specifier: ^4.5.5
+        version: 4.5.5(@types/react@18.2.18)(react@18.3.1)
+    devDependencies:
+      '@vitejs/plugin-react-swc':
+        specifier: ^3.5.0
+        version: 3.7.1(vite@5.4.10)
+      vite:
+        specifier: ^5.4.9
+        version: 5.4.10(@types/node@20.4.6)
+
   apps/vite-project:
     dependencies:
       '@zhixin/shadcn_lib':
@@ -7433,11 +7500,140 @@ packages:
     dev: true
     optional: true
 
+  /@swc/core-darwin-arm64@1.7.39:
+    resolution: {integrity: sha512-o2nbEL6scMBMCTvY9OnbyVXtepLuNbdblV9oNJEFia5v5eGj9WMrnRQiylH3Wp/G2NYkW7V1/ZVW+kfvIeYe9A==}
+    engines: {node: '>=10'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@swc/core-darwin-x64@1.7.39:
+    resolution: {integrity: sha512-qMlv3XPgtPi/Fe11VhiPDHSLiYYk2dFYl747oGsHZPq+6tIdDQjIhijXPcsUHIXYDyG7lNpODPL8cP/X1sc9MA==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@swc/core-linux-arm-gnueabihf@1.7.39:
+    resolution: {integrity: sha512-NP+JIkBs1ZKnpa3Lk2W1kBJMwHfNOxCUJXuTa2ckjFsuZ8OUu2gwdeLFkTHbR43dxGwH5UzSmuGocXeMowra/Q==}
+    engines: {node: '>=10'}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@swc/core-linux-arm64-gnu@1.7.39:
+    resolution: {integrity: sha512-cPc+/HehyHyHcvAsk3ML/9wYcpWVIWax3YBaA+ScecJpSE04l/oBHPfdqKUPslqZ+Gcw0OWnIBGJT/fBZW2ayw==}
+    engines: {node: '>=10'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@swc/core-linux-arm64-musl@1.7.39:
+    resolution: {integrity: sha512-8RxgBC6ubFem66bk9XJ0vclu3exJ6eD7x7CwDhp5AD/tulZslTYXM7oNPjEtje3xxabXuj/bEUMNvHZhQRFdqA==}
+    engines: {node: '>=10'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@swc/core-linux-x64-gnu@1.7.39:
+    resolution: {integrity: sha512-3gtCPEJuXLQEolo9xsXtuPDocmXQx12vewEyFFSMSjOfakuPOBmOQMa0sVL8Wwius8C1eZVeD1fgk0omMqeC+Q==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@swc/core-linux-x64-musl@1.7.39:
+    resolution: {integrity: sha512-mg39pW5x/eqqpZDdtjZJxrUvQNSvJF4O8wCl37fbuFUqOtXs4TxsjZ0aolt876HXxxhsQl7rS+N4KioEMSgTZw==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@swc/core-win32-arm64-msvc@1.7.39:
+    resolution: {integrity: sha512-NZwuS0mNJowH3e9bMttr7B1fB8bW5svW/yyySigv9qmV5VcQRNz1kMlCvrCLYRsa93JnARuiaBI6FazSeG8mpA==}
+    engines: {node: '>=10'}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@swc/core-win32-ia32-msvc@1.7.39:
+    resolution: {integrity: sha512-qFmvv5UExbJPXhhvCVDBnjK5Duqxr048dlVB6ZCgGzbRxuarOlawCzzLK4N172230pzlAWGLgn9CWl3+N6zfHA==}
+    engines: {node: '>=10'}
+    cpu: [ia32]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@swc/core-win32-x64-msvc@1.7.39:
+    resolution: {integrity: sha512-o+5IMqgOtj9+BEOp16atTfBgCogVak9svhBpwsbcJQp67bQbxGYhAPPDW/hZ2rpSSF7UdzbY9wudoX9G4trcuQ==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@swc/core@1.7.39:
+    resolution: {integrity: sha512-jns6VFeOT49uoTKLWIEfiQqJAlyqldNAt80kAr8f7a5YjX0zgnG3RBiLMpksx4Ka4SlK4O6TJ/lumIM3Trp82g==}
+    engines: {node: '>=10'}
+    requiresBuild: true
+    peerDependencies:
+      '@swc/helpers': '*'
+    peerDependenciesMeta:
+      '@swc/helpers':
+        optional: true
+    dependencies:
+      '@swc/counter': 0.1.3
+      '@swc/types': 0.1.13
+    optionalDependencies:
+      '@swc/core-darwin-arm64': 1.7.39
+      '@swc/core-darwin-x64': 1.7.39
+      '@swc/core-linux-arm-gnueabihf': 1.7.39
+      '@swc/core-linux-arm64-gnu': 1.7.39
+      '@swc/core-linux-arm64-musl': 1.7.39
+      '@swc/core-linux-x64-gnu': 1.7.39
+      '@swc/core-linux-x64-musl': 1.7.39
+      '@swc/core-win32-arm64-msvc': 1.7.39
+      '@swc/core-win32-ia32-msvc': 1.7.39
+      '@swc/core-win32-x64-msvc': 1.7.39
+    dev: true
+
+  /@swc/counter@0.1.3:
+    resolution: {integrity: sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ==}
+    dev: true
+
   /@swc/helpers@0.5.13:
     resolution: {integrity: sha512-UoKGxQ3r5kYI9dALKJapMmuK+1zWM/H17Z1+iwnNmzcJRnfFuevZs375TA5rW31pu4BS4NoSy1fRsexDXfWn5w==}
     dependencies:
       tslib: 2.7.0
     dev: false
+
+  /@swc/types@0.1.13:
+    resolution: {integrity: sha512-JL7eeCk6zWCbiYQg2xQSdLXQJl8Qoc9rXmG2cEKvHe3CKwMHwHGpfOb8frzNLmbycOo6I51qxnLnn9ESf4I20Q==}
+    dependencies:
+      '@swc/counter': 0.1.3
+    dev: true
 
   /@tauri-apps/cli-darwin-arm64@1.6.2:
     resolution: {integrity: sha512-6mdRyf9DaLqlZvj8kZB09U3rwY+dOHSGzTZ7+GDg665GJb17f4cb30e8dExj6/aghcsOie9EGpgiURcDUvLNSQ==}
@@ -7798,6 +7994,17 @@ packages:
 
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
+    dev: true
+
+  /@vitejs/plugin-react-swc@3.7.1(vite@5.4.10):
+    resolution: {integrity: sha512-vgWOY0i1EROUK0Ctg1hwhtC3SdcDjZcdit4Ups4aPkDcB1jYhmo+RMYWY87cmXMhvtD5uf8lV89j2w16vkdSVg==}
+    peerDependencies:
+      vite: ^4 || ^5
+    dependencies:
+      '@swc/core': 1.7.39
+      vite: 5.4.10(@types/node@20.4.6)
+    transitivePeerDependencies:
+      - '@swc/helpers'
     dev: true
 
   /@vitejs/plugin-react@4.3.1(vite@5.4.3):
@@ -10340,6 +10547,19 @@ packages:
       react-router: 6.26.1(react@18.2.0)
     dev: false
 
+  /react-router-dom@6.26.1(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-veut7m41S1fLql4pLhxeSW3jlqs+4MtjRLj0xvuCEXsxusJCbs6I8yn9BxzzDX2XDgafrccY6hwjmd/bL54tFw==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.19.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-router: 6.26.1(react@18.3.1)
+    dev: false
+
   /react-router@6.26.1(react@18.2.0):
     resolution: {integrity: sha512-kIwJveZNwp7teQRI5QmwWo39A5bXRyqpH0COKKmPnyD2vBvDwgFXSqDUYtt1h+FEyfnE8eXr7oe0MxRzVwCcvQ==}
     engines: {node: '>=14.0.0'}
@@ -10348,6 +10568,16 @@ packages:
     dependencies:
       '@remix-run/router': 1.19.1
       react: 18.2.0
+    dev: false
+
+  /react-router@6.26.1(react@18.3.1):
+    resolution: {integrity: sha512-kIwJveZNwp7teQRI5QmwWo39A5bXRyqpH0COKKmPnyD2vBvDwgFXSqDUYtt1h+FEyfnE8eXr7oe0MxRzVwCcvQ==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.19.1
+      react: 18.3.1
     dev: false
 
   /react-smooth@4.0.1(react-dom@18.2.0)(react@18.2.0):
@@ -11082,6 +11312,45 @@ packages:
       d3-timer: 3.0.1
     dev: false
 
+  /vite@5.4.10(@types/node@20.4.6):
+    resolution: {integrity: sha512-1hvaPshuPUtxeQ0hsVH3Mud0ZanOLwVTneA1EgbAM5LhaZEqyPWGRQ7BtaMvUrTDeEaC8pxtj6a6jku3x4z6SQ==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': ^18.0.0 || >=20.0.0
+      less: '*'
+      lightningcss: ^1.21.0
+      sass: '*'
+      sass-embedded: '*'
+      stylus: '*'
+      sugarss: '*'
+      terser: ^5.4.0
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      less:
+        optional: true
+      lightningcss:
+        optional: true
+      sass:
+        optional: true
+      sass-embedded:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+    dependencies:
+      '@types/node': 20.4.6
+      esbuild: 0.21.5
+      postcss: 8.4.45
+      rollup: 4.21.2
+    optionalDependencies:
+      fsevents: 2.3.3
+    dev: true
+
   /vite@5.4.3(@types/node@20.4.6):
     resolution: {integrity: sha512-IH+nl64eq9lJjFqU+/yrRnrHPVTlgy42/+IzbOdaFDVlyLgI/wDlf+FCobXLX1cT0X5+7LMyH1mIy2xJdLfo8Q==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -11277,4 +11546,24 @@ packages:
       '@types/react': 18.2.18
       react: 18.2.0
       use-sync-external-store: 1.2.2(react@18.2.0)
+    dev: false
+
+  /zustand@4.5.5(@types/react@18.2.18)(react@18.3.1):
+    resolution: {integrity: sha512-+0PALYNJNgK6hldkgDq2vLrw5f6g/jCInz52n9RTpropGgeAf/ioFUCdtsjCqu4gNhW9D01rUQBROoRjdzyn2Q==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      '@types/react': '>=16.8'
+      immer: '>=9.0.6'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      '@types/react': 18.2.18
+      react: 18.3.1
+      use-sync-external-store: 1.2.2(react@18.3.1)
     dev: false
