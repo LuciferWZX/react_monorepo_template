@@ -28,6 +28,8 @@ import { NavUser } from "@/layouts/base/nav-user.tsx";
 import { ComponentProps, useState } from "react";
 import { INav } from "@/types";
 import NavSecond from "@/layouts/base/nav-second.tsx";
+import { useAppStore } from "@/stores";
+import { useShallow } from "zustand/react/shallow";
 
 // This is sample data.
 const data = {
@@ -161,6 +163,7 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
+  const user = useAppStore(useShallow((state) => state.user))!;
   const [navs] = useState<INav[]>([
     {
       title: "会话",
@@ -193,7 +196,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
         <NavSecond items={bottomNavs} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

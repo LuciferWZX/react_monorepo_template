@@ -24,14 +24,17 @@ export interface IUser {
   //角色
   role: UserRole;
   //创建时间
-  createAt: number;
+  createAt: Date;
   //更新时间
-  updateAt: number;
+  updateAt: Date;
+  //删除时间
+  deletedAt: Date | null;
   //凭证
-  token: string;
+  access_token: string;
   //隐藏字段
   // password:string 密码
-  // banned:string  是否禁用
+  //是否禁用
+  banned: boolean;
 }
 export interface INav {
   title: string;
