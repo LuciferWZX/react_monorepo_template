@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 import useAuthApp from "@/hooks/use-auth-app.ts";
 import { useAppStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
+import { useWuKong } from "@/hooks/use-wukong.ts";
 
 const BaseLayout = () => {
   const { checking } = useAuthApp();
@@ -17,6 +18,7 @@ const BaseLayout = () => {
   return <AuthBaseLayout />;
 };
 const AuthBaseLayout = () => {
+  useWuKong();
   return (
     <SidebarProvider>
       <AppSidebar />

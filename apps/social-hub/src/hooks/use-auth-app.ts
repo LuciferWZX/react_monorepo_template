@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { APPManager } from "@/instances";
 import { useNavigate } from "react-router-dom";
-import { sleep } from "@/lib/utils.ts";
 import { toast } from "sonner";
 import { useAppStore } from "@/stores";
 
@@ -13,7 +12,6 @@ const useAuthApp = () => {
   }, []);
   const initial = async () => {
     setChecking(true);
-    await sleep(2000);
     const user = await APPManager.shared.init({
       onFailed: (reason) => {
         console.error("failed:", reason);
@@ -27,7 +25,6 @@ const useAuthApp = () => {
     if (user) {
       useAppStore.setState({ user });
     }
-    await sleep(2000);
     setChecking(false);
   };
   return {

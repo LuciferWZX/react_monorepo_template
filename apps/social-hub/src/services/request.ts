@@ -1,6 +1,7 @@
 import { extend, ResponseError } from "umi-request";
 import store from "storejs";
 import { StorageKey } from "@/types";
+import { toast } from "sonner";
 export interface ServerError {
   data: null;
   message: string;
@@ -9,16 +10,25 @@ export interface ServerError {
 
 const errorHandler = function (error: ResponseError<ServerError>) {
   if (error.response) {
+    console.log(111, error.data);
+    console.log(111, error.response);
     if (error.data) {
+      //说明是服务器返回的
       return error.data;
     }
     //从服务器返回的错误
     const status = error.response.status;
+    const statusText = error.response.statusText;
     switch (status) {
       case 401: {
         break;
       }
       case 500: {
+        toast.error(`远程服务器出错：${statusText}`, {
+          position: "top-center",
+          richColors: true,
+          id: "net_error",
+        });
         // notification.error({
         //   message: "远程服务器出错",
         //   description: error.response.statusText,

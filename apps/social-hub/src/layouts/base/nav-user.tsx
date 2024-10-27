@@ -29,7 +29,6 @@ import { IUser } from "@/types";
 
 export function NavUser({ user }: { user: IUser }) {
   const { isMobile } = useSidebar();
-  console.log(1111, user);
   return (
     <SidebarMenu>
       <SidebarMenuItem>

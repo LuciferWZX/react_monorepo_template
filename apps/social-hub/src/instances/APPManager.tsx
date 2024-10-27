@@ -14,7 +14,7 @@ export class APPManager {
     }
     const response = await APIManager.authService.profile();
     if (response.code === ResponseCode.success) {
-      return response.data;
+      return { ...response.data, access_token: token };
     }
     options.onFailed(response?.message ?? "用户信息已过期，请重新登录");
     return null;

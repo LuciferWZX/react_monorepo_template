@@ -30,6 +30,7 @@ import { INav } from "@/types";
 import NavSecond from "@/layouts/base/nav-second.tsx";
 import { useAppStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
+import { NavConnectStatus } from "@/layouts/base/nav-connect-status.tsx";
 
 // This is sample data.
 const data = {
@@ -186,6 +187,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
+        <NavConnectStatus />
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
