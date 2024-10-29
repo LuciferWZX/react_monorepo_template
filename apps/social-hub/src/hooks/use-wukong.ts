@@ -18,11 +18,12 @@ export function useWuKong() {
   const initialWuKong = async (uid: string, token: string) => {
     const ipResponse = await APIManager.wuKongService.getIp({ uid: uid });
     if (ipResponse.code === ResponseCode.success) {
-      // console.log(111, ip);
+      useWuKongStore.setState({ ip: ipResponse.data });
       const { ws_addr } = ipResponse.data;
       WKSDK.shared().config.addr = ws_addr;
       WKSDK.shared().config.uid = uid;
       WKSDK.shared().config.token = token;
+
       //监听连接状态
       WKSDK.shared().connectManager.addConnectStatusListener(
         connectStatusListener,
@@ -36,15 +37,26 @@ export function useWuKong() {
       };
     }
   };
+  const syncConversation = async () => {
+    console.info("正在同步一次最近会话");
+    const response = await APIManager.wuKongService.syncConversation({
+      uid: WKSDK.shared().config.uid!,
+      version: 0,
+      msg_count: 20,
+    });
+    console.log("response：", response);
+    console.info("同步完成");
+  };
   const connectStatusListener = async (
     status: ConnectStatus,
     reasonCode?: number,
   ) => {
     useWuKongStore.setState({ status });
     console.log(123, status, reasonCode);
-    match(status)
-      .with(ConnectStatus.Connected, () => {
+    await match(status)
+      .with(ConnectStatus.Connected, async () => {
         console.info("🔗连接成功");
+        await syncConversation();
       })
       .with(ConnectStatus.Connecting, () => {
         console.info("🔗连接中");
