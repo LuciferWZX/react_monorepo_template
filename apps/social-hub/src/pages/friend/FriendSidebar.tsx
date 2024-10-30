@@ -1,0 +1,128 @@
+import { cn } from "@/lib/utils.ts";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Badge,
+  Label,
+  ScrollArea,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarInput,
+} from "@/components";
+import { Search } from "lucide-react";
+import { useAppStore } from "@/stores";
+import { useShallow } from "zustand/react/shallow";
+import { AnimatePresence, motion } from "framer-motion";
+import { FriendRequestRecord, RequestStatus } from "@/types/friend.ts";
+import { useState } from "react";
+import { useRequest } from "ahooks";
+import { APIManager } from "@/instances";
+import { IUser, ResponseCode } from "@/types";
+
+interface FriendSidebarProps {
+  curRecord: FriendRequestRecord | null;
+  setCurRecord: (record: FriendRequestRecord | null) => void;
+}
+const FriendSidebar = (props: FriendSidebarProps) => {
+  const { curRecord, setCurRecord } = props;
+  const [friendRecords, uid] = useAppStore(
+    useShallow((state) => [state.friendRecords, state.user!.id]),
+  );
+  return (
+    <aside
+      className={cn(
+        "w-72 h-full flex flex-col overflow-auto bg-sidebar/80 text-sidebar-foreground",
+      )}
+    >
+      <header className={"flex-shrink-0"}>
+        <div className={cn("flex gap-2 p-2")}>
+          <SidebarGroup className="py-0">
+            <SidebarGroupContent className="relative">
+              <Label htmlFor="search" className="sr-only">
+                Search
+              </Label>
+              <SidebarInput id="search" placeholder="查询" className="pl-8" />
+              <Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 select-none opacity-50" />
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </div>
+      </header>
+      <ScrollArea className={"flex-1"}>
+        <AnimatePresence>
+          {friendRecords.length === 0 ? (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-center text-muted-foreground p-4"
+            >
+              No pending friend requests
+            </motion.p>
+          ) : (
+            <ul>
+              {friendRecords.map((request) => (
+                <motion.li
+                  key={request.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.2 }}
+                  className={`p-4 cursor-pointer hover:bg-accent ${curRecord?.id === request.id ? "bg-accent" : ""}`}
+                  onClick={() => setCurRecord(request)}
+                >
+                  <RequestRecordItem
+                    fid={request.uid === uid ? request.to : request.uid}
+                    record={request}
+                  />
+                </motion.li>
+              ))}
+            </ul>
+          )}
+        </AnimatePresence>
+      </ScrollArea>
+    </aside>
+  );
+};
+const RequestRecordItem = (props: {
+  record: FriendRequestRecord;
+  fid: string;
+}) => {
+  const { record, fid } = props;
+  const [user, setUser] = useState<Omit<
+    IUser,
+    "deletedAt" | "createAt" | "access_token"
+  > | null>(null);
+  useRequest(APIManager.userService.getUserSimpleInfo, {
+    defaultParams: [fid],
+    cacheKey: fid,
+    onSuccess: (response) => {
+      if (response.code === ResponseCode.success) {
+        setUser(response.data);
+      }
+    },
+  });
+  return (
+    <div className="flex items-start gap-4 ">
+      <Avatar>
+        <AvatarImage src={user?.avatar} alt={user?.username} />
+        <AvatarFallback>
+          {user?.username.slice(0, 2).toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+      <div className={"flex-1 "}>
+        <div className="flex-1 justify-between min-w-0 flex gap-2">
+          <p className="text-sm font-medium truncate">{user?.nickname}</p>
+          <Badge className={""} variant={"secondary"}>
+            {record.status === RequestStatus.accept
+              ? "已接受"
+              : record.status === RequestStatus.reject
+                ? "已拒绝"
+                : "待处理"}
+          </Badge>
+        </div>
+      </div>
+    </div>
+  );
+};
+export default FriendSidebar;

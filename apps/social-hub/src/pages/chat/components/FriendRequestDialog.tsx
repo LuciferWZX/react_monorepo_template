@@ -13,13 +13,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserPlus, Search, Mail, Loader2 } from "lucide-react";
 import { useRequest } from "ahooks";
 import { APIManager } from "@/instances";
-import { IUser } from "@/types";
+import { IUser, ResponseCode } from "@/types";
+import { toast } from "sonner";
 
 function UserCard({
   user,
+  loading,
   onSendRequest,
 }: {
   user: IUser;
+  loading: boolean;
   onSendRequest: () => void;
 }) {
   return (
@@ -48,8 +51,12 @@ function UserCard({
         <Mail className="w-4 h-4" />
         <span>{user.email}</span>
       </div>
-      <Button onClick={onSendRequest} className="w-full">
-        <UserPlus className="w-4 h-4 mr-2" />
+      <Button disabled={loading} onClick={onSendRequest} className="w-full">
+        {loading ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <UserPlus className="w-4 h-4 mr-2" />
+        )}
         发送好友请求
       </Button>
     </motion.div>
@@ -65,42 +72,47 @@ export default function FriendRequestDialog(props: FriendRequestDialogProps) {
   const { open, children, onVisibleChange } = props;
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState<IUser | null>(null);
-  // const [isSearching, setIsSearching] = useState(false);
-  const { runAsync: searchUser, loading: searchUserLoading } = useRequest(
-    APIManager.userService.search,
-    {
-      manual: true,
-      debounceWait: 400,
-      onSuccess: (response) => {
-        setSearchResult(response.data);
-      },
+  const [isSearching, setIsSearching] = useState(false);
+  const { runAsync: searchUser } = useRequest(APIManager.userService.search, {
+    manual: true,
+    debounceWait: 400,
+    onSuccess: (response) => {
+      setSearchResult(response.data);
     },
-  );
+  });
+  const { runAsync: sendFriendRequest, loading: sendFriendRequestLoading } =
+    useRequest(APIManager.userService.sendFriendRequest, { manual: true });
   useEffect(() => {
     if (searchQuery) {
-      searchUser({ exact: searchQuery }).then();
+      searchUser({ exact: searchQuery }).then(() => {
+        setIsSearching(false);
+      });
     }
   }, [searchQuery]);
-  // const handleSearch = () => {
-  //   setIsSearching(true);
-  //   setTimeout(() => {
-  //     const result = mockUsers.find(
-  //       (user) =>
-  //         user.username.toLowerCase() === searchQuery.toLowerCase() ||
-  //         user.email.toLowerCase() === searchQuery.toLowerCase(),
-  //     );
-  //     setSearchResult(result || null);
-  //     setIsSearching(false);
-  //   }, 1000); // Simulating API call delay
-  // };
-
-  const handleSendRequest = () => {
-    alert(`Friend request sent to ${searchResult?.username}`);
-    setSearchResult(null);
-    setSearchQuery("");
-    onVisibleChange(false);
+  const handleSendRequest = async () => {
+    if (!searchResult) {
+      console.error("searchResult:", searchResult);
+      throw Error("查询的用户信息为null");
+    }
+    const response = await sendFriendRequest({ friendId: searchResult.id });
+    console.log(123, response);
+    if (response.code === ResponseCode.success) {
+      setSearchResult(null);
+      setSearchQuery("");
+      onVisibleChange(false);
+      return;
+    }
+    toast.error(`${response.message} `, {
+      position: "top-center",
+      richColors: true,
+    });
   };
-
+  useEffect(() => {
+    if (!open) {
+      setSearchResult(null);
+      setSearchQuery("");
+    }
+  }, [open]);
   return (
     <Dialog open={open} onOpenChange={onVisibleChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -118,7 +130,10 @@ export default function FriendRequestDialog(props: FriendRequestDialogProps) {
                 type="text"
                 placeholder="搜索用户名或邮箱"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setIsSearching(true);
+                  setSearchQuery(e.target.value);
+                }}
                 className="pl-10 pr-4 py-2"
               />
             </div>
@@ -131,7 +146,7 @@ export default function FriendRequestDialog(props: FriendRequestDialogProps) {
             {/*</Button>*/}
           </div>
           <AnimatePresence mode="wait">
-            {searchUserLoading ? (
+            {isSearching ? (
               <motion.div
                 key="searching"
                 initial={{ opacity: 0 }}
@@ -145,10 +160,12 @@ export default function FriendRequestDialog(props: FriendRequestDialogProps) {
               <UserCard
                 key="result"
                 user={searchResult}
+                loading={sendFriendRequestLoading}
                 onSendRequest={handleSendRequest}
               />
             ) : (
-              searchQuery && (
+              searchQuery &&
+              !isSearching && (
                 <motion.p
                   key="not-found"
                   initial={{ opacity: 0 }}

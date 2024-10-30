@@ -12,6 +12,7 @@ import {
   Settings,
   Settings2,
   SquareTerminal,
+  Users,
 } from "lucide-react";
 import {
   ScrollArea,
@@ -25,12 +26,13 @@ import { TeamSwitcher } from "@/layouts/base/team-switcher.tsx";
 import { NavMain } from "@/layouts/base/nav-main.tsx";
 import { NavProjects } from "@/layouts/base/nav-projects.tsx";
 import { NavUser } from "@/layouts/base/nav-user.tsx";
-import { ComponentProps, useState } from "react";
+import { ComponentProps, useMemo, useState } from "react";
 import { INav } from "@/types";
 import NavSecond from "@/layouts/base/nav-second.tsx";
 import { useAppStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { NavConnectStatus } from "@/layouts/base/nav-connect-status.tsx";
+import { useAppSideBar } from "@/layouts/base/use-app-side-bar.ts";
 
 // This is sample data.
 const data = {
@@ -165,13 +167,7 @@ const data = {
 
 export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   const user = useAppStore(useShallow((state) => state.user))!;
-  const [navs] = useState<INav[]>([
-    {
-      title: "会话",
-      icon: MessageCircleMore,
-      url: "/chat",
-    },
-  ]);
+
   const [bottomNavs] = useState<INav[]>([
     {
       title: "设置",
@@ -184,6 +180,22 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
       url: "support",
     },
   ]);
+  const { unreadRequestNumber } = useAppSideBar();
+  const navs: INav[] = useMemo(() => {
+    return [
+      {
+        title: "会话",
+        icon: MessageCircleMore,
+        url: "/chat",
+      },
+      {
+        title: "好友",
+        icon: Users,
+        url: "/friend",
+        count: unreadRequestNumber,
+      },
+    ];
+  }, [unreadRequestNumber]);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

@@ -42,4 +42,5 @@ export interface INav {
   icon?: LucideIcon;
   isActive?: boolean;
   items?: INav[];
+  count?: number;
 }

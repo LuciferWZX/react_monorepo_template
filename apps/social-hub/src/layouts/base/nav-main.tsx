@@ -6,6 +6,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
+  CountBadge,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
@@ -38,11 +39,13 @@ export function NavMain({ items }: { items: INav[] }) {
                 >
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuButton tooltip={_item.title}>
-                        {_item.icon && <_item.icon />}
-                        <span>{_item.title}</span>
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      </SidebarMenuButton>
+                      <CountBadge count={_item.count}>
+                        <SidebarMenuButton tooltip={_item.title}>
+                          {_item.icon && <_item.icon />}
+                          <span>{_item.title}</span>
+                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        </SidebarMenuButton>
+                      </CountBadge>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
@@ -64,16 +67,18 @@ export function NavMain({ items }: { items: INav[] }) {
             .otherwise((_item) => {
               return (
                 <SidebarMenuItem key={_item.url}>
-                  <SidebarMenuButton
-                    tooltip={_item.title}
-                    isActive={location.pathname.startsWith(_item.url)}
-                    onClick={() => {
-                      navigate(_item.url);
-                    }}
-                  >
-                    {_item.icon && <_item.icon />}
-                    <span>{_item.title}</span>
-                  </SidebarMenuButton>
+                  <CountBadge count={_item.count}>
+                    <SidebarMenuButton
+                      tooltip={_item.title}
+                      isActive={location.pathname.startsWith(_item.url)}
+                      onClick={() => {
+                        navigate(_item.url);
+                      }}
+                    >
+                      {_item.icon && <_item.icon />}
+                      <span>{_item.title}</span>
+                    </SidebarMenuButton>
+                  </CountBadge>
                 </SidebarMenuItem>
               );
             });
