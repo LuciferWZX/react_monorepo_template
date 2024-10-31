@@ -21,11 +21,11 @@ import { APIManager } from "@/instances";
 import { IUser, ResponseCode } from "@/types";
 
 interface FriendSidebarProps {
-  curRecord: FriendRequestRecord | null;
-  setCurRecord: (record: FriendRequestRecord | null) => void;
+  recordId: string | null;
+  setRecordId: (id: string) => void;
 }
 const FriendSidebar = (props: FriendSidebarProps) => {
-  const { curRecord, setCurRecord } = props;
+  const { recordId, setRecordId } = props;
   const [friendRecords, uid] = useAppStore(
     useShallow((state) => [state.friendRecords, state.user!.id]),
   );
@@ -68,8 +68,8 @@ const FriendSidebar = (props: FriendSidebarProps) => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.2 }}
-                  className={`p-4 cursor-pointer hover:bg-accent ${curRecord?.id === request.id ? "bg-accent" : ""}`}
-                  onClick={() => setCurRecord(request)}
+                  className={`p-4 cursor-pointer hover:bg-accent ${recordId === request.id ? "bg-accent" : ""}`}
+                  onClick={() => setRecordId(request.id)}
                 >
                   <RequestRecordItem
                     fid={request.uid === uid ? request.to : request.uid}
@@ -121,6 +121,9 @@ const RequestRecordItem = (props: {
                 : "待处理"}
           </Badge>
         </div>
+        <p className="text-sm text-muted-foreground font-medium truncate">
+          {user?.email}
+        </p>
       </div>
     </div>
   );

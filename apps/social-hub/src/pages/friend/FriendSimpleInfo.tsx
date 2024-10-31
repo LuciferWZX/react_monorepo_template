@@ -1,13 +1,15 @@
-import { FriendRequestRecord } from "@/types/friend.ts";
+import { FriendRequestRecord, RequestStatus } from "@/types/friend.ts";
 import { AnimatePresence, motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage, Button } from "@/components";
 import { useRequest } from "ahooks";
 import { APIManager } from "@/instances";
 import { IUser, ResponseCode } from "@/types";
 import { useEffect, useMemo, useState } from "react";
-import { Cake, Mail } from "lucide-react";
+import { Cake, Check, Loader2, Mail, X } from "lucide-react";
 import { useAppStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
+import { cn } from "@/lib/utils.ts";
+import { match } from "ts-pattern";
 
 interface FriendSimpleInfoProps {
   curRecord: FriendRequestRecord | null;
@@ -23,7 +25,6 @@ const FriendSimpleInfo = (props: FriendSimpleInfoProps) => {
     () => (curRecord?.uid === uid ? curRecord?.to : curRecord?.uid),
     [curRecord, uid],
   );
-
   const { runAsync: getUserInfo } = useRequest(
     APIManager.userService.getUserSimpleInfo,
     {
@@ -35,16 +36,32 @@ const FriendSimpleInfo = (props: FriendSimpleInfoProps) => {
       },
     },
   );
+  const { runAsync: handleFriendRequest, loading: handling } = useRequest(
+    APIManager.userService.handleFriendRequest,
+    {
+      manual: true,
+      onSuccess: async (response) => {
+        if (response.code === ResponseCode.success) {
+          const result = await APIManager.userService.getFriendRequestList();
+          if (result.code === ResponseCode.success) {
+            useAppStore.setState({ friendRecords: result.data });
+          }
+        }
+      },
+    },
+  );
   useEffect(() => {
     if (fid) {
       getUserInfo(fid).then();
     }
   }, [fid]);
-  const handleAccept = (uid: string) => {
+  const handleAccept = async (id: string) => {
     console.log("accept：", uid);
+    await handleFriendRequest({ id: id, type: RequestStatus.accept });
   };
-  const handleDecline = (uid: string) => {
+  const handleDecline = async (id: string) => {
     console.log("reject：", uid);
+    await handleFriendRequest({ id: id, type: RequestStatus.reject });
   };
   return (
     <div className={"h-full w-full p-10"}>
@@ -112,19 +129,81 @@ const FriendSimpleInfo = (props: FriendSimpleInfoProps) => {
               transition={{ delay: 0.4 }}
               className="flex gap-4"
             >
-              <Button
-                onClick={() => handleAccept(curRecord.id)}
-                className="flex-1"
-              >
-                Accept Request
-              </Button>
-              <Button
-                onClick={() => handleDecline(curRecord.id)}
-                variant="outline"
-                className="flex-1"
-              >
-                Decline Request
-              </Button>
+              {curRecord.to === uid ? (
+                curRecord.status === null ? (
+                  <>
+                    <Button
+                      disabled={handling}
+                      onClick={() => handleAccept(curRecord.id)}
+                      className="flex-1"
+                    >
+                      接受
+                    </Button>
+                    <Button
+                      disabled={handling}
+                      onClick={() => handleDecline(curRecord.id)}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      拒绝
+                    </Button>
+                  </>
+                ) : (
+                  <span
+                    className={`mx-auto inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      curRecord.status === RequestStatus.accept
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {curRecord.status === RequestStatus.accept ? (
+                      <>
+                        <Check className="w-3 h-3 mr-1" />
+                        已接受
+                      </>
+                    ) : (
+                      <>
+                        <X className="w-3 h-3 mr-1" />
+                        已拒绝
+                      </>
+                    )}
+                  </span>
+                )
+              ) : (
+                match(curRecord.status)
+                  .with(RequestStatus.reject, () => {
+                    return (
+                      <span
+                        className={"flex items-center text-red-600 mx-auto"}
+                      >
+                        <X className="w-4 h-4 mr-1" />
+                        已拒绝
+                      </span>
+                    );
+                  })
+                  .with(RequestStatus.accept, () => {
+                    return (
+                      <span
+                        className={"flex items-center text-green-600 mx-auto"}
+                      >
+                        <Check className="w-4 h-4 mr-1" />
+                        已添加
+                      </span>
+                    );
+                  })
+                  .otherwise(() => {
+                    return (
+                      <span
+                        className={cn(
+                          "mx-auto mt-2 flex items-center text-muted-foreground gap-1",
+                        )}
+                      >
+                        等待对方处理{" "}
+                        <Loader2 className={cn("h-4 w-4 animate-spin")} />
+                      </span>
+                    );
+                  })
+              )}
             </motion.div>
           </motion.div>
         ) : (
@@ -135,7 +214,7 @@ const FriendSimpleInfo = (props: FriendSimpleInfoProps) => {
             transition={{ duration: 0.3 }}
             className="h-full flex items-center justify-center text-muted-foreground"
           >
-            Select a friend request to view details
+            空空如也
           </motion.div>
         )}
       </AnimatePresence>

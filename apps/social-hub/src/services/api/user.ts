@@ -1,6 +1,6 @@
 import request from "@/services/request.ts";
 import { IUser, ResponseDataType } from "@/types";
-import { FriendRequestRecord } from "@/types/friend.ts";
+import { FriendRequestRecord, RequestStatus } from "@/types/friend.ts";
 
 const PREFIX = "/api/user";
 /**
@@ -45,6 +45,15 @@ export const sendFriendRequest = async (data: {
   friendId: string;
 }): Promise<ResponseDataType<null>> => {
   return request(`${PREFIX}/friend/request`, {
+    method: "post",
+    data,
+  });
+};
+export const handleFriendRequest = async (data: {
+  id: string;
+  type: RequestStatus;
+}): Promise<ResponseDataType<null>> => {
+  return request(`${PREFIX}/friend/request/handle`, {
     method: "post",
     data,
   });

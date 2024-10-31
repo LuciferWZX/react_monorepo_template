@@ -1,6 +1,7 @@
 import {
   getFriendRequestList,
   getUserSimpleInfo,
+  handleFriendRequest,
   search,
   sendFriendRequest,
 } from "@/services/api/user.ts";
@@ -12,4 +13,5 @@ export class UserServiceManager {
   public static getFriendRequestList = getFriendRequestList;
   public static sendFriendRequest = sendFriendRequest;
   public static getUserSimpleInfo = getUserSimpleInfo;
+  public static handleFriendRequest = handleFriendRequest;
 }
