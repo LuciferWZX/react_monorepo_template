@@ -6,6 +6,7 @@ import ChatPage from "@/pages/chat";
 import AuthLayout from "@/layouts/auth";
 import LoginPage from "@/pages/auth/login";
 import FriendPage from "@/pages/friend";
+import { ChatContextPage } from "@/pages/chat/ChatContext.tsx";
 
 export function useRouter() {
   const router: RouteObject[] = [
@@ -19,7 +20,11 @@ export function useRouter() {
           children: [
             { path: "", element: <Navigate to={"home"} /> },
             { path: "home", element: <HomePage /> },
-            { path: "chat", element: <ChatPage /> },
+            {
+              path: "chat",
+              element: <ChatPage />,
+              children: [{ path: ":id", element: <ChatContextPage /> }],
+            },
             { path: "friend", element: <FriendPage /> },
           ],
         },

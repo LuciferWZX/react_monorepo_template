@@ -95,7 +95,6 @@ export default function FriendRequestDialog(props: FriendRequestDialogProps) {
       throw Error("查询的用户信息为null");
     }
     const response = await sendFriendRequest({ friendId: searchResult.id });
-    console.log(123, response);
     if (response.code === ResponseCode.success) {
       setSearchResult(null);
       setSearchQuery("");

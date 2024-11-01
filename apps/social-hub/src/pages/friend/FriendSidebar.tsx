@@ -1,5 +1,9 @@
 import { cn } from "@/lib/utils.ts";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
   Avatar,
   AvatarFallback,
   AvatarImage,
@@ -26,8 +30,8 @@ interface FriendSidebarProps {
 }
 const FriendSidebar = (props: FriendSidebarProps) => {
   const { recordId, setRecordId } = props;
-  const [friendRecords, uid] = useAppStore(
-    useShallow((state) => [state.friendRecords, state.user!.id]),
+  const [friendRecords, uid, friends] = useAppStore(
+    useShallow((state) => [state.friendRecords, state.user!.id, state.friends]),
   );
   return (
     <aside
@@ -61,22 +65,51 @@ const FriendSidebar = (props: FriendSidebarProps) => {
             </motion.p>
           ) : (
             <ul>
-              {friendRecords.map((request) => (
-                <motion.li
-                  key={request.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className={`p-4 cursor-pointer hover:bg-accent ${recordId === request.id ? "bg-accent" : ""}`}
-                  onClick={() => setRecordId(request.id)}
-                >
-                  <RequestRecordItem
-                    fid={request.uid === uid ? request.to : request.uid}
-                    record={request}
-                  />
-                </motion.li>
-              ))}
+              <Accordion type="multiple" defaultValue={["requests", "friends"]}>
+                <AccordionItem value="requests">
+                  <AccordionTrigger className={"px-2"}>
+                    请求列表
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    {friendRecords.map((request) => (
+                      <motion.li
+                        key={request.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.2 }}
+                        className={`p-4 cursor-pointer hover:bg-accent ${recordId === request.id ? "bg-accent" : ""}`}
+                        onClick={() => setRecordId(request.id)}
+                      >
+                        <RequestRecordItem
+                          fid={request.uid === uid ? request.to : request.uid}
+                          record={request}
+                        />
+                      </motion.li>
+                    ))}
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="friends">
+                  <AccordionTrigger className={"px-2"}>
+                    好友列表 ({friends.length})
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    {friends.map((friend) => (
+                      <motion.li
+                        key={friend.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.2 }}
+                        className={`p-4 cursor-pointer hover:bg-accent ${recordId === friend.id ? "bg-accent" : ""}`}
+                        onClick={() => setRecordId(friend.id)}
+                      >
+                        <FriendItem friend={friend} />
+                      </motion.li>
+                    ))}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </ul>
           )}
         </AnimatePresence>
@@ -113,7 +146,16 @@ const RequestRecordItem = (props: {
       <div className={"flex-1 "}>
         <div className="flex-1 justify-between min-w-0 flex gap-2">
           <p className="text-sm font-medium truncate">{user?.nickname}</p>
-          <Badge className={""} variant={"secondary"}>
+          <Badge
+            className={cn({
+              "bg-green-800": record.status === RequestStatus.accept,
+            })}
+            variant={
+              record.status === RequestStatus.reject
+                ? "destructive"
+                : "secondary"
+            }
+          >
             {record.status === RequestStatus.accept
               ? "已接受"
               : record.status === RequestStatus.reject
@@ -123,6 +165,27 @@ const RequestRecordItem = (props: {
         </div>
         <p className="text-sm text-muted-foreground font-medium truncate">
           {user?.email}
+        </p>
+      </div>
+    </div>
+  );
+};
+const FriendItem = (props: { friend: IUser }) => {
+  const { friend } = props;
+  return (
+    <div className="flex items-start gap-4 ">
+      <Avatar>
+        <AvatarImage src={friend.avatar} alt={friend.username} />
+        <AvatarFallback>
+          {friend.username.slice(0, 2).toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+      <div className={"flex-1 "}>
+        <div className="flex-1 justify-between min-w-0 flex gap-2">
+          <p className="text-sm font-medium truncate">{friend.nickname}</p>
+        </div>
+        <p className="text-sm text-muted-foreground font-medium truncate">
+          {friend?.email}
         </p>
       </div>
     </div>

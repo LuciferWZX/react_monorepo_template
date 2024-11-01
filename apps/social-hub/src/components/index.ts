@@ -1,5 +1,6 @@
 export * from "./badge";
 export * from "./theme-provider";
+export * from "./ui/accordion.tsx";
 export * from "./ui/sidebar.tsx";
 export * from "./ui/button.tsx";
 export * from "./ui/badge.tsx";

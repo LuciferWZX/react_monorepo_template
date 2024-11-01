@@ -1,5 +1,6 @@
 import {
   getFriendRequestList,
+  getFriends,
   getUserSimpleInfo,
   handleFriendRequest,
   search,
@@ -14,4 +15,5 @@ export class UserServiceManager {
   public static sendFriendRequest = sendFriendRequest;
   public static getUserSimpleInfo = getUserSimpleInfo;
   public static handleFriendRequest = handleFriendRequest;
+  public static getFriends = getFriends;
 }

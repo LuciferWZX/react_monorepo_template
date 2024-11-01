@@ -1,9 +1,13 @@
 import { useEffect } from "react";
 import { APIManager } from "@/instances";
-import { useAppStore, useWuKongStore } from "@/stores";
+import { useAppStore, useChatStore, useWuKongStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { ResponseCode } from "@/types";
-import WKSDK, { ConnectStatus } from "wukongimjssdk";
+import WKSDK, {
+  ConnectStatus,
+  Conversation,
+  ConversationAction,
+} from "wukongimjssdk";
 import { match } from "ts-pattern";
 
 export function useWuKong() {
@@ -28,31 +32,90 @@ export function useWuKong() {
       WKSDK.shared().connectManager.addConnectStatusListener(
         connectStatusListener,
       );
+      //监听消息
+      WKSDK.shared().conversationManager.addConversationListener(
+        conversationListener,
+      );
       WKSDK.shared().connectManager.connect();
       return () => {
         //取消监听连接状态
         WKSDK.shared().connectManager.removeConnectStatusListener(
           connectStatusListener,
         );
+        WKSDK.shared().conversationManager.removeConversationListener(
+          conversationListener,
+        );
+        WKSDK.shared().connectManager.disconnect();
       };
     }
   };
   const syncConversation = async () => {
     console.info("正在同步一次最近会话");
-    const response = await APIManager.wuKongService.syncConversation({
-      uid: WKSDK.shared().config.uid!,
-      version: 0,
-      msg_count: 20,
-    });
-    console.log("response：", response);
+    const latestConversations = await WKSDK.shared().conversationManager.sync();
+    useChatStore.setState({ conversations: latestConversations });
     console.info("同步完成");
+  };
+  const conversationListener = async (
+    conversation: Conversation,
+    action: ConversationAction,
+  ) => {
+    console.log("[action]", { action });
+    match(action)
+      .with(ConversationAction.add, () => {
+        console.log("新增最近会话", conversation);
+        // useChatStore.setState((oldStore) => {
+        //   return {
+        //     conversations: oldStore.conversations.concat(conversation),
+        //   };
+        // });
+      })
+      .with(ConversationAction.update, async () => {
+        console.log("更新最近会话");
+        // if (channelID === conversation.channel.channelID) {
+        //   await setUnread({
+        //     uid: WKSDK.shared().config.uid!,
+        //     channel_id: conversation.channel.channelID,
+        //     channel_type: conversation.channel.channelType,
+        //     unread: 0,
+        //   }).then((res) => {
+        //     if (res.code === 0 && res.data.status === 200) {
+        //       conversation.unread = 0;
+        //     }
+        //   });
+        //   //   //说明我在当前页
+        //   //   WuKongClient.shared.clearUnread(conversation.channel);
+        // }
+        // useChatStore.setState((oldStore) => {
+        //   return {
+        //     conversations: oldStore.conversations.map((cs) => {
+        //       if (cs.channel.channelID == conversation.channel.channelID) {
+        //         const temp = conversation;
+        //         temp.unread = isNaN(conversation.unread)
+        //             ? 0
+        //             : conversation.unread;
+        //         return temp;
+        //       }
+        //       return cs;
+        //     }),
+        //   };
+        // });
+      })
+      .with(ConversationAction.remove, () => {
+        console.log("删除最近会话");
+        // useChatStore.setState((oldStore) => {
+        //   return {
+        //     conversations: oldStore.conversations.filter(
+        //         (cs) => cs.channel.channelID !== conversation.channel.channelID,
+        //     ),
+        //   };
+        // });
+      });
   };
   const connectStatusListener = async (
     status: ConnectStatus,
     reasonCode?: number,
   ) => {
     useWuKongStore.setState({ status });
-    console.log(123, status, reasonCode);
     await match(status)
       .with(ConnectStatus.Connected, async () => {
         console.info("🔗连接成功");

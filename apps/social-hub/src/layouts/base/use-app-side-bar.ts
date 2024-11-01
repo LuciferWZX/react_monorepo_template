@@ -13,7 +13,14 @@ export const useAppSideBar = () => {
       useAppStore.setState({ friendRecords: request.data });
     },
   });
+  useRequest(APIManager.userService.getFriends, {
+    onSuccess: (request) => {
+      useAppStore.setState({ friends: request.data });
+    },
+  });
   return {
-    unreadRequestNumber: records.filter((record) => record.to === uid),
+    unreadRequestNumber: records.filter(
+      (record) => record.to === uid && record.status === null,
+    ).length,
   };
 };

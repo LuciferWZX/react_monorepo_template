@@ -17,7 +17,7 @@ const FriendPage = () => {
         <FriendSidebar recordId={recordId} setRecordId={setRecordId} />
       </div>
       <div className={"flex-1 overflow-auto"}>
-        <FriendSimpleInfo curRecord={curRecord} />
+        <FriendSimpleInfo recordId={recordId} curRecord={curRecord} />
       </div>
     </div>
   );

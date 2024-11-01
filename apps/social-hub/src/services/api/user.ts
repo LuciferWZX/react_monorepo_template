@@ -38,6 +38,14 @@ export const getUserSimpleInfo = async (
   });
 };
 /**
+ * 获取好友列表
+ */
+export const getFriends = async (): Promise<ResponseDataType<IUser[]>> => {
+  return request(`${PREFIX}/friend/list`, {
+    method: "get",
+  });
+};
+/**
  * 发送好友请求
  * @param data
  */
