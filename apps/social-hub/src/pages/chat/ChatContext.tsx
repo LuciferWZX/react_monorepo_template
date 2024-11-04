@@ -4,10 +4,11 @@ import ChatBottom from "@/pages/chat/components/ChatBottom.tsx";
 import { useChat } from "@/pages/chat/components/ChatProvider.tsx";
 import { match } from "ts-pattern";
 import { Outlet, useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import WKSDK from "wukongimjssdk";
 import { useChatStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
-import WKSDK from "wukongimjssdk";
+import { ScrollArea } from "@/components";
 
 export const ChatContextPage = () => {
   return <Outlet />;
@@ -15,32 +16,38 @@ export const ChatContextPage = () => {
 const ChatContext = () => {
   const { user, setUser } = useChat();
   const { id } = useParams();
-  const conversations = useChatStore(
-    useShallow((state) => state.conversations),
+  const [conversations] = useChatStore(
+    useShallow((state) => [state.conversations]),
   );
-  console.log(1111, id);
-  useEffect(() => {
-    const conversation = conversations.find(
+  const conversation = useMemo(() => {
+    return conversations.find(
       (conversation) => conversation.channel.channelID === id,
     );
+  }, [conversations, id]);
+  useEffect(() => {
     if (conversation) {
-      let info = WKSDK.shared().channelManager.getChannelInfo(
+      const info = WKSDK.shared().channelManager.getChannelInfo(
         conversation.channel,
       );
       if (!info) {
         WKSDK.shared()
           .channelManager.fetchChannelInfo(conversation.channel)
           .then(() => {
-            info = WKSDK.shared().channelManager.getChannelInfo(
+            const remoteInfo = WKSDK.shared().channelManager.getChannelInfo(
               conversation.channel,
             );
+            if (remoteInfo) {
+              setUser(remoteInfo.orgData);
+            }
           });
+
+        return;
       }
-      setUser(info?.orgData);
+      setUser(info.orgData);
     }
-  }, [id]);
+  }, [conversation]);
   return (
-    <div className={"h-full flex flex-col"}>
+    <div className={"h-full w-full flex flex-col overflow-auto"}>
       {match(user)
         .with(null, () => {
           return (
@@ -55,8 +62,16 @@ const ChatContext = () => {
               <div className={"flex-shrink-0"}>
                 <ChatHeader user={_user} />
               </div>
-              <div className={"flex-1"}>
-                <ChatBody />
+              <div className={"flex-1  px-2 w-full overflow-auto"}>
+                <ScrollArea
+                  classes={{ viewport: "break-words" }}
+                  hideX={true}
+                  className={"space-y-4 w-full "}
+                >
+                  <div className={"flex flex-col gap-2 w-full"}>
+                    <ChatBody user={_user} conversation={conversation} />
+                  </div>
+                </ScrollArea>
               </div>
               <div className={"flex-shrink-0"}>
                 <ChatBottom />

@@ -180,13 +180,14 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
       url: "support",
     },
   ]);
-  const { unreadRequestNumber } = useAppSideBar();
+  const { unreadMessageNumber, unreadRequestNumber } = useAppSideBar();
   const navs: INav[] = useMemo(() => {
     return [
       {
         title: "会话",
         icon: MessageCircleMore,
         url: "/chat",
+        count: unreadMessageNumber,
       },
       {
         title: "好友",
@@ -195,7 +196,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
         count: unreadRequestNumber,
       },
     ];
-  }, [unreadRequestNumber]);
+  }, [unreadRequestNumber, unreadMessageNumber]);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

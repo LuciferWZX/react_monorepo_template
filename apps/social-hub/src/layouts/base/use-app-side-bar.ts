@@ -1,12 +1,23 @@
 import { useRequest } from "ahooks";
 import { APIManager } from "@/instances";
-import { useAppStore } from "@/stores";
+import { useAppStore, useChatStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
+import { useMemo } from "react";
 
 export const useAppSideBar = () => {
   const [records, uid] = useAppStore(
     useShallow((state) => [state.friendRecords, state.user!.id]),
   );
+  const [conversations] = useChatStore(
+    useShallow((state) => [state.conversations]),
+  );
+  const unreadMessageNumber = useMemo(() => {
+    let unread = 0;
+    conversations.forEach((conversation) => {
+      unread += conversation.unread;
+    });
+    return unread;
+  }, [conversations]);
   // const { runAsync: getFriendRequestList } =
   useRequest(APIManager.userService.getFriendRequestList, {
     onSuccess: (request) => {
@@ -22,5 +33,6 @@ export const useAppSideBar = () => {
     unreadRequestNumber: records.filter(
       (record) => record.to === uid && record.status === null,
     ).length,
+    unreadMessageNumber,
   };
 };

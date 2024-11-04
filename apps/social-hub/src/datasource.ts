@@ -1,4 +1,10 @@
-import WKSDK, { Channel, ChannelInfo, ChannelTypePerson } from "wukongimjssdk";
+import WKSDK, {
+  Channel,
+  ChannelInfo,
+  ChannelTypePerson,
+  Conversation,
+  SyncOptions,
+} from "wukongimjssdk";
 import { APIManager } from "@/instances";
 import { Convert } from "@/lib/convert.ts";
 import { Buffer } from "buffer";
@@ -7,6 +13,7 @@ if (typeof window !== "undefined") {
   window.Buffer = Buffer;
 }
 export function initDatasource() {
+  //同步左侧聊天列表
   WKSDK.shared().config.provider.syncConversationsCallback = async () => {
     const uid = WKSDK.shared().config.uid;
     if (!uid) {
@@ -17,11 +24,20 @@ export function initDatasource() {
       msg_count: 20,
       version: 0,
     });
-    return response.map((res) => {
-      return Convert.convert.toConversation(res);
-    });
+    const result: Conversation[] = [];
+    for (let i = 0; i < response.length; i++) {
+      const con = Convert.convert.toConversation(response[i]);
+      await WKSDK.shared().channelManager.fetchChannelInfo(con.channel);
+      result.push(con);
+    }
+    return result;
+    // return response.map((res) => {
+    //   const con = Convert.convert.toConversation(res)
+    //
+    //   return con;
+    // });
   };
-
+  //同步用户详情
   WKSDK.shared().config.provider.channelInfoCallback = async (
     channel: Channel,
   ) => {
@@ -82,7 +98,27 @@ export function initDatasource() {
         }
       }
     }
-
     return info;
+  };
+  WKSDK.shared().config.provider.syncMessagesCallback = async (
+    channel: Channel,
+    opts: SyncOptions,
+  ) => {
+    const uid = WKSDK.shared().config.uid;
+    if (!uid) {
+      return [];
+    }
+    const response = await APIManager.wuKongService.syncMessages({
+      login_uid: uid,
+      channel_id: channel.channelID,
+      channel_type: channel.channelType,
+      start_message_seq: opts.startMessageSeq,
+      end_message_seq: opts.endMessageSeq,
+      pull_mode: opts.pullMode,
+      limit: opts.limit,
+    });
+    return response.messages.map((res) => {
+      return Convert.toMessage(res);
+    });
   };
 }

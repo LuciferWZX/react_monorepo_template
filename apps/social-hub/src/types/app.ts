@@ -3,6 +3,7 @@ export enum UserRole {
   user = "user",
   admin = "admin",
   super_admin = "super_admin",
+  system = "system",
 }
 export enum Sex {
   female,

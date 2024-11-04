@@ -27,3 +27,6 @@ export type WKConversationType = {
   version: number; // 数据版本编号
   recents: WKMessageType[]; // 最近N条消息
 };
+export enum WkMessageContentType {
+  text = 1,
+}

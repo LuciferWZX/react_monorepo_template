@@ -1,6 +1,6 @@
 import request from "@/services/request.ts";
 import { ResponseDataType } from "@/types";
-import { ChannelTypeGroup, ChannelTypePerson } from "wukongimjssdk";
+import { ChannelTypeGroup, ChannelTypePerson, Message } from "wukongimjssdk";
 import { WKConversationType } from "@/types/chat.ts";
 const PREFIX = "/api/wuKong";
 const REQUEST_URL = "http://127.0.0.1:5001";
@@ -28,6 +28,25 @@ export const syncConversation = async (data: {
   msg_count: number; // 每个会话获取最大的消息数量，一般为app点进去第一屏的数据
 }): Promise<WKConversationType[]> => {
   return request(`${REQUEST_URL}/conversation/sync`, {
+    method: "post",
+    data: data,
+  });
+};
+export const syncMessages = async (data: {
+  login_uid: string; // 当前登录用户uid
+  channel_id: string; //  频道ID
+  channel_type: 1 | 2 | number; // 频道类型
+  start_message_seq: number; // 开始消息列号（结果包含start_message_seq的消息）
+  end_message_seq: number; // 结束消息列号（结果不包含end_message_seq的消息）
+  limit: number; // 消息数量限制
+  pull_mode: 0 | 1; // 拉取模式 0:向下拉取 1:向上拉取
+}): Promise<{
+  start_message_seq: number; // 查询的start_message_seq
+  end_message_seq: number; // 查询的end_message_seq
+  more: 0 | 1; // 是否有更多  0.无 1.有
+  messages: Message[];
+}> => {
+  return request(`${REQUEST_URL}/channel/messagesync`, {
     method: "post",
     data: data,
   });

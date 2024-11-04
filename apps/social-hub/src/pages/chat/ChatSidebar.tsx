@@ -20,8 +20,6 @@ import { motion } from "framer-motion";
 import WKSDK, { ChannelInfo, Conversation } from "wukongimjssdk";
 import { ChatManager } from "@/instances";
 import { getTimeStringAutoShort } from "@/lib/time.ts";
-import { useChat } from "@/pages/chat/components/ChatProvider.tsx";
-import { IUser } from "@/types";
 import { useNavigate } from "react-router-dom";
 
 const ChatSidebar = () => {
