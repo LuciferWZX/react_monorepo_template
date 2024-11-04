@@ -29,7 +29,7 @@ const ChatMessageItem = (props: ChatMessageItemProps) => {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
       transition={{ type: "spring", stiffness: 500, damping: 40 }}
-      className={`flex ${sender === "user" ? "justify-end" : "justify-start"}`}
+      className={` break-all p-2 w-full  flex ${sender === "user" ? "justify-end" : "justify-start"}`}
     >
       <div
         className={`w-full flex ${sender === "user" ? "flex-row-reverse" : "flex-row"} items-end space-x-2`}
@@ -41,28 +41,30 @@ const ChatMessageItem = (props: ChatMessageItemProps) => {
           />
           <AvatarFallback>{user.nickname.charAt(0)}</AvatarFallback>
         </Avatar>
-        <div className="flex flex-col">
-          <span
-            className={`text-xs ${sender === "user" ? "text-right" : "text-left"} text-gray-500 mb-1`}
-          >
-            {user.nickname}
-          </span>
-          <div
-            className={cn(
-              "flex w-max  flex-col gap-2 rounded-lg px-3 py-2 text-sm bg-muted break-all",
-              {
-                [`flex w-max  flex-col gap-2 rounded-lg px-3 py-2 text-sm ml-auto bg-primary text-primary-foreground`]:
-                  sender === "user",
-              },
-            )}
-          >
-            {content}
-            {content}
-            {content}
-            {content}
-            {content}
-            {content}
-            {content}
+        <div className={"flex-1 overflow-auto break-all"}>
+          <div className="flex overflow-auto flex-col">
+            <span
+              className={`text-xs ${sender === "user" ? "text-right" : "text-left"} text-gray-500 mb-1`}
+            >
+              {user.nickname}
+            </span>
+            <div
+              className={cn(
+                "flex w-max  flex-col gap-2 rounded-lg px-3 py-2 text-sm bg-muted break-all",
+                {
+                  [`flex w-max  flex-col gap-2 rounded-lg px-3 py-2 text-sm ml-auto bg-primary text-primary-foreground`]:
+                    sender === "user",
+                },
+              )}
+            >
+              {content}
+              {content}
+              {content}
+              {content}
+              {content}
+              {content}
+              {content}
+            </div>
           </div>
         </div>
       </div>

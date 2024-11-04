@@ -47,7 +47,7 @@ const ChatContext = () => {
     }
   }, [conversation]);
   return (
-    <div className={"h-full w-full flex flex-col overflow-auto"}>
+    <div className={"h-full w-full flex flex-col overflow-auto "}>
       {match(user)
         .with(null, () => {
           return (
@@ -62,13 +62,16 @@ const ChatContext = () => {
               <div className={"flex-shrink-0"}>
                 <ChatHeader user={_user} />
               </div>
-              <div className={"flex-1  px-2 w-full overflow-auto"}>
+              <div className={"flex-1  px-4 overflow-auto w-full "}>
                 <ScrollArea
-                  classes={{ viewport: "break-words" }}
+                  classes={{
+                    viewport:
+                      "break-all overflow-auto  [&>div]:!flex [&>div]:!break-word [&>div]:!overflow-hidden",
+                  }}
                   hideX={true}
                   className={"space-y-4 w-full "}
                 >
-                  <div className={"flex flex-col gap-2 w-full"}>
+                  <div className={"flex flex-col gap-2 w-full overflow-auto  "}>
                     <ChatBody user={_user} conversation={conversation} />
                   </div>
                 </ScrollArea>
