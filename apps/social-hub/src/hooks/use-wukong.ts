@@ -32,10 +32,11 @@ export function useWuKong() {
       WKSDK.shared().connectManager.addConnectStatusListener(
         connectStatusListener,
       );
-      //监听消息
+      //监听消息列表
       WKSDK.shared().conversationManager.addConversationListener(
         conversationListener,
       );
+
       WKSDK.shared().connectManager.connect();
       return () => {
         //取消监听连接状态
@@ -55,6 +56,7 @@ export function useWuKong() {
     useChatStore.setState({ conversations: latestConversations });
     console.info("同步完成");
   };
+
   const conversationListener = async (
     conversation: Conversation,
     action: ConversationAction,
@@ -70,7 +72,17 @@ export function useWuKong() {
         // });
       })
       .with(ConversationAction.update, async () => {
-        console.log("更新最近会话");
+        console.log("更新最近会话", conversation);
+        useChatStore.setState((oldChatStore) => {
+          return {
+            conversations: oldChatStore.conversations.map((oldCon) => {
+              if (oldCon.channel.channelID === conversation.channel.channelID) {
+                return conversation;
+              }
+              return oldCon;
+            }),
+          };
+        });
         // if (channelID === conversation.channel.channelID) {
         //   await setUnread({
         //     uid: WKSDK.shared().config.uid!,

@@ -62,22 +62,20 @@ const ChatContext = () => {
               <div className={"flex-shrink-0"}>
                 <ChatHeader user={_user} />
               </div>
-              <div className={"flex-1  px-4 overflow-auto w-full "}>
+              <div className={"flex-1 overflow-auto "}>
                 <ScrollArea
-                  classes={{
-                    viewport:
-                      "break-all overflow-auto  [&>div]:!flex [&>div]:!break-word [&>div]:!overflow-hidden",
-                  }}
+                  // classes={{
+                  //   viewport:
+                  //     "break-all [&>div]:!flex [&>div]:!break-word [&>div]:!overflow-hidden",
+                  // }}
                   hideX={true}
-                  className={"space-y-4 w-full "}
+                  className={"px-2 break-all h-full w-full "}
                 >
-                  <div className={"flex flex-col gap-2 w-full overflow-auto  "}>
-                    <ChatBody user={_user} conversation={conversation} />
-                  </div>
+                  <ChatBody user={_user} conversation={conversation} />
                 </ScrollArea>
               </div>
               <div className={"flex-shrink-0"}>
-                <ChatBottom />
+                <ChatBottom conversation={conversation} user={_user} />
               </div>
             </>
           );
