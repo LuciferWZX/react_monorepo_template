@@ -32,6 +32,7 @@ export function useWuKong() {
       WKSDK.shared().connectManager.addConnectStatusListener(
         connectStatusListener,
       );
+
       //监听消息列表
       WKSDK.shared().conversationManager.addConversationListener(
         conversationListener,
@@ -63,13 +64,16 @@ export function useWuKong() {
   ) => {
     console.log("[action]", { action });
     match(action)
-      .with(ConversationAction.add, () => {
+      .with(ConversationAction.add, async () => {
         console.log("新增最近会话", conversation);
-        // useChatStore.setState((oldStore) => {
-        //   return {
-        //     conversations: oldStore.conversations.concat(conversation),
-        //   };
-        // });
+        await WKSDK.shared().channelManager.fetchChannelInfo(
+          conversation.channel,
+        );
+        useChatStore.setState((oldStore) => {
+          return {
+            conversations: oldStore.conversations.concat(conversation),
+          };
+        });
       })
       .with(ConversationAction.update, async () => {
         console.log("更新最近会话", conversation);
@@ -114,13 +118,13 @@ export function useWuKong() {
       })
       .with(ConversationAction.remove, () => {
         console.log("删除最近会话");
-        // useChatStore.setState((oldStore) => {
-        //   return {
-        //     conversations: oldStore.conversations.filter(
-        //         (cs) => cs.channel.channelID !== conversation.channel.channelID,
-        //     ),
-        //   };
-        // });
+        useChatStore.setState((oldStore) => {
+          return {
+            conversations: oldStore.conversations.filter(
+              (cs) => cs.channel.channelID !== conversation.channel.channelID,
+            ),
+          };
+        });
       });
   };
   const connectStatusListener = async (

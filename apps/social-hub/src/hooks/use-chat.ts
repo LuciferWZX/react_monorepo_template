@@ -35,6 +35,9 @@ export const useChat = (
     };
   }, [conversation?.channel.channelID]);
   const messageListener = async (message: Message) => {
+    if (message.channel.channelID !== conversation?.channel.channelID) {
+      return;
+    }
     setMessages((oldMessages) => {
       if (!message.messageID) {
         message.messageID = nanoid(19);

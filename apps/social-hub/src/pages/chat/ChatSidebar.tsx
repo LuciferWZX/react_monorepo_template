@@ -125,7 +125,6 @@ const ConversationItem = (props: ConversationItemType) => {
           </p>
           <p className="text-xs text-muted-foreground truncate">
             {ChatManager.shared.getLastMessageText(conversation.lastMessage)}
-            {ChatManager.shared.getLastMessageText(conversation.lastMessage)}
           </p>
         </div>
         <div className="flex flex-col items-end">
