@@ -13,6 +13,7 @@ export const useAppSideBar = () => {
     useShallow((state) => [state.conversations]),
   );
   const unreadMessageNumber = useMemo(() => {
+    // WKSDK.shared().reminderManager.
     return WKSDK.shared().conversationManager.getAllUnreadCount();
     // let unread = 0;
     // conversations.forEach((conversation) => {

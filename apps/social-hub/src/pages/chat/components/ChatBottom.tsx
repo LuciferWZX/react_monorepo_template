@@ -38,7 +38,11 @@ const ChatBottom = (props: ChatBottomProps) => {
         className={"resize-none"}
         placeholder={`发送给 ${user.nickname}`}
       />
-      <Button disabled={disabled} variant={"secondary"}>
+      <Button
+        onClick={() => sendMessage(text)}
+        disabled={disabled}
+        variant={"secondary"}
+      >
         发送
       </Button>
     </div>

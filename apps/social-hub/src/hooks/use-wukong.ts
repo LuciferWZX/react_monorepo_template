@@ -1,19 +1,24 @@
 import { useEffect } from "react";
-import { APIManager } from "@/instances";
+import { APIManager, CMDType } from "@/instances";
 import { useAppStore, useChatStore, useWuKongStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { ResponseCode } from "@/types";
 import WKSDK, {
+  Channel,
+  CMDContent,
   ConnectStatus,
   Conversation,
   ConversationAction,
+  Message,
 } from "wukongimjssdk";
 import { match } from "ts-pattern";
+import { useParams } from "react-router-dom";
 
 export function useWuKong() {
   const [id, accessToken] = useAppStore(
     useShallow((state) => [state.user?.id, state.user?.access_token]),
   );
+  const { id: fid } = useParams();
   useEffect(() => {
     if (id && accessToken) {
       initialWuKong(id, accessToken).then();
@@ -37,7 +42,8 @@ export function useWuKong() {
       WKSDK.shared().conversationManager.addConversationListener(
         conversationListener,
       );
-
+      //监听CMD消息
+      WKSDK.shared().chatManager.addCMDListener(cmdListener); // 监听cmd消息
       WKSDK.shared().connectManager.connect();
       return () => {
         //取消监听连接状态
@@ -57,7 +63,30 @@ export function useWuKong() {
     useChatStore.setState({ conversations: latestConversations });
     console.info("同步完成");
   };
-
+  // 监听cmd消息
+  const cmdListener = (msg: Message) => {
+    console.info("收到CMD：", msg);
+    const cmdContent = msg.content as CMDContent;
+    if (cmdContent.cmd === CMDType.CMDTypeClearUnread) {
+      const contentParam = cmdContent.param as Channel;
+      const clearChannel = new Channel(
+        contentParam.channelID,
+        contentParam.channelType,
+      );
+      clearConversationUnread(clearChannel);
+    }
+  };
+  const clearConversationUnread = (channel: Channel) => {
+    const conversation =
+      WKSDK.shared().conversationManager.findConversation(channel);
+    if (conversation) {
+      conversation.unread = 0;
+      WKSDK.shared().conversationManager.notifyConversationListeners(
+        conversation,
+        ConversationAction.update,
+      );
+    }
+  };
   const conversationListener = async (
     conversation: Conversation,
     action: ConversationAction,
@@ -81,6 +110,9 @@ export function useWuKong() {
           return {
             conversations: oldChatStore.conversations.map((oldCon) => {
               if (oldCon.channel.channelID === conversation.channel.channelID) {
+                if (fid === conversation.channel.channelID) {
+                  conversation.unread = 0;
+                }
                 return conversation;
               }
               return oldCon;

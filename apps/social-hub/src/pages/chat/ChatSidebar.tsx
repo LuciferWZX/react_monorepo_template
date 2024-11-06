@@ -20,14 +20,17 @@ import { motion } from "framer-motion";
 import WKSDK, { ChannelInfo, Conversation } from "wukongimjssdk";
 import { ChatManager } from "@/instances";
 import { getTimeStringAutoShort } from "@/lib/time.ts";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import APIClient from "@/instances/APIClient.ts";
 
 const ChatSidebar = () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [conversations] = useChatStore(
     useShallow((state) => [state.conversations]),
   );
+  const { id } = useParams();
   const navigate = useNavigate();
+  // bg-sidebar-accent
   return (
     <nav
       className={cn(
@@ -65,7 +68,9 @@ const ChatSidebar = () => {
                 key={conversation.channel.channelID}
                 conversation={conversation}
                 index={index}
+                active={conversation.channel.channelID === id}
                 onClick={() => {
+                  APIClient.shared.clearUnread(conversation.channel);
                   navigate(`/chat/${conversation.channel.channelID}`);
                 }}
               />
@@ -80,12 +85,14 @@ interface ConversationItemType {
   conversation: Conversation;
   index: number;
   onClick: (info: ChannelInfo | undefined) => void;
+  active?: boolean;
 }
 const ConversationItem = (props: ConversationItemType) => {
-  const { conversation, index, onClick } = props;
+  const { conversation, index, onClick, active } = props;
   const [channelInfo, setChannelInfo] = useState<ChannelInfo | undefined>(
     WKSDK.shared().channelManager.getChannelInfo(conversation.channel),
   );
+  // console.log(1234, WKSDK.shared().conversationManager);
   useEffect(() => {
     if (!channelInfo) {
       WKSDK.shared()
@@ -110,7 +117,12 @@ const ConversationItem = (props: ConversationItemType) => {
       role="button"
       onClick={() => onClick(channelInfo)}
       // aria-pressed={selectedChat === chat.id}
-      className={`p-2 rounded-lg mb-2 cursor-pointer transition-colors outline-none`}
+      className={cn(
+        `p-2 rounded-lg mb-2 cursor-pointer transition-colors outline-none `,
+        {
+          "bg-sidebar-accent": active,
+        },
+      )}
     >
       <div className="flex items-center space-x-4 ">
         <Avatar>

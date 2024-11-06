@@ -16,6 +16,7 @@ export const useChat = (
 ) => {
   const [messages, setMessages] = useState<Message[]>([]);
   useLayoutEffect(() => {
+    setMessages([]);
     if (conversation) {
       fetchMessages(conversation, {
         startMessageSeq: 0, // 开始消息列号（结果包含startMessageSeq的消息）
