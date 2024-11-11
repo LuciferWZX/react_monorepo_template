@@ -24,7 +24,7 @@ const App = () => {
     },
   ];
   return (
-    <div className={"h-screen flex flex-col"}>
+    <div className={"h-screen flex flex-col p-10"}>
       <div className={"flex-1"}></div>
       <div className={"flex-shrink-0"}>
         <SlateRichEditor

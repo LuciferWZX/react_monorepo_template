@@ -11,14 +11,20 @@ export const MentionMenu = forwardRef<HTMLDivElement, MentionMenuProps>(
       <div
         ref={ref}
         className={cn(
-          "bg-red-400 p-2 transition-none max-w-md overflow-auto",
+          "p-2 round transition-none max-w-md overflow-auto",
           className,
         )}
         {...restProps}
       >
         {options.map((option) => {
           return (
-            <div className={"bg-blue-600 truncate"} key={option.value}>
+            <div
+              onClick={() => {
+                console.log(option.value);
+              }}
+              className={"bg-blue-600 truncate"}
+              key={option.value}
+            >
               {option.label}
             </div>
           );

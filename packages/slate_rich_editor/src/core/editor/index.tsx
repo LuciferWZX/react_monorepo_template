@@ -52,7 +52,6 @@ const BaseEditor = (props: BaseEditorProps) => {
   } = props;
 
   const [editor] = useSlateEditor();
-  //索索
 
   const { mentions, setMentions } = useMention();
   const {
@@ -66,6 +65,7 @@ const BaseEditor = (props: BaseEditorProps) => {
     isOpen,
     setIsOpen,
   } = useSearchMentions(editor);
+
   console.log("mentions", mentions);
   const renderElement = useCallback(
     (props: RenderElementProps) => (
@@ -75,14 +75,7 @@ const BaseEditor = (props: BaseEditorProps) => {
   );
   const mergedEditable = useMemo(() => {
     let editable = (
-      <Editable
-        onFocus={() => {
-          const { selection } = editor;
-          console.log(111222, selection);
-        }}
-        renderElement={renderElement}
-        {...editableProps}
-      />
+      <Editable renderElement={renderElement} {...editableProps} />
     );
     //@todo 增加mention的provider
     if (mention?.enable) {
@@ -130,11 +123,12 @@ const BaseEditor = (props: BaseEditorProps) => {
           const beforeMatch =
             beforeText &&
             beforeText.match(new RegExp(`^${targetData.trigger}([^@#]+)$`));
-          const after = Editor.after(editor, start);
-          const afterRange = Editor.range(editor, start, after);
-          const afterText = Editor.string(editor, afterRange);
-          const afterMatch = afterText.match(/^(\s|$)/);
-          if (beforeMatch && afterMatch) {
+          // const after = Editor.after(editor, start);
+          // const afterRange = Editor.range(editor, start, after);
+          // const afterText = Editor.string(editor, afterRange);
+          // const afterMatch = afterText.match(/^(\s|$)/);
+          // console.log(234, afterText);
+          if (beforeMatch) {
             setTarget(beforeRange);
             setSearch(beforeMatch[1]);
             setMentionData(targetData);
@@ -148,7 +142,7 @@ const BaseEditor = (props: BaseEditorProps) => {
       setMentionData(undefined);
       setMentions([]);
     }
-  }, 400);
+  }, 200);
   return (
     <div ref={refs.setReference} {...getReferenceProps()}>
       <Slate

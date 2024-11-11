@@ -78,18 +78,24 @@ export const useSearchMentions = (editor: Editor) => {
     }
   }, [search, mentionData, setMentions]);
   useEffect(() => {
+    handleMenuOpenState();
+  }, [mentions, target]);
+  const handleMenuOpenState = useCallback(() => {
     if (target !== undefined && mentions.length !== 0) {
       setIsOpen(true);
     } else {
       setIsOpen(false);
     }
-  }, [mentions, target]);
+  }, [mentions.length, target]);
   const floatElement = useMemo(() => {
     return (
       isMounted && (
         <MentionMenu
           ref={refs.setFloating}
           style={{ ...floatingStyles, ...styles }}
+          onClick={() => {
+            ReactEditor.focus(editor);
+          }}
           options={mentions}
           {...getFloatingProps()}
         />
