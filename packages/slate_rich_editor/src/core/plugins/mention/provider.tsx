@@ -1,26 +1,49 @@
-import { MentionItemType } from "../../editor";
-import { createContext, ReactNode, useContext, useState } from "react";
+import { MentionSelectItemType } from "../../editor";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { MentionManager } from "../../instants";
 
 type MentionProviderState = {
-  mentions: MentionItemType[];
-  setMentions: (mentions: MentionItemType[]) => void;
+  mentions: MentionSelectItemType[];
+  setMentions: (mentions: MentionSelectItemType[]) => void;
+  activeValue: string | undefined;
+  setActiveValue: (value: string | undefined) => void;
 };
 const initialState: MentionProviderState = {
   mentions: [],
+  activeValue: undefined,
   setMentions: () => null,
+  setActiveValue: () => null,
 };
 const MentionProviderContext =
   createContext<MentionProviderState>(initialState);
 interface MentionProviderProps {
   children?: ReactNode;
-  defaultMentions?: MentionItemType[];
+  defaultMentions?: MentionSelectItemType[];
 }
 const MentionProvider = (props: MentionProviderProps) => {
   const { children, defaultMentions = [] } = props;
-  const [mentions, setMentions] = useState<MentionItemType[]>(defaultMentions);
+  const [mentions, setMentions] =
+    useState<MentionSelectItemType[]>(defaultMentions);
+  const [activeValue, setActiveValue] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    if (mentions.length > 0) {
+      setActiveValue(MentionManager.getFirstMention()?.value);
+    }
+  }, [mentions]);
   const value: MentionProviderState = {
     mentions,
-    setMentions,
+    activeValue: activeValue,
+    setMentions: (_mentions) => {
+      setMentions(_mentions);
+      MentionManager.setMentions(_mentions);
+    },
+    setActiveValue,
   };
   return (
     <MentionProviderContext.Provider {...props} value={value}>

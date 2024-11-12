@@ -1,0 +1,18 @@
+.slate_rich_editor_menu{
+    & ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    & li {
+        list-style: none;
+    }
+    @apply border border-border/15 rounded-lg shadow-md;
+
+}
+.slate_rich_editor_menu_group_item{
+
+}
+.slate_rich_editor_menu_item{
+
+}

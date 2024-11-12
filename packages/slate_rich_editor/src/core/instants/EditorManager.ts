@@ -1,4 +1,5 @@
-import { Descendant, Editor, Range as SlateRange } from "slate";
+import { Descendant, Editor, Range as SlateRange, Transforms } from "slate";
+import { MentionElement } from "../type/custom-slate.ts";
 
 export class EditorManager {
   public static shared = new EditorManager();
@@ -27,5 +28,21 @@ export class EditorManager {
         return Editor.range(editor, beforeStart, start);
       }
     }
+  }
+
+  public static insertMention(
+    editor: Editor,
+    props: Omit<MentionElement, "type" | "children">,
+  ) {
+    const mention: MentionElement = {
+      type: "mention",
+      label: props.label,
+      trigger: props.trigger,
+      value: props.value,
+      children: [{ text: "" }],
+    };
+    console.log(123, mention);
+    Transforms.insertNodes(editor, mention);
+    Transforms.move(editor);
   }
 }

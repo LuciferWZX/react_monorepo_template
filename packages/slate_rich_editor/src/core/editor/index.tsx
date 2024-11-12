@@ -1,29 +1,52 @@
 import { useSearchMentions, useSlateEditor } from "../hooks";
 import { Editable, RenderElementProps, Slate } from "slate-react";
 import { EditableProps } from "slate-react/dist/components/editable";
-import { ComponentProps, ReactNode, useCallback, useMemo } from "react";
-import { BaseSelection, Descendant, Editor, Range as SlateRange } from "slate";
+import {
+  ComponentProps,
+  CSSProperties,
+  ReactNode,
+  useCallback,
+  useMemo,
+} from "react";
+import { BaseSelection, Descendant } from "slate";
 import { EditorManager } from "../instants";
 import Element from "./Element.tsx";
-import { match, P } from "ts-pattern";
 import MentionProvider, { useMention } from "../plugins/mention/provider.tsx";
-import { debounce } from "es-toolkit";
+import Text from "../plugins/Text";
 
 export interface MentionItemType {
   value: string;
   label: string;
   disabled?: boolean;
+  icon?: ReactNode;
+  className?: string;
+  style?: CSSProperties;
 }
+export interface MentionGroupItemType {
+  key: string;
+  label: string;
+  disabled?: boolean;
+  children: MentionItemType[];
+  className?: string;
+  style?: CSSProperties;
+}
+export type MentionSelectItemType = MentionItemType | MentionGroupItemType;
 export interface MentionConfigDataType {
   trigger: "@" | "#";
   allowSearchAll?: boolean; //允许@的时候查询所有的
   mentions:
-    | MentionItemType[]
-    | ((searchText: string) => Promise<MentionItemType[]>);
+    | MentionSelectItemType[]
+    | ((searchText: string) => Promise<MentionSelectItemType[]>);
   disabled?: boolean;
 }
-interface MentionConfig {
+export interface MentionConfig {
   enable?: boolean;
+  classes?: {
+    menu?: string;
+  };
+  styles?: {
+    menu?: CSSProperties;
+  };
   data?: Array<MentionConfigDataType>;
 }
 interface BaseEditorProps
@@ -53,18 +76,16 @@ const BaseEditor = (props: BaseEditorProps) => {
 
   const [editor] = useSlateEditor();
 
-  const { mentions, setMentions } = useMention();
+  const { mentions } = useMention();
   const {
-    setTarget,
-    setSearch,
-    setOptIndex,
-    setMentionData,
     refs,
     floatElement,
     getReferenceProps,
     isOpen,
     setIsOpen,
-  } = useSearchMentions(editor);
+    onKeyDown,
+    handleMentions,
+  } = useSearchMentions(editor, mention);
 
   console.log("mentions", mentions);
   const renderElement = useCallback(
@@ -73,9 +94,15 @@ const BaseEditor = (props: BaseEditorProps) => {
     ),
     [],
   );
+
   const mergedEditable = useMemo(() => {
     let editable = (
-      <Editable renderElement={renderElement} {...editableProps} />
+      <Editable
+        onKeyDown={onKeyDown}
+        renderElement={renderElement}
+        renderLeaf={(_props) => <Text {..._props}>{_props.children}</Text>}
+        {...editableProps}
+      />
     );
     //@todo 增加mention的provider
     if (mention?.enable) {
@@ -86,63 +113,6 @@ const BaseEditor = (props: BaseEditorProps) => {
     }
     return editable;
   }, [editableProps, editableWrapper, mention?.enable]);
-  const handleMentions = debounce(() => {
-    if (mention?.enable) {
-      const data = mention.data;
-      const { selection } = editor;
-      const prevChar = EditorManager.getPrevCharacter(editor);
-      const matchTarget = data?.find((_data) => _data.trigger === prevChar);
-      if (matchTarget && matchTarget.allowSearchAll) {
-        //这边属于@的时候查看所有的
-        const options = matchTarget.mentions;
-        match(options)
-          .with(P.instanceOf(Function), async (_func) => {
-            const opts = await _func("");
-            setMentions(opts);
-          })
-          .otherwise((opts) => {
-            setMentions(opts);
-          });
-        setTarget(EditorManager.getPrevCharacterSelection(editor));
-        setOptIndex(0);
-        setSearch("");
-        setMentionData(matchTarget);
-        return;
-      }
-      if (selection && SlateRange.isCollapsed(selection)) {
-        const [start] = SlateRange.edges(selection);
-        const wordBefore = Editor.before(editor, start, {
-          unit: "word",
-        });
-        const before = wordBefore && Editor.before(editor, wordBefore);
-        const beforeRange = before && Editor.range(editor, before, start);
-        const beforeText = beforeRange && Editor.string(editor, beforeRange);
-        // const beforeMatch = beforeText && beforeText.match(/^@(\w+)$/);
-        for (let i = 0; i < (data ?? []).length; i++) {
-          const targetData = (data ?? [])[i];
-          const beforeMatch =
-            beforeText &&
-            beforeText.match(new RegExp(`^${targetData.trigger}([^@#]+)$`));
-          // const after = Editor.after(editor, start);
-          // const afterRange = Editor.range(editor, start, after);
-          // const afterText = Editor.string(editor, afterRange);
-          // const afterMatch = afterText.match(/^(\s|$)/);
-          // console.log(234, afterText);
-          if (beforeMatch) {
-            setTarget(beforeRange);
-            setSearch(beforeMatch[1]);
-            setMentionData(targetData);
-            setOptIndex(0);
-            return;
-          }
-        }
-      }
-      setTarget(undefined);
-      setSearch("");
-      setMentionData(undefined);
-      setMentions([]);
-    }
-  }, 200);
   return (
     <div ref={refs.setReference} {...getReferenceProps()}>
       <Slate
@@ -174,7 +144,7 @@ const BaseEditor = (props: BaseEditorProps) => {
               return onSelectionChange(selection);
             }
           },
-          [handleMentions, isOpen, onSelectionChange, setIsOpen],
+          [isOpen, onSelectionChange],
         )}
         editor={editor}
         initialValue={EditorManager.initialValue}
