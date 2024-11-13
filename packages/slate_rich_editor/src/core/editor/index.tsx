@@ -4,15 +4,19 @@ import { EditableProps } from "slate-react/dist/components/editable";
 import {
   ComponentProps,
   CSSProperties,
+  forwardRef,
   ReactNode,
   useCallback,
+  useImperativeHandle,
   useMemo,
 } from "react";
 import { BaseSelection, Descendant } from "slate";
 import { EditorManager } from "../instants";
 import Element from "./Element.tsx";
-import MentionProvider, { useMention } from "../plugins/mention/provider.tsx";
+import MentionProvider from "../plugins/mention/provider.tsx";
 import Text from "../plugins/Text";
+import { ReferenceType } from "@floating-ui/react";
+import * as React from "react";
 
 export interface MentionItemType {
   value: string;
@@ -41,80 +45,116 @@ export interface MentionConfigDataType {
 }
 export interface MentionConfig {
   enable?: boolean;
+  loadingNode?: ReactNode;
+  loading?: boolean;
   classes?: {
     menu?: string;
   };
   styles?: {
     menu?: CSSProperties;
   };
+  check?: CheckMentionConfig;
   data?: Array<MentionConfigDataType>;
 }
+export interface CheckMentionConfig {
+  enable?: boolean;
+  fetch?: (value: string) => Promise<string | undefined>;
+}
 interface BaseEditorProps
-  extends Omit<EditableProps, "onChange">,
+  extends Omit<EditableProps, "onChange" | "value">,
     Pick<ComponentProps<typeof Slate>, "onSelectionChange" | "onValueChange"> {
   onChange?: (value: Descendant[]) => void;
+  value?: Descendant[];
   editableWrapper?: (editable: ReactNode) => ReactNode;
   mention?: MentionConfig;
 }
-export const SlateRichEditor = (props: BaseEditorProps) => {
-  const { mention } = props;
-  let baseEditor = <BaseEditor {...props} />;
-  if (mention?.enable) {
-    baseEditor = <MentionProvider>{baseEditor}</MentionProvider>;
-  }
-  return baseEditor;
+export type SlateRichEditorRef = {
+  setReference: (node: ReferenceType | null) => void;
+  getReferenceProps: (
+    userProps?: React.HTMLProps<Element>,
+  ) => Record<string, unknown>;
+  editorValue: Descendant[];
 };
-const BaseEditor = (props: BaseEditorProps) => {
-  const {
-    onChange,
-    editableWrapper,
-    onSelectionChange,
-    onValueChange,
-    mention,
-    ...editableProps
-  } = props;
-
-  const [editor] = useSlateEditor();
-
-  const { mentions } = useMention();
-  const {
-    refs,
-    floatElement,
-    getReferenceProps,
-    isOpen,
-    setIsOpen,
-    onKeyDown,
-    handleMentions,
-  } = useSearchMentions(editor, mention);
-
-  console.log("mentions", mentions);
-  const renderElement = useCallback(
-    (props: RenderElementProps) => (
-      <Element {...props}>{props.children}</Element>
-    ),
-    [],
-  );
-
-  const mergedEditable = useMemo(() => {
-    let editable = (
-      <Editable
-        onKeyDown={onKeyDown}
-        renderElement={renderElement}
-        renderLeaf={(_props) => <Text {..._props}>{_props.children}</Text>}
-        {...editableProps}
-      />
-    );
-    //@todo 增加mention的provider
+export const SlateRichEditor = forwardRef<SlateRichEditorRef, BaseEditorProps>(
+  (props, ref) => {
+    const { mention } = props;
+    let baseEditor = <BaseEditor ref={ref} {...props} />;
     if (mention?.enable) {
-      editable = <MentionProvider>{editable}</MentionProvider>;
+      baseEditor = <MentionProvider>{baseEditor}</MentionProvider>;
     }
-    if (editableWrapper) {
-      return editableWrapper(editable);
-    }
-    return editable;
-  }, [editableProps, editableWrapper, mention?.enable]);
-  return (
-    <div ref={refs.setReference} {...getReferenceProps()}>
+    return baseEditor;
+  },
+);
+
+const BaseEditor = forwardRef<SlateRichEditorRef, BaseEditorProps>(
+  (props, ref) => {
+    const {
+      onChange,
+      editableWrapper,
+      onSelectionChange,
+      onValueChange,
+      mention,
+      value,
+      ...editableProps
+    } = props;
+    const [editor] = useSlateEditor();
+    const {
+      refs,
+      floatElement,
+      getReferenceProps,
+      isOpen,
+      setIsOpen,
+      onKeyDown,
+      handleMentions,
+    } = useSearchMentions(editor, mention);
+    useImperativeHandle(ref, () => {
+      return {
+        setReference: refs.setReference,
+        getReferenceProps: getReferenceProps,
+        editorValue: editor.children,
+      };
+    });
+    const renderElement = useCallback(
+      (props: RenderElementProps & { config?: CheckMentionConfig }) => (
+        <Element {...props} config={mention?.check}>
+          {props.children}
+        </Element>
+      ),
+      [mention?.check],
+    );
+
+    const mergedEditable = useMemo(() => {
+      let editable = (
+        <Editable
+          onError={(event) => {
+            console.log("event:", event);
+          }}
+          className={"text-sm leading-[24px]"}
+          onKeyDown={onKeyDown}
+          renderElement={renderElement}
+          renderLeaf={(_props) => <Text {..._props}>{_props.children}</Text>}
+          {...editableProps}
+        />
+      );
+      //@todo 增加mention的provider
+      if (mention?.enable) {
+        editable = <MentionProvider>{editable}</MentionProvider>;
+      }
+      if (editableWrapper) {
+        return editableWrapper(editable);
+      }
+      return editable;
+    }, [
+      editableProps,
+      editableWrapper,
+      mention?.enable,
+      onKeyDown,
+      renderElement,
+    ]);
+    return (
+      // <div ref={refs.setReference} {...getReferenceProps()}>
+      //
+      // </div>
       <Slate
         onChange={useCallback(
           async (value: Descendant[]) => {
@@ -147,11 +187,11 @@ const BaseEditor = (props: BaseEditorProps) => {
           [isOpen, onSelectionChange],
         )}
         editor={editor}
-        initialValue={EditorManager.initialValue}
+        initialValue={value ?? EditorManager.initialValue}
       >
         {mergedEditable}
         {floatElement}
       </Slate>
-    </div>
-  );
-};
+    );
+  },
+);

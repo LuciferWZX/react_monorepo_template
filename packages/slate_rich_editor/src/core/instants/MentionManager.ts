@@ -58,7 +58,7 @@ export class MentionManager {
       });
     return flatArray[nextIndex];
   }
-  public static getMentionItem(value: string) {
+  public static getMentionItem(value?: string) {
     const flatArray = flatMap(
       this.mentions.filter((item) => !item.disabled),
       (mention) =>

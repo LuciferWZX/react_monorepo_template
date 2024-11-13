@@ -5,7 +5,7 @@ import { HistoryEditor } from "slate-history";
 
 export type ParagraphElement = {
   type: "paragraph";
-  children: CustomText[];
+  children: Array<CustomText | MentionElement>;
 };
 export type MentionElement = {
   type: "mention";

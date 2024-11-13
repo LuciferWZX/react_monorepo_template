@@ -2,6 +2,7 @@ import {
   KeyboardEvent,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
 } from "react";
@@ -9,6 +10,7 @@ import { Editor, Range as SlateRange, Transforms } from "slate";
 import {
   MentionConfig,
   MentionConfigDataType,
+  MentionItemType,
   MentionSelectItemType,
 } from "../editor";
 import { match, P } from "ts-pattern";
@@ -30,7 +32,7 @@ import {
 import { MentionMenu } from "../components";
 import { ReactEditor } from "slate-react";
 import { useLatest } from "ahooks";
-import isHotkey from "is-hotkey";
+import isHotkey, { isKeyHotkey } from "is-hotkey";
 import { EditorManager, MentionManager } from "../instants";
 import { debounce } from "es-toolkit";
 export const useSearchMentions = (
@@ -112,21 +114,50 @@ export const useSearchMentions = (
         });
     }
   }, [search, mentionData]);
-
   useEffect(() => {
     handleMenuOpenState();
-  }, [mentions, target]);
+  }, [config?.loading, config?.enable, mentions, target]);
+  useLayoutEffect(() => {
+    EditorManager.setCheckMentionConfig(config?.check);
+  }, [config?.check]);
+  const selectMention = (_mention?: MentionItemType | undefined) => {
+    if (target && (_mention || activeValue) && mentionData) {
+      Transforms.select(editor, target);
+      const targetMention =
+        _mention ?? MentionManager.getMentionItem(activeValue);
+      if (!targetMention) {
+        return;
+      }
+      Transforms.select(editor, target);
+      EditorManager.insertMention(editor, {
+        trigger: mentionData.trigger,
+        label: targetMention.label,
+        value: targetMention.value,
+      });
+      resetSearchState();
+    }
+  };
   const handleMenuOpenState = useCallback(() => {
+    if (config?.enable && config.loading) {
+      setIsOpen(true);
+      return;
+    }
     if (target !== undefined && mentions.length !== 0) {
       setIsOpen(true);
     } else {
       setIsOpen(false);
     }
-  }, [mentions.length, target]);
+  }, [mentions.length, target, config?.enable, config?.loading]);
   const floatElement = useMemo(() => {
+    if (!config?.loading && mentions.length === 0) {
+      return null;
+    }
     return (
       isMounted && (
         <MentionMenu
+          loading={config?.loading}
+          loadingNode={config?.loadingNode}
+          onClickItem={(data) => selectMention(data)}
           ref={refs.setFloating}
           parentWidth={refs.reference.current?.getBoundingClientRect()?.width}
           style={{ ...floatingStyles, ...styles, ...config?.styles?.menu }}
@@ -140,6 +171,8 @@ export const useSearchMentions = (
       )
     );
   }, [
+    config?.loadingNode,
+    config?.loading,
     config?.classes,
     isMounted,
     refs.setFloating,
@@ -210,8 +243,39 @@ export const useSearchMentions = (
     },
     [editor, targetRef],
   );
+  const fixedLeftRight = (event: KeyboardEvent<HTMLDivElement>) => {
+    const { selection } = editor;
+
+    // Default left/right behavior is unit:'character'.
+    // This fails to distinguish between two cursor positions, such as
+    // <inline>foo<cursor/></inline> vs <inline>foo</inline><cursor/>.
+    // Here we modify the behavior to unit:'offset'.
+    // This lets the user step into and out of the inline without stepping over characters.
+    // You may wish to customize this further to only use unit:'offset' in specific cases.
+    if (selection && SlateRange.isCollapsed(selection)) {
+      const { nativeEvent } = event;
+      if (isKeyHotkey("left", nativeEvent)) {
+        event.preventDefault();
+        Transforms.move(editor, { unit: "offset", reverse: true });
+        return;
+      }
+      if (isKeyHotkey("right", nativeEvent)) {
+        event.preventDefault();
+        Transforms.move(editor, { unit: "offset" });
+        return;
+      }
+    }
+  };
+
+  const resetSearchState = () => {
+    setSearch("");
+    setTarget(undefined);
+    setMentions([]);
+    setMentionData(undefined);
+  };
   const onKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
+      fixedLeftRight(event);
       if (isOpen && config?.enable && mentions.length > 0) {
         if (isHotkey("ArrowDown", event)) {
           event.preventDefault();
@@ -237,23 +301,13 @@ export const useSearchMentions = (
         }
         if (isHotkey("Enter", event)) {
           event.preventDefault();
-          if (target && activeValue && mentionData) {
-            Transforms.select(editor, target);
-            const targetMention = MentionManager.getMentionItem(activeValue);
-            if (!targetMention) {
-              return;
-            }
-            EditorManager.insertMention(editor, {
-              trigger: mentionData.trigger,
-              label: targetMention.label,
-              value: targetMention.value,
-            });
-          }
+          selectMention();
         }
       }
     },
     [activeValue, config?.enable, isOpen, target, mentions.length],
   );
+
   const handleMentions = debounce(() => {
     if (config?.enable) {
       const data = config.data;
@@ -272,7 +326,6 @@ export const useSearchMentions = (
             setMentions(opts);
           });
         setTarget(EditorManager.getPrevCharacterSelection(editor));
-        setActiveValue(undefined);
         setSearch("");
         setMentionData(matchTarget);
         return;

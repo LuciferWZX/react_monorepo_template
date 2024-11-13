@@ -1,4 +1,4 @@
-import { MentionSelectItemType } from "../../editor";
+import { CheckMentionConfig, MentionSelectItemType } from "../../editor";
 import {
   createContext,
   ReactNode,
@@ -13,12 +13,16 @@ type MentionProviderState = {
   setMentions: (mentions: MentionSelectItemType[]) => void;
   activeValue: string | undefined;
   setActiveValue: (value: string | undefined) => void;
+  checkMentionConfig: CheckMentionConfig | undefined;
+  setCheckMentionConfig: (config: CheckMentionConfig | undefined) => void;
 };
 const initialState: MentionProviderState = {
   mentions: [],
   activeValue: undefined,
   setMentions: () => null,
   setActiveValue: () => null,
+  checkMentionConfig: undefined,
+  setCheckMentionConfig: () => null,
 };
 const MentionProviderContext =
   createContext<MentionProviderState>(initialState);
@@ -31,6 +35,9 @@ const MentionProvider = (props: MentionProviderProps) => {
   const [mentions, setMentions] =
     useState<MentionSelectItemType[]>(defaultMentions);
   const [activeValue, setActiveValue] = useState<string | undefined>(undefined);
+  const [checkMentionConfig, setCheckMentionConfig] = useState<
+    CheckMentionConfig | undefined
+  >(undefined);
   useEffect(() => {
     if (mentions.length > 0) {
       setActiveValue(MentionManager.getFirstMention()?.value);
@@ -39,6 +46,8 @@ const MentionProvider = (props: MentionProviderProps) => {
   const value: MentionProviderState = {
     mentions,
     activeValue: activeValue,
+    checkMentionConfig,
+    setCheckMentionConfig,
     setMentions: (_mentions) => {
       setMentions(_mentions);
       MentionManager.setMentions(_mentions);

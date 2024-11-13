@@ -8,12 +8,14 @@
         --slate-primary: 229 90% 64%;
         --slate-muted: 210 40% 96.1%;
         --slate-muted-foreground: 215.4 16.3% 46.9%;
+        --slate-danger:357 91% 55% ;
+
     }
     .dark {
         --slate-foreground: rgba(0,0,0,0.48);
         --slate-border: 230 14% 68%;
         --slate-primary: 229 90% 64%;
-
+        --slate-danger:357 91% 55% ;
 
         --slate-muted: 217.2 32.6% 17.5%;
         --slate-muted-foreground: 215 20.2% 65.1%;

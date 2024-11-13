@@ -13,6 +13,10 @@ export default {
           DEFAULT: "hsl(var(--slate-primary))",
           // foreground: "hsl(var(---slate-foreground))",
         },
+        danger: {
+          DEFAULT: "hsl(var(--slate-danger))",
+          // foreground: "hsl(var(---slate-foreground))",
+        },
       },
     },
   },

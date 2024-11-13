@@ -2,12 +2,11 @@ import { Editor } from "slate";
 //行内元素
 const INLINE_ELEMENT = ["mention"];
 //只读元素
-const READONLY_ELEMENT = ["mention"];
+const READONLY_ELEMENT: string[] = [];
 const withInlines = (editor: Editor) => {
   const {
     // insertData,
-    // insertText,
-
+    insertText,
     isInline,
     isElementReadOnly,
     isSelectable,
@@ -19,6 +18,10 @@ const withInlines = (editor: Editor) => {
     READONLY_ELEMENT.includes(element.type) || isElementReadOnly(element);
 
   editor.isSelectable = (element) => isSelectable(element);
+  editor.insertText = (text) => {
+    insertText(text);
+  };
   return editor;
 };
+
 export default withInlines;

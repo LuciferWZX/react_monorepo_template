@@ -1,6 +1,14 @@
-import { SlateRichEditor, MentionSelectItemType } from "./core";
+import {
+  SlateRichEditor,
+  MentionSelectItemType,
+  SlateRichEditorRef,
+} from "./core";
+import { useRef, useState } from "react";
 
 const App = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [enable, setEnable] = useState<boolean>(true);
+  const ref = useRef<SlateRichEditorRef>(null);
   const mentions: MentionSelectItemType[] = [
     {
       key: "@",
@@ -52,26 +60,109 @@ const App = () => {
   return (
     <div className={"h-screen flex flex-col p-10"}>
       <div className={"flex-1"}></div>
-      <div className={"flex-shrink-0"}>
+      <div
+        ref={ref.current?.setReference}
+        className={
+          "focus-within:outline focus-within:outline-primary  flex-shrink-0 flex p-2"
+        }
+        {...ref.current?.getReferenceProps()}
+      >
         <SlateRichEditor
+          ref={ref}
+          className={"outline-none flex-1"}
+          value={[
+            {
+              type: "paragraph",
+              children: [
+                {
+                  text: "1234",
+                },
+                {
+                  type: "mention",
+                  label: "关键词3",
+                  trigger: "@",
+                  value: "00000000003",
+                  children: [
+                    {
+                      text: "关键词3",
+                    },
+                  ],
+                },
+                {
+                  text: "3456",
+                },
+                {
+                  type: "mention",
+                  label: "文档13",
+                  trigger: "@",
+                  value: "awdsadewafe",
+                  children: [
+                    {
+                      text: "文档13",
+                    },
+                  ],
+                },
+                {
+                  text: "",
+                },
+              ],
+            },
+          ]}
           // onChange={(value) => {
           //   console.log("onChange:", value);
           // }}
-          // onValueChange={(value) => {
-          //   console.log("onValueChange:", value);
-          // }}
+          onValueChange={(value) => {
+            console.log("onValueChange:", value);
+          }}
           // onSelectionChange={(selection) => {
           //   console.log("onSelectionChange:", selection);
           // }}
           mention={{
             enable: true,
+            loading: loading,
+            check: {
+              enable: enable,
+              fetch: async (id: string) => {
+                console.log("id", id);
+                return new Promise((resolve) => {
+                  setTimeout(() => {
+                    if (id === "00000000003") {
+                      resolve(undefined);
+                    }
+                    resolve(id + "001");
+                  }, 1000);
+                });
+              },
+            },
+            // loadingNode: <div>xx</div>,
             data: [
-              { trigger: "@", allowSearchAll: true, mentions: mentions },
+              {
+                trigger: "@",
+                allowSearchAll: true,
+                mentions: (searchText) => {
+                  console.log(11111, searchText);
+                  setLoading(true);
+                  return new Promise((resolve) => {
+                    setTimeout(() => {
+                      resolve(mentions);
+                      setLoading(false);
+                    }, 1000);
+                  });
+                },
+              },
               { trigger: "#", mentions: mentions2 },
             ],
           }}
           placeholder={"请输入"}
         />
+        <button
+          onClick={() => {
+            // setEnable(!enable)
+            console.log(ref.current?.editorValue);
+          }}
+        >
+          发送
+        </button>
       </div>
     </div>
   );

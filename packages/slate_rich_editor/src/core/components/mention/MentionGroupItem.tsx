@@ -1,13 +1,14 @@
 import { forwardRef, HTMLAttributes } from "react";
-import { MentionGroupItemType } from "../../editor";
+import { MentionGroupItemType, MentionItemType } from "../../editor";
 import MentionItem from "./MentionItem.tsx";
 interface MentionGroupItemProps extends HTMLAttributes<HTMLUListElement> {
   data: MentionGroupItemType;
   activeValue?: string;
+  onClickItem: (data: MentionItemType) => void;
 }
 const MentionGroupItem = forwardRef<HTMLUListElement, MentionGroupItemProps>(
   (props, ref) => {
-    const { data, activeValue } = props;
+    const { data, activeValue, onClickItem } = props;
     return (
       <ul
         className={"slate_rich_editor_menu_group_item overflow-hidden"}
@@ -20,6 +21,7 @@ const MentionGroupItem = forwardRef<HTMLUListElement, MentionGroupItemProps>(
           {data.children.map((item) => {
             return (
               <MentionItem
+                onClickItem={onClickItem}
                 isActive={activeValue === item.value}
                 disabled={data.disabled}
                 key={item.value}

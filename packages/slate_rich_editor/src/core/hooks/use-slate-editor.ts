@@ -9,8 +9,8 @@ import withInlines from "../plugins/hoc/withInlines.ts";
 export const useSlateEditor = () => {
   const slateEditor = useMemo(() => {
     const plugins = [
-      withMention,
       withInlines,
+      withMention,
       withReact,
       withHistory,
     ].reverse();
