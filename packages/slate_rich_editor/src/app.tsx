@@ -7,7 +7,7 @@ import {
 import { useRef, useState } from "react";
 import { Descendant } from "slate";
 
-const App = (props: any) => {
+const App = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const ref = useRef<SlateRichEditorRef>(null);
   const defaultValue: Descendant[] = [
@@ -137,7 +137,6 @@ const App = (props: any) => {
       >
         <SlateRichEditor
           ref={ref}
-          // pastedType={props.pastedType}
           className={"outline-none flex-1 break-all"}
           value={defaultValue}
           hotKey={{

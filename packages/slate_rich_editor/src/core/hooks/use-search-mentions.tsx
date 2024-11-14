@@ -325,6 +325,12 @@ export const useSearchMentions = (
 
   const handleMentions = debounce(() => {
     if (config?.enable) {
+      //keepSearching优先级更大
+      if (config.keepSearching) {
+        //@todo 找到当前光标到上个节点的文字
+        //@todo 设置target和search和activeValue和mentionData
+        return;
+      }
       const data = config.data;
       const { selection } = editor;
       const prevChar = EditorManager.getPrevCharacter(editor);

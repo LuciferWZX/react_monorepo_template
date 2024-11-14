@@ -17,9 +17,6 @@ const withMention = (editor: Editor) => {
     }
   };
   editor.insertData = (data) => {
-    // const html = data.getData("text/html");
-    // const dd = data.getData("application/x-slate-fragment");
-    console.log(123, EditorManager.pastedType);
     if (EditorManager.pastedType === "text") {
       const text = data.getData("text/plain");
       editor.insertText(text);

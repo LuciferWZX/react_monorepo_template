@@ -46,6 +46,7 @@ export interface MentionConfigDataType {
 }
 export interface MentionConfig {
   enable?: boolean;
+  keepSearching?: boolean;
   loadingNode?: ReactNode;
   loading?: boolean;
   classes?: {
@@ -68,6 +69,7 @@ interface BaseEditorProps
   value?: Descendant[];
   editableWrapper?: (editable: ReactNode) => ReactNode;
   mention?: MentionConfig;
+
   hotKey?: EditorHotKeyConfig;
   pastedType?: "text" | "origin";
 }
