@@ -2,12 +2,12 @@ import {
   SlateRichEditor,
   MentionSelectItemType,
   SlateRichEditorRef,
+  EditorManager,
 } from "./core";
 import { useRef, useState } from "react";
 
 const App = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [enable, setEnable] = useState<boolean>(true);
   const ref = useRef<SlateRichEditorRef>(null);
   const mentions: MentionSelectItemType[] = [
     {
@@ -108,32 +108,30 @@ const App = () => {
               ],
             },
           ]}
-          // onChange={(value) => {
-          //   console.log("onChange:", value);
-          // }}
-          onValueChange={(value) => {
-            console.log("onValueChange:", value);
+          hotKey={{
+            switchLine: "mod+Enter",
           }}
-          // onSelectionChange={(selection) => {
-          //   console.log("onSelectionChange:", selection);
-          // }}
+          onValueChange={(value) => {
+            // const str = EditorManager.serialize(value, "html");
+            // const dv = EditorManager.deserialize(str);
+          }}
           mention={{
             enable: true,
             loading: loading,
-            check: {
-              enable: enable,
-              fetch: async (id: string) => {
-                console.log("id", id);
-                return new Promise((resolve) => {
-                  setTimeout(() => {
-                    if (id === "00000000003") {
-                      resolve(undefined);
-                    }
-                    resolve(id + "001");
-                  }, 1000);
-                });
-              },
-            },
+            // check: {
+            //   enable: enable,
+            //   fetch: async (id: string) => {
+            //     console.log("id", id);
+            //     return new Promise((resolve) => {
+            //       setTimeout(() => {
+            //         if (id === "00000000003") {
+            //           resolve(undefined);
+            //         }
+            //         resolve(id + "001");
+            //       }, 1000);
+            //     });
+            //   },
+            // },
             // loadingNode: <div>xx</div>,
             data: [
               {

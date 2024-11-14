@@ -2,7 +2,7 @@ import { Editor } from "slate";
 //行内元素
 const INLINE_ELEMENT = ["mention"];
 //只读元素
-const READONLY_ELEMENT: string[] = [];
+const READONLY_ELEMENT: string[] = ["mention"];
 const withInlines = (editor: Editor) => {
   const {
     // insertData,

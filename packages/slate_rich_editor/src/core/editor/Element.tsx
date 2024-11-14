@@ -1,10 +1,10 @@
 import { RenderElementProps } from "slate-react";
 import { match } from "ts-pattern";
 import Mention from "../plugins/mention";
-import { CheckMentionConfig } from "./index.tsx";
 
 const Element = (
-  props: RenderElementProps & { config?: CheckMentionConfig },
+  // props: RenderElementProps & { config?: CheckMentionConfig },
+  props: RenderElementProps,
 ) => {
   const { attributes, children, element } = props;
   return match(element)

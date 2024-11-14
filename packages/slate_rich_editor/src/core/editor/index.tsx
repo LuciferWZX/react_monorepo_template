@@ -10,7 +10,7 @@ import {
   useImperativeHandle,
   useMemo,
 } from "react";
-import { BaseSelection, Descendant } from "slate";
+import { BaseSelection, Descendant, Editor } from "slate";
 import { EditorManager } from "../instants";
 import Element from "./Element.tsx";
 import MentionProvider from "../plugins/mention/provider.tsx";
@@ -53,13 +53,13 @@ export interface MentionConfig {
   styles?: {
     menu?: CSSProperties;
   };
-  check?: CheckMentionConfig;
+  // check?: CheckMentionConfig;
   data?: Array<MentionConfigDataType>;
 }
-export interface CheckMentionConfig {
-  enable?: boolean;
-  fetch?: (value: string) => Promise<string | undefined>;
-}
+// export interface CheckMentionConfig {
+//   enable?: boolean;
+//   fetch?: (value: string) => Promise<string | undefined>;
+// }
 interface BaseEditorProps
   extends Omit<EditableProps, "onChange" | "value">,
     Pick<ComponentProps<typeof Slate>, "onSelectionChange" | "onValueChange"> {
@@ -67,6 +67,11 @@ interface BaseEditorProps
   value?: Descendant[];
   editableWrapper?: (editable: ReactNode) => ReactNode;
   mention?: MentionConfig;
+  hotKey?: EditorHotKeyConfig;
+}
+export interface EditorHotKeyConfig {
+  switchLine?: "Enter" | "mod+Enter";
+  confirm?: "Enter";
 }
 export type SlateRichEditorRef = {
   setReference: (node: ReferenceType | null) => void;
@@ -95,6 +100,7 @@ const BaseEditor = forwardRef<SlateRichEditorRef, BaseEditorProps>(
       onValueChange,
       mention,
       value,
+      hotKey,
       ...editableProps
     } = props;
     const [editor] = useSlateEditor();
@@ -106,21 +112,22 @@ const BaseEditor = forwardRef<SlateRichEditorRef, BaseEditorProps>(
       setIsOpen,
       onKeyDown,
       handleMentions,
-    } = useSearchMentions(editor, mention);
+    } = useSearchMentions(editor, mention, hotKey);
     useImperativeHandle(ref, () => {
       return {
+        editor: Editor,
         setReference: refs.setReference,
         getReferenceProps: getReferenceProps,
         editorValue: editor.children,
       };
     });
     const renderElement = useCallback(
-      (props: RenderElementProps & { config?: CheckMentionConfig }) => (
-        <Element {...props} config={mention?.check}>
-          {props.children}
-        </Element>
+      // (props: RenderElementProps & { config?: CheckMentionConfig }) => (
+      (props: RenderElementProps) => (
+        // <Element {...props} config={mention?.check}>
+        <Element {...props}>{props.children}</Element>
       ),
-      [mention?.check],
+      [],
     );
 
     const mergedEditable = useMemo(() => {

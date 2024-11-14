@@ -2,12 +2,12 @@ import {
   KeyboardEvent,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useState,
 } from "react";
 import { Editor, Range as SlateRange, Transforms } from "slate";
 import {
+  EditorHotKeyConfig,
   MentionConfig,
   MentionConfigDataType,
   MentionItemType,
@@ -38,6 +38,7 @@ import { debounce } from "es-toolkit";
 export const useSearchMentions = (
   editor: Editor,
   config: MentionConfig | undefined,
+  hotKey: EditorHotKeyConfig | undefined,
 ) => {
   const [target, setTarget] = useState<SlateRange | undefined>();
 
@@ -65,7 +66,7 @@ export const useSearchMentions = (
   const { isMounted, styles } = useTransitionStyles(context, {
     duration: {
       open: 200,
-      close: 100,
+      close: 0,
     },
     // initial: {
     //   opacity: 0,
@@ -117,9 +118,9 @@ export const useSearchMentions = (
   useEffect(() => {
     handleMenuOpenState();
   }, [config?.loading, config?.enable, mentions, target]);
-  useLayoutEffect(() => {
-    EditorManager.setCheckMentionConfig(config?.check);
-  }, [config?.check]);
+  // useLayoutEffect(() => {
+  //   EditorManager.setCheckMentionConfig(config?.check);
+  // }, [config?.check]);
   const selectMention = (_mention?: MentionItemType | undefined) => {
     if (target && (_mention || activeValue) && mentionData) {
       Transforms.select(editor, target);
@@ -276,7 +277,7 @@ export const useSearchMentions = (
   const onKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
       fixedLeftRight(event);
-      if (isOpen && config?.enable && mentions.length > 0) {
+      if (isOpen && config?.enable) {
         if (isHotkey("ArrowDown", event)) {
           event.preventDefault();
           if (activeValue) {
@@ -301,7 +302,21 @@ export const useSearchMentions = (
         }
         if (isHotkey("Enter", event)) {
           event.preventDefault();
-          selectMention();
+          if (mentions.length > 0) {
+            selectMention();
+          }
+        }
+      } else {
+        if (hotKey?.switchLine) {
+          if (hotKey.switchLine !== "Enter") {
+            if (isHotkey("Enter", event.nativeEvent)) {
+              event.preventDefault();
+            }
+          }
+          if (isHotkey(hotKey.switchLine, event.nativeEvent)) {
+            event.preventDefault();
+            Editor.insertBreak(editor);
+          }
         }
       }
     },
