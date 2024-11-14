@@ -5,10 +5,50 @@ import {
   EditorManager,
 } from "./core";
 import { useRef, useState } from "react";
+import { Descendant } from "slate";
 
-const App = () => {
+const App = (props: any) => {
   const [loading, setLoading] = useState<boolean>(false);
   const ref = useRef<SlateRichEditorRef>(null);
+  const defaultValue: Descendant[] = [
+    {
+      type: "paragraph",
+      children: [
+        {
+          text: "1234",
+        },
+        {
+          type: "mention",
+          label: "关键词3",
+          trigger: "@",
+          value: "00000000003",
+          children: [
+            {
+              text: "关键词3",
+            },
+          ],
+        },
+        {
+          text: "3456",
+        },
+        {
+          type: "mention",
+          label: "文档13",
+          trigger: "@",
+          value: "awdsadewafe",
+          children: [
+            {
+              text: "文档13",
+            },
+          ],
+        },
+        {
+          text: "",
+        },
+      ],
+    },
+  ];
+  const [descendant, setDescendant] = useState<Descendant[]>(defaultValue);
   const mentions: MentionSelectItemType[] = [
     {
       key: "@",
@@ -57,9 +97,37 @@ const App = () => {
         "关键词4关键词4关键词4关键词5关键词4关键词4关键词4关键词5关键词4关键词4关键词4关键词5关键词4关键词4关键词4关键词55",
     },
   ];
+  console.log("descendant：", descendant);
+
   return (
-    <div className={"h-screen flex flex-col p-10"}>
-      <div className={"flex-1"}></div>
+    <div className={" flex flex-col p-10"}>
+      <div className={"h-[200px]"}></div>
+      <div>
+        <button
+          onClick={() => {
+            if (ref.current) {
+              EditorManager.clear(ref.current.editor);
+            }
+          }}
+        >
+          清空
+        </button>
+        <button
+          onClick={() => {
+            if (ref.current) {
+              const str = EditorManager.serialize(descendant, "html");
+
+              const dv = EditorManager.deserialize(
+                `<div><div><div><div>${str}</div></div></div></div>`,
+              );
+              console.log(111, dv);
+              EditorManager.updateValue(ref.current.editor, { newValue: dv });
+            }
+          }}
+        >
+          清空并设置
+        </button>
+      </div>
       <div
         ref={ref.current?.setReference}
         className={
@@ -69,51 +137,15 @@ const App = () => {
       >
         <SlateRichEditor
           ref={ref}
-          className={"outline-none flex-1"}
-          value={[
-            {
-              type: "paragraph",
-              children: [
-                {
-                  text: "1234",
-                },
-                {
-                  type: "mention",
-                  label: "关键词3",
-                  trigger: "@",
-                  value: "00000000003",
-                  children: [
-                    {
-                      text: "关键词3",
-                    },
-                  ],
-                },
-                {
-                  text: "3456",
-                },
-                {
-                  type: "mention",
-                  label: "文档13",
-                  trigger: "@",
-                  value: "awdsadewafe",
-                  children: [
-                    {
-                      text: "文档13",
-                    },
-                  ],
-                },
-                {
-                  text: "",
-                },
-              ],
-            },
-          ]}
+          // pastedType={props.pastedType}
+          className={"outline-none flex-1 break-all"}
+          value={defaultValue}
           hotKey={{
             switchLine: "mod+Enter",
           }}
           onValueChange={(value) => {
-            // const str = EditorManager.serialize(value, "html");
-            // const dv = EditorManager.deserialize(str);
+            console.log("value:", value);
+            // setDescendant(value);
           }}
           mention={{
             enable: true,

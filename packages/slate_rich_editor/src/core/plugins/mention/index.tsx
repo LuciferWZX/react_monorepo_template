@@ -1,12 +1,19 @@
-import { RenderElementProps, useSelected } from "slate-react";
+import {
+  ReactEditor,
+  RenderElementProps,
+  useSelected,
+  useSlate,
+} from "slate-react";
 import { InlineChromiumBugfix } from "../InlineChromiumBugfix";
 import cn from "classnames";
+import { Editor, Transforms } from "slate";
 const MentionNode = (
   // props: RenderElementProps & { config?: CheckMentionConfig },
   props: RenderElementProps,
 ) => {
-  const { attributes, children } = props;
+  const { attributes, element, children } = props;
 
+  const editor = useSlate();
   const selected = useSelected();
   // const [loading, setLoading] = useState<boolean>(false);
   // const [invalid, setInvalid] = useState<boolean>(false);
@@ -53,6 +60,7 @@ const MentionNode = (
         //   "!text-danger !bg-danger/10": invalid,
         // },
       )}
+      // ref={ref}
       data-playwright-selected={selected}
       // onClick={() => {
       //   const path = ReactEditor.findPath(editor, element);
@@ -64,6 +72,43 @@ const MentionNode = (
       //       n.type === "mention",
       //   });
       // }}
+
+      //点击聚焦到后面
+      onClick={() => {
+        const path = ReactEditor.findPath(editor, element);
+        const nextEntry = Editor.next(editor, { at: path });
+        if (nextEntry) {
+          const [, path] = nextEntry;
+          const point = Editor.start(editor, path);
+          Transforms.deselect(editor);
+          Transforms.select(editor, point);
+        }
+        // if (!event.currentTarget) {
+        //   return;
+        // }
+        // const spanRect = event.currentTarget.getBoundingClientRect();
+        // const clickX = event.clientX;
+        // const path = ReactEditor.findPath(editor, element);
+        // if (clickX < spanRect.left + spanRect.width / 2) {
+        //   console.log("点击左侧");
+        //   const prevEntry = Editor.previous(editor, { at: path });
+        //   if (prevEntry) {
+        //     const [, path] = prevEntry;
+        //     const point = Editor.end(editor, path);
+        //     Transforms.deselect(editor);
+        //     Transforms.select(editor, point);
+        //   }
+        // } else {
+        //   console.log("点击右侧");
+        //   const nextEntry = Editor.next(editor, { at: path });
+        //   if (nextEntry) {
+        //     const [, path] = nextEntry;
+        //     const point = Editor.start(editor, path);
+        //     Transforms.deselect(editor);
+        //     Transforms.select(editor, point);
+        //   }
+        // }
+      }}
     >
       <InlineChromiumBugfix />
       {children}

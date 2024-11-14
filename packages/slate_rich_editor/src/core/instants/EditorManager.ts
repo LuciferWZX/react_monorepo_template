@@ -18,6 +18,7 @@ export class EditorManager {
   public static initialValue: Descendant[] = [
     { type: "paragraph", children: [{ text: "" }] },
   ];
+  public static pastedType: "text" | "origin" | undefined = undefined;
   // public static setCheckMentionConfig(config: CheckMentionConfig | undefined) {
   //   this.checkMentionConfig = config;
   // }
@@ -107,14 +108,51 @@ export class EditorManager {
         return children;
       });
   }
+
+  /**
+   * 将文本序列化成node节点
+   * @param htmlStr
+   */
   public static deserialize(htmlStr: string) {
     const document = new DOMParser().parseFromString(htmlStr, "text/html");
     const nodes = this._deserialize(document.body);
-    console.log(998, nodes);
     if (Array.isArray(nodes)) {
       return nodes.filter((n) => !SlateText.isText(n));
     }
     return [nodes];
+  }
+
+  /**
+   * 清空数据
+   * @param editor
+   * @param config
+   */
+  public static clear(editor: Editor, config?: { withHistory?: boolean }) {
+    editor.removeNodes();
+    editor.children = this.initialValue;
+    editor.onChange();
+    if (config?.withHistory !== false) {
+      editor.history.redos = [];
+      editor.history.undos = [];
+    }
+  }
+
+  /**
+   * 设置数据
+   * @param editor
+   * @param config
+   */
+  public static updateValue(
+    editor: Editor,
+    config?: { newValue?: Descendant[]; withHistory?: boolean },
+  ) {
+    editor.removeNodes();
+    editor.children = config?.newValue ?? this.initialValue;
+    editor.normalize({ force: true });
+    if (config?.withHistory !== false) {
+      editor.history.redos = [];
+      editor.history.undos = [];
+    }
   }
   private static _deserialize(
     el: HTMLElement | ChildNode,

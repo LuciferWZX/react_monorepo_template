@@ -8,6 +8,7 @@ import {
   ReactNode,
   useCallback,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
 } from "react";
 import { BaseSelection, Descendant, Editor } from "slate";
@@ -68,6 +69,7 @@ interface BaseEditorProps
   editableWrapper?: (editable: ReactNode) => ReactNode;
   mention?: MentionConfig;
   hotKey?: EditorHotKeyConfig;
+  pastedType?: "text" | "origin";
 }
 export interface EditorHotKeyConfig {
   switchLine?: "Enter" | "mod+Enter";
@@ -79,6 +81,7 @@ export type SlateRichEditorRef = {
     userProps?: React.HTMLProps<Element>,
   ) => Record<string, unknown>;
   editorValue: Descendant[];
+  editor: Editor;
 };
 export const SlateRichEditor = forwardRef<SlateRichEditorRef, BaseEditorProps>(
   (props, ref) => {
@@ -101,6 +104,7 @@ const BaseEditor = forwardRef<SlateRichEditorRef, BaseEditorProps>(
       mention,
       value,
       hotKey,
+      pastedType,
       ...editableProps
     } = props;
     const [editor] = useSlateEditor();
@@ -113,9 +117,12 @@ const BaseEditor = forwardRef<SlateRichEditorRef, BaseEditorProps>(
       onKeyDown,
       handleMentions,
     } = useSearchMentions(editor, mention, hotKey);
+    useLayoutEffect(() => {
+      EditorManager.pastedType = pastedType;
+    }, [pastedType]);
     useImperativeHandle(ref, () => {
       return {
-        editor: Editor,
+        editor: editor,
         setReference: refs.setReference,
         getReferenceProps: getReferenceProps,
         editorValue: editor.children,
