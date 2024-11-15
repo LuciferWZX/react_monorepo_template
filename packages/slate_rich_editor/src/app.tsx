@@ -48,7 +48,7 @@ const App = () => {
       ],
     },
   ];
-  const [descendant, setDescendant] = useState<Descendant[]>(defaultValue);
+  const [descendant] = useState<Descendant[]>(defaultValue);
   const mentions: MentionSelectItemType[] = [
     {
       key: "@",
@@ -98,10 +98,11 @@ const App = () => {
     },
   ];
   console.log("descendant：", descendant);
-
   return (
-    <div className={" flex flex-col p-10"}>
-      <div className={"h-[200px]"}></div>
+    <div className={"h-screen flex flex-col p-10"}>
+      <div className={"flex-1"}>
+        <span onClick={() => setLoading(true)}>xx</span>
+      </div>
       <div>
         <button
           onClick={() => {
@@ -128,71 +129,96 @@ const App = () => {
           清空并设置
         </button>
       </div>
-      <div
-        ref={ref.current?.setReference}
-        className={
-          "focus-within:outline focus-within:outline-primary  flex-shrink-0 flex p-2"
-        }
-        {...ref.current?.getReferenceProps()}
-      >
-        <SlateRichEditor
-          ref={ref}
-          className={"outline-none flex-1 break-all"}
-          value={defaultValue}
-          hotKey={{
-            switchLine: "mod+Enter",
-          }}
-          onValueChange={(value) => {
-            console.log("value:", value);
-            // setDescendant(value);
-          }}
-          mention={{
-            enable: true,
-            loading: loading,
-            // check: {
-            //   enable: enable,
-            //   fetch: async (id: string) => {
-            //     console.log("id", id);
-            //     return new Promise((resolve) => {
-            //       setTimeout(() => {
-            //         if (id === "00000000003") {
-            //           resolve(undefined);
-            //         }
-            //         resolve(id + "001");
-            //       }, 1000);
-            //     });
-            //   },
-            // },
-            // loadingNode: <div>xx</div>,
-            data: [
-              {
-                trigger: "@",
-                allowSearchAll: true,
-                mentions: (searchText) => {
-                  console.log(11111, searchText);
-                  setLoading(true);
-                  return new Promise((resolve) => {
-                    setTimeout(() => {
-                      resolve(mentions);
-                      setLoading(false);
-                    }, 1000);
+
+      <SlateRichEditor
+        ref={ref}
+        className={"outline-none flex-1 break-all"}
+        value={defaultValue}
+        hotKey={{
+          switchLine: "mod+Enter",
+        }}
+        onValueChange={(value) => {
+          console.log("value:", value);
+          // setDescendant(value);
+          // setDescendant(value);
+        }}
+        mention={{
+          enable: true,
+          keepSearching: true,
+          loading: loading,
+          highlight: true,
+          keepSearchingData: {
+            // mentions: mentions,
+            mentions: (searchText) => {
+              console.log("searchText", searchText);
+              setLoading(true);
+              return new Promise((resolve) => {
+                setTimeout(() => {
+                  resolve({
+                    keywords: "关键词",
+                    options: mentions,
                   });
-                },
-              },
-              { trigger: "#", mentions: mentions2 },
-            ],
-          }}
-          placeholder={"请输入"}
-        />
-        <button
-          onClick={() => {
-            // setEnable(!enable)
-            console.log(ref.current?.editorValue);
-          }}
-        >
-          发送
-        </button>
-      </div>
+                  setLoading(false);
+                }, 1000);
+              });
+            },
+          },
+          // loading: loading,
+          // check: {
+          //   enable: enable,
+          //   fetch: async (id: string) => {
+          //     console.log("id", id);
+          //     return new Promise((resolve) => {
+          //       setTimeout(() => {
+          //         if (id === "00000000003") {
+          //           resolve(undefined);
+          //         }
+          //         resolve(id + "001");
+          //       }, 1000);
+          //     });
+          //   },
+          // },
+          // loadingNode: <div>xx</div>,
+          data: [
+            {
+              trigger: "@",
+              allowSearchAll: true,
+              mentions: mentions,
+              // mentions: (searchText) => {
+              //   console.log(11111, searchText);
+              //   setLoading(true);
+              //   return new Promise((resolve) => {
+              //     setTimeout(() => {
+              //       resolve(mentions);
+              //       setLoading(false);
+              //     }, 1000);
+              //   });
+              // },
+            },
+            { trigger: "#", mentions: mentions2, allowSearchAll: true },
+          ],
+        }}
+        placeholder={"请输入"}
+        uiRender={(core) => {
+          return (
+            <div
+              className={
+                "focus-within:outline focus-within:outline-primary  flex-shrink-0 flex p-2"
+              }
+            >
+              {core}
+              <button
+                onClick={() => {
+                  // setEnable(!enable)
+                  console.log(ref.current?.editorValue);
+                }}
+              >
+                发送
+              </button>
+            </div>
+          );
+        }}
+      />
     </div>
   );
 };

@@ -9,7 +9,7 @@ export type ParagraphElement = {
 };
 export type MentionElement = {
   type: "mention";
-  trigger: "@" | "#";
+  trigger: "@" | "#" | undefined;
   value: string;
   label: string;
   children: CustomText[];

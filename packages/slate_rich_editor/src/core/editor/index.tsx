@@ -16,8 +16,8 @@ import { EditorManager } from "../instants";
 import Element from "./Element.tsx";
 import MentionProvider from "../plugins/mention/provider.tsx";
 import Text from "../plugins/Text";
-import { ReferenceType } from "@floating-ui/react";
-import * as React from "react";
+// import { ReferenceType } from "@floating-ui/react";
+// import * as React from "react";
 
 export interface MentionItemType {
   value: string;
@@ -44,9 +44,21 @@ export interface MentionConfigDataType {
     | ((searchText: string) => Promise<MentionSelectItemType[]>);
   disabled?: boolean;
 }
+export type KeepSearchingDataType = Omit<
+  MentionConfigDataType,
+  "trigger" | "mentions"
+> & {
+  mentions:
+    | MentionSelectItemType[]
+    | ((
+        searchText: string,
+      ) => Promise<{ keywords: string; options: MentionSelectItemType[] }>);
+};
 export interface MentionConfig {
   enable?: boolean;
   keepSearching?: boolean;
+  highlight?: boolean;
+  keepSearchingData?: KeepSearchingDataType;
   loadingNode?: ReactNode;
   loading?: boolean;
   classes?: {
@@ -69,7 +81,7 @@ interface BaseEditorProps
   value?: Descendant[];
   editableWrapper?: (editable: ReactNode) => ReactNode;
   mention?: MentionConfig;
-
+  uiRender?: (core: ReactNode) => ReactNode;
   hotKey?: EditorHotKeyConfig;
   pastedType?: "text" | "origin";
 }
@@ -78,10 +90,10 @@ export interface EditorHotKeyConfig {
   confirm?: "Enter";
 }
 export type SlateRichEditorRef = {
-  setReference: (node: ReferenceType | null) => void;
-  getReferenceProps: (
-    userProps?: React.HTMLProps<Element>,
-  ) => Record<string, unknown>;
+  // setReference: (node: ReferenceType | null) => void;
+  // getReferenceProps: (
+  //   userProps?: React.HTMLProps<Element>,
+  // ) => Record<string, unknown>;
   editorValue: Descendant[];
   editor: Editor;
 };
@@ -107,6 +119,7 @@ const BaseEditor = forwardRef<SlateRichEditorRef, BaseEditorProps>(
       value,
       hotKey,
       pastedType,
+      uiRender,
       ...editableProps
     } = props;
     const [editor] = useSlateEditor();
@@ -125,8 +138,8 @@ const BaseEditor = forwardRef<SlateRichEditorRef, BaseEditorProps>(
     useImperativeHandle(ref, () => {
       return {
         editor: editor,
-        setReference: refs.setReference,
-        getReferenceProps: getReferenceProps,
+        // setReference: refs.setReference,
+        // getReferenceProps: getReferenceProps,
         editorValue: editor.children,
       };
     });
@@ -167,10 +180,7 @@ const BaseEditor = forwardRef<SlateRichEditorRef, BaseEditorProps>(
       onKeyDown,
       renderElement,
     ]);
-    return (
-      // <div ref={refs.setReference} {...getReferenceProps()}>
-      //
-      // </div>
+    const coreComponent = (
       <Slate
         onChange={useCallback(
           async (value: Descendant[]) => {
@@ -208,6 +218,12 @@ const BaseEditor = forwardRef<SlateRichEditorRef, BaseEditorProps>(
         {mergedEditable}
         {floatElement}
       </Slate>
+    );
+
+    return (
+      <div ref={refs.setReference} {...getReferenceProps()}>
+        {uiRender ? uiRender(coreComponent) : coreComponent}
+      </div>
     );
   },
 );

@@ -17,6 +17,7 @@
   "devDependencies": {
     "@types/escape-html": "^1.0.4",
     "@types/is-hotkey": "^0.1.10",
+    "@types/react-highlight-words": "^0.20.0",
     "@vitejs/plugin-react": "^4.3.1",
     "vite": "^5.4.1"
   },
@@ -29,6 +30,7 @@
     "escape-html": "^1.0.3",
     "is-hotkey": "^0.2.0",
     "lucide-react": "^0.438.0",
+    "react-highlight-words": "^0.20.0",
     "slate": "^0.103.0",
     "slate-history": "^0.109.0",
     "slate-hyperscript": "^0.100.0",

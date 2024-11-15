@@ -1,14 +1,24 @@
-import { HTMLAttributes, useLayoutEffect, useRef } from "react";
+import { HTMLAttributes, useLayoutEffect, useMemo, useRef } from "react";
 import { MentionItemType } from "../../editor";
+import Highlighter from "react-highlight-words";
 import cn from "classnames";
 interface MentionItemProps extends HTMLAttributes<HTMLLIElement> {
   data: MentionItemType;
   onClickItem: (data: MentionItemType) => void;
   disabled?: boolean;
   isActive: boolean;
+  highlightWords?: string;
 }
 const MentionItem = (props: MentionItemProps) => {
-  const { data, disabled, onClickItem, isActive, className, style } = props;
+  const {
+    data,
+    disabled,
+    highlightWords,
+    onClickItem,
+    isActive,
+    className,
+    style,
+  } = props;
   const liRef = useRef<HTMLLIElement>(null);
   const mergedDisabled = disabled || data.disabled;
   useLayoutEffect(() => {
@@ -16,6 +26,9 @@ const MentionItem = (props: MentionItemProps) => {
       liRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [isActive]);
+  const needHighlight = useMemo(() => {
+    return !mergedDisabled && !!highlightWords;
+  }, [highlightWords, mergedDisabled]);
   return (
     <li
       className={cn(
@@ -32,7 +45,14 @@ const MentionItem = (props: MentionItemProps) => {
       onClick={() => onClickItem(data)}
     >
       <span className={"flex-shrink-0"}>{data.icon}</span>
-      <div className={"flex-1 truncate"}>{data.label}</div>
+      <div className={"flex-1 truncate"}>
+        <Highlighter
+          highlightClassName="text-primary bg-transparent"
+          searchWords={[needHighlight ? (highlightWords ?? "") : ""]}
+          autoEscape={true}
+          textToHighlight={data.label}
+        />
+      </div>
     </li>
   );
 };

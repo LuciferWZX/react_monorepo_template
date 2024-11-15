@@ -47,13 +47,16 @@ export class EditorManager {
   }
   public static getPreNodeEntry = (editor: Editor) => {
     if (editor && editor.selection) {
-      return Editor.previous(editor, { at: editor.selection });
+      return Editor.previous(editor, {
+        at: editor.selection,
+      });
     }
     return null;
   };
   public static insertMention(
     editor: Editor,
     props: Omit<MentionElement, "type" | "children">,
+    replaceLength?: number,
   ) {
     const mention: MentionElement = {
       type: "mention",
@@ -63,6 +66,22 @@ export class EditorManager {
       children: [{ text: props.label }],
     };
     HistoryEditor.withMerging(editor, () => {
+      const { selection } = editor;
+      if (selection && SlateRange.isRange(selection) && replaceLength) {
+        const { anchor, focus } = selection;
+        const focusOffset = focus.offset;
+        const startOffset = focusOffset - replaceLength;
+        const newRange = {
+          anchor: {
+            ...anchor,
+            offset: startOffset < 0 ? 0 : startOffset,
+          },
+          focus: {
+            ...focus,
+          },
+        };
+        Transforms.select(editor, newRange);
+      }
       //fixed:这边需要加个空的text不然插入的话光标丢失
       Transforms.insertNodes(editor, [mention, { text: "" }]);
       Transforms.move(editor);

@@ -4,11 +4,12 @@ import MentionItem from "./MentionItem.tsx";
 interface MentionGroupItemProps extends HTMLAttributes<HTMLUListElement> {
   data: MentionGroupItemType;
   activeValue?: string;
+  highlightWords?: string;
   onClickItem: (data: MentionItemType) => void;
 }
 const MentionGroupItem = forwardRef<HTMLUListElement, MentionGroupItemProps>(
   (props, ref) => {
-    const { data, activeValue, onClickItem } = props;
+    const { data, activeValue, highlightWords, onClickItem } = props;
     return (
       <ul
         className={"slate_rich_editor_menu_group_item overflow-hidden"}
@@ -22,6 +23,7 @@ const MentionGroupItem = forwardRef<HTMLUListElement, MentionGroupItemProps>(
             return (
               <MentionItem
                 onClickItem={onClickItem}
+                highlightWords={highlightWords}
                 isActive={activeValue === item.value}
                 disabled={data.disabled}
                 key={item.value}

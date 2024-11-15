@@ -8,6 +8,7 @@ import {
 import { Editor, Range as SlateRange, Transforms } from "slate";
 import {
   EditorHotKeyConfig,
+  KeepSearchingDataType,
   MentionConfig,
   MentionConfigDataType,
   MentionItemType,
@@ -34,7 +35,6 @@ import { ReactEditor } from "slate-react";
 import { useLatest } from "ahooks";
 import isHotkey, { isKeyHotkey } from "is-hotkey";
 import { EditorManager, MentionManager } from "../instants";
-import { debounce } from "es-toolkit";
 export const useSearchMentions = (
   editor: Editor,
   config: MentionConfig | undefined,
@@ -44,6 +44,7 @@ export const useSearchMentions = (
 
   const targetRef = useLatest(target);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
@@ -65,7 +66,7 @@ export const useSearchMentions = (
   const { getReferenceProps, getFloatingProps } = useInteractions([dismiss]);
   const { isMounted, styles } = useTransitionStyles(context, {
     duration: {
-      open: 200,
+      open: 0,
       close: 0,
     },
     // initial: {
@@ -78,16 +79,21 @@ export const useSearchMentions = (
   });
   const { mentions, setMentions, activeValue, setActiveValue } = useMention();
   const [mentionData, setMentionData] = useState<
-    MentionConfigDataType | undefined
+    MentionConfigDataType | KeepSearchingDataType | undefined
   >(undefined);
 
   const [search, setSearch] = useState("");
+  const [highlightWords, setHighlightWords] = useState("");
   useEffect(() => {
     if (search && mentionData) {
       const { mentions } = mentionData;
       match(mentions)
-        .with(P.instanceOf(Function), (getMentions) => {
-          getMentions(search).then((data) => setMentions(data));
+        .with(P.instanceOf(Function), () => {
+          // getMentions(search).then((data) => {
+          //   match(data).with(P.instanceOf(Array), (_data) => {
+          //     setMentions(_data);
+          //   });
+          // });
         })
         .otherwise((mentions) => {
           const filtered: MentionSelectItemType[] = [];
@@ -115,40 +121,57 @@ export const useSearchMentions = (
         });
     }
   }, [search, mentionData]);
+
   useEffect(() => {
-    handleMenuOpenState();
+    if (!config?.enable) {
+      return;
+    }
+    if (!target) {
+      setIsOpen(false);
+      return;
+    }
+    if (config?.loading) {
+      setIsOpen(true);
+      return;
+    }
+    if (mentions.length > 0) {
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    }
   }, [config?.loading, config?.enable, mentions, target]);
-  // useLayoutEffect(() => {
-  //   EditorManager.setCheckMentionConfig(config?.check);
-  // }, [config?.check]);
   const selectMention = (_mention?: MentionItemType | undefined) => {
     if (target && (_mention || activeValue) && mentionData) {
-      Transforms.select(editor, target);
+      // Transforms.select(editor, target);
       const targetMention =
         _mention ?? MentionManager.getMentionItem(activeValue);
       if (!targetMention) {
         return;
       }
       Transforms.select(editor, target);
-      EditorManager.insertMention(editor, {
-        trigger: mentionData.trigger,
-        label: targetMention.label,
-        value: targetMention.value,
-      });
+      match(mentionData)
+        .with({ trigger: P.not(undefined) }, (_mentionData) => {
+          EditorManager.insertMention(editor, {
+            trigger: _mentionData.trigger,
+            label: targetMention.label,
+            value: targetMention.value,
+          });
+        })
+        .otherwise(() => {
+          EditorManager.insertMention(
+            editor,
+            {
+              trigger: undefined,
+              label: targetMention.label,
+              value: targetMention.value,
+            },
+            highlightWords.length,
+          );
+        });
+
       resetSearchState();
     }
   };
-  const handleMenuOpenState = useCallback(() => {
-    if (config?.enable && config.loading) {
-      setIsOpen(true);
-      return;
-    }
-    if (target !== undefined && mentions.length !== 0) {
-      setIsOpen(true);
-    } else {
-      setIsOpen(false);
-    }
-  }, [mentions.length, target, config?.enable, config?.loading]);
   const floatElement = useMemo(() => {
     if (!config?.loading && mentions.length === 0) {
       return null;
@@ -156,6 +179,7 @@ export const useSearchMentions = (
     return (
       isMounted && (
         <MentionMenu
+          highlightWords={config?.highlight ? highlightWords : undefined}
           loading={config?.loading}
           loadingNode={config?.loadingNode}
           onClickItem={(data) => selectMention(data)}
@@ -172,7 +196,9 @@ export const useSearchMentions = (
       )
     );
   }, [
+    highlightWords,
     config?.loadingNode,
+    config?.highlight,
     config?.loading,
     config?.classes,
     isMounted,
@@ -277,6 +303,11 @@ export const useSearchMentions = (
   const onKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
       fixedLeftRight(event);
+      // if (isHotkey("Space", event)) {
+      //   event.preventDefault();
+      //   console.log(111);
+      //   editor.insertText(" ");
+      // }
       if (isOpen && config?.enable) {
         if (isHotkey("ArrowDown", event)) {
           event.preventDefault();
@@ -320,15 +351,59 @@ export const useSearchMentions = (
         }
       }
     },
-    [activeValue, config?.enable, isOpen, target, mentions.length],
+    [
+      highlightWords,
+      activeValue,
+      config?.enable,
+      isOpen,
+      target,
+      mentions.length,
+    ],
   );
-
-  const handleMentions = debounce(() => {
+  const handleMentions = () => {
     if (config?.enable) {
       //keepSearching优先级更大
-      if (config.keepSearching) {
+      if (
+        config.keepSearching &&
+        config.keepSearchingData &&
+        !config.keepSearchingData.disabled
+      ) {
         //@todo 找到当前光标到上个节点的文字
         //@todo 设置target和search和activeValue和mentionData
+        const { selection } = editor;
+        if (selection && SlateRange.isCollapsed(selection)) {
+          //当前节点的路径
+          const path = Editor.path(editor, selection);
+          //点前光标所在节点
+          const point = Editor.point(editor, selection);
+          const range = {
+            anchor: { path, offset: 0 },
+            focus: { path, offset: point.offset },
+          };
+          const text = Editor.string(editor, range);
+          setHighlightWords("");
+          if (text) {
+            const { mentions: _mentions } = config.keepSearchingData;
+            match(_mentions)
+              .with(P.instanceOf(Function), async (_getMentions) => {
+                const result = await _getMentions(text);
+                setMentions(result.options);
+                setHighlightWords(result.keywords);
+              })
+              .otherwise((_mentions) => {
+                setMentions(_mentions);
+              });
+            setTarget(range);
+            setMentionData(config.keepSearchingData);
+            setSearch(text);
+            return;
+          }
+        }
+        setTarget(undefined);
+        setSearch("");
+        setMentionData(undefined);
+        setActiveValue(undefined);
+        setMentions([]);
         return;
       }
       const data = config.data;
@@ -384,7 +459,8 @@ export const useSearchMentions = (
       setActiveValue(undefined);
       setMentions([]);
     }
-  }, 200);
+  };
+
   return {
     target,
     setTarget,
@@ -395,6 +471,7 @@ export const useSearchMentions = (
     refs,
     floatElement,
     getReferenceProps,
+    resetSearchState,
     isOpen,
     setIsOpen,
     onKeyDown,

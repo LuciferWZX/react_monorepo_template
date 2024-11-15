@@ -13,6 +13,7 @@ interface MentionMenuProps extends HTMLAttributes<HTMLDivElement> {
   loadingNode?: ReactNode;
   onClickItem: (data: MentionItemType) => void;
   parentWidth: number | undefined;
+  highlightWords: string | undefined;
 }
 export const MentionMenu = forwardRef<HTMLDivElement, MentionMenuProps>(
   (props, ref) => {
@@ -23,6 +24,7 @@ export const MentionMenu = forwardRef<HTMLDivElement, MentionMenuProps>(
       loading,
       style,
       parentWidth,
+      highlightWords,
       onClickItem,
       ...restProps
     } = props;
@@ -63,6 +65,7 @@ export const MentionMenu = forwardRef<HTMLDivElement, MentionMenuProps>(
                         onClickItem={onClickItem}
                         data={opt}
                         activeValue={activeValue}
+                        highlightWords={highlightWords}
                         className={opt.className}
                         style={opt.style}
                       />
@@ -74,6 +77,7 @@ export const MentionMenu = forwardRef<HTMLDivElement, MentionMenuProps>(
                         isActive={activeValue === opt.value}
                         key={opt.value}
                         onClickItem={onClickItem}
+                        highlightWords={highlightWords}
                         data={opt}
                         className={opt.className}
                         style={opt.style}
