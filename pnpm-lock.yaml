@@ -140,79 +140,79 @@ importers:
   apps/origin-hub:
     dependencies:
       '@hookform/resolvers':
-        specifier: ^3.9.0
+        specifier: ^3.9.1
         version: 3.9.1(react-hook-form@7.53.2(react@18.3.1))
       '@radix-ui/react-accordion':
-        specifier: ^1.2.0
+        specifier: ^1.2.1
         version: 1.2.1(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-alert-dialog':
-        specifier: ^1.1.1
+        specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-aspect-ratio':
         specifier: ^1.1.0
         version: 1.1.0(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-avatar':
-        specifier: ^1.1.0
+        specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-checkbox':
-        specifier: ^1.1.1
+        specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-collapsible':
-        specifier: ^1.1.0
+        specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-context-menu':
-        specifier: ^2.2.1
+        specifier: ^2.2.2
         version: 2.2.2(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-dialog':
-        specifier: ^1.1.1
+        specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-dropdown-menu':
-        specifier: ^2.1.1
+        specifier: ^2.1.2
         version: 2.1.2(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-hover-card':
-        specifier: ^1.1.1
+        specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-label':
         specifier: ^2.1.0
         version: 2.1.0(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-menubar':
-        specifier: ^1.1.1
+        specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-navigation-menu':
-        specifier: ^1.2.0
+        specifier: ^1.2.1
         version: 1.2.1(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-popover':
-        specifier: ^1.1.1
+        specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-progress':
         specifier: ^1.1.0
         version: 1.1.0(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-radio-group':
-        specifier: ^1.2.0
+        specifier: ^1.2.1
         version: 1.2.1(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-scroll-area':
-        specifier: ^1.1.0
+        specifier: ^1.2.1
         version: 1.2.1(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-select':
-        specifier: ^2.1.1
+        specifier: ^2.1.2
         version: 2.1.2(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-separator':
         specifier: ^1.1.0
         version: 1.1.0(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-slider':
-        specifier: ^1.2.0
+        specifier: ^1.2.1
         version: 1.2.1(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-slot':
         specifier: ^1.1.0
         version: 1.1.0(@types/react@18.2.18)(react@18.3.1)
       '@radix-ui/react-switch':
-        specifier: ^1.1.0
+        specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-tabs':
-        specifier: ^1.1.0
+        specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-toast':
-        specifier: ^1.2.1
+        specifier: ^1.2.2
         version: 1.2.2(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-toggle':
         specifier: ^1.1.0
@@ -221,7 +221,7 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-tooltip':
-        specifier: ^1.1.2
+        specifier: ^1.1.4
         version: 1.1.4(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       class-variance-authority:
         specifier: ^0.7.0
@@ -236,10 +236,10 @@ importers:
         specifier: ^3.6.0
         version: 3.6.0
       embla-carousel-react:
-        specifier: ^8.2.1
+        specifier: ^8.5.1
         version: 8.5.1(react@18.3.1)
       input-otp:
-        specifier: ^1.2.4
+        specifier: ^1.4.1
         version: 1.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       lucide-react:
         specifier: ^0.438.0
@@ -250,6 +250,9 @@ importers:
       react:
         specifier: ^18.3.1
         version: 18.3.1
+      react-aria-components:
+        specifier: ^1.4.1
+        version: 1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-day-picker:
         specifier: 8.10.1
         version: 8.10.1(date-fns@3.6.0)(react@18.3.1)
@@ -257,16 +260,16 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
       react-hook-form:
-        specifier: ^7.53.0
+        specifier: ^7.53.2
         version: 7.53.2(react@18.3.1)
       react-resizable-panels:
-        specifier: ^2.1.2
+        specifier: ^2.1.7
         version: 2.1.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       recharts:
-        specifier: ^2.12.7
+        specifier: ^2.13.3
         version: 2.13.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       sonner:
-        specifier: ^1.5.0
+        specifier: ^1.7.0
         version: 1.7.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwind-merge:
         specifier: ^2.5.2
@@ -275,7 +278,7 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.15)
       vaul:
-        specifier: ^0.9.2
+        specifier: ^0.9.9
         version: 0.9.9(@types/react-dom@18.2.7)(@types/react@18.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       zod:
         specifier: ^3.23.8
