@@ -1,10 +1,18 @@
-import { InputDemo } from "@/components";
-function App() {
+import { ThemeProvider } from "@/components";
+import { RouterProvider } from "react-router-dom";
+import { useRouter } from "@/hooks";
+const RootAppWithRoute = () => {
+  const router = useRouter();
+  return <RouterProvider router={router} />;
+};
+const RootAppWithProvider = () => {
   return (
-    <div>
-      <InputDemo />
-    </div>
+    <ThemeProvider defaultTheme={"light"}>
+      <RootAppWithRoute />
+    </ThemeProvider>
   );
-}
-
+};
+const App = () => {
+  return <RootAppWithProvider />;
+};
 export default App;
