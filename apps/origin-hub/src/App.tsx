@@ -7,7 +7,7 @@ const RootAppWithRoute = () => {
 };
 const RootAppWithProvider = () => {
   return (
-    <ThemeProvider defaultTheme={"light"}>
+    <ThemeProvider defaultTheme={"dark"}>
       <RootAppWithRoute />
     </ThemeProvider>
   );

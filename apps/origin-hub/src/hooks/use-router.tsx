@@ -3,6 +3,8 @@ import RootLayout from "@/layouts";
 import BaseLayout from "@/layouts/base";
 import HomePage from "@/pages/home";
 import NotFoundPage from "@/pages/404.tsx";
+import AuthLayout from "@/layouts/auth";
+import LoginPage from "@/pages/auth/login";
 
 export function useRouter() {
   const router: RouteObject[] = [
@@ -18,11 +20,11 @@ export function useRouter() {
             { path: "home", element: <HomePage /> },
           ],
         },
-        // {
-        //   path: "/login",
-        //   element: <AuthLayout />,
-        //   children: [{ path: "", element: <LoginPage /> }],
-        // },
+        {
+          path: "/login",
+          element: <AuthLayout />,
+          children: [{ path: "", element: <LoginPage /> }],
+        },
         { path: "*", element: <NotFoundPage /> },
       ],
     },
