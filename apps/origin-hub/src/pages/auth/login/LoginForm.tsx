@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/form.tsx";
 import PasswordInput from "@/components/password-input";
 import { Button } from "@/components";
+import { useRequest } from "ahooks";
+import { ServiceManager } from "@/instances/ServiceManager.ts";
 
 const formSchema = z.object({
   username: z
@@ -40,9 +42,16 @@ export function LoginForm() {
       password: "",
     },
   });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  const { runAsync: login, loading: loginLoading } = useRequest(
+    ServiceManager.authService.login,
+    { manual: true },
+  );
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const response = await login({
+      username: values.username,
+      password: values.password,
+    });
+    console.log("response:", response);
   }
   return (
     <Card className="mx-auto max-w-sm min-w-96">
@@ -84,11 +93,7 @@ export function LoginForm() {
               )}
             />
             <div className={"flex flex-col gap-4 mt-2"}>
-              <Button
-                // loading={true}
-                type="submit"
-                className="w-full bg-blue-600 text-white hover:bg-blue-600/90"
-              >
+              <Button loading={loginLoading} type="submit" className="w-full ">
                 登录
               </Button>
               <Button variant="outline" className="w-full">

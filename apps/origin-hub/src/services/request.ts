@@ -1,6 +1,7 @@
 import { extend, ResponseError } from "umi-request";
 import { toast } from "sonner";
 import { AuthManager } from "@/instances/AuthManager.ts";
+import { match } from "ts-pattern";
 export interface ServerError {
   data: null;
   message: string;
@@ -18,19 +19,13 @@ const errorHandler = function (error: ResponseError<ServerError>) {
     //从服务器返回的错误
     const status = error.response.status;
     const statusText = error.response.statusText;
-    switch (status) {
-      case 401: {
-        break;
-      }
-      case 500: {
-        toast.error(`远程服务器出错：${statusText}`, {
-          position: "top-center",
-          richColors: true,
-          id: "net_error",
-        });
-        break;
-      }
-    }
+    match(status).with(500, () => {
+      toast.error(`远程服务器出错：${statusText}`, {
+        position: "top-center",
+        richColors: true,
+        id: "net_error",
+      });
+    });
   }
   if (error.type === "Timeout") {
     // notification.error({

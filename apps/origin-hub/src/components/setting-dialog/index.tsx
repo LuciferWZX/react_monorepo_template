@@ -47,6 +47,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "@/components";
 import AppearanceSettings from "@/components/setting-dialog/AppearanceSettings.tsx";
+import { getAppColor } from "@/lib/utils.ts";
 const LOCAL_SETTING = ["Appearance", "Language & region"];
 const SETTING = {
   nav: [
@@ -78,13 +79,14 @@ const settingFormSchema = z.object({
   // }),
 });
 type SettingFormValues = z.infer<typeof settingFormSchema>;
+
 export function SettingsDialog(props: SettingsDialogProps) {
   const [open, setOpen] = useState(false);
   const [activeNav, setActiveNav] = useState<string>("");
   const [user, isLogin] = useUserStore(
     useShallow((state) => [state.user, !!state.user]),
   );
-  console.log("setting:user", user);
+  console.log("user:", user);
   const { theme } = useTheme();
   const mergedOpen = useMemo(() => {
     return props.open ?? open;
@@ -105,6 +107,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
   const defaultFormValues: Partial<SettingFormValues> = useMemo(() => {
     return {
       theme: theme,
+      color: getAppColor(),
     };
   }, [theme]);
   const form = useForm<z.infer<typeof settingFormSchema>>({

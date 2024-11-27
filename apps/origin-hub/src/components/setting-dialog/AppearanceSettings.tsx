@@ -8,6 +8,10 @@ import {
 } from "@/components/ui/form.tsx";
 import ThemeRadioGroup from "@/components/setting-dialog/ThemeRadioGroup.tsx";
 import { BaseSettingProps, Theme, useTheme } from "@/components";
+import ColorRadioGroup from "@/components/setting-dialog/ColorRadioGroup.tsx";
+import store from "storejs";
+import { ConstantManager } from "@/instances/ConstantManager.ts";
+import events from "@/hooks/event_bus/events.ts";
 
 const AppearanceSettings = (props: BaseSettingProps) => {
   const { form } = props;
@@ -33,6 +37,25 @@ const AppearanceSettings = (props: BaseSettingProps) => {
               onChange={(_theme) => {
                 setTheme(_theme as Theme);
                 field.onChange(_theme);
+              }}
+            />
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="color"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>颜色</FormLabel>
+            <FormDescription>为您的网站设置主题色</FormDescription>
+            <ColorRadioGroup
+              {...field}
+              onChange={(color) => {
+                store.set(ConstantManager.APP_COLOR, color);
+                events.emit(ConstantManager.SWITCH_APP_COLOR, color);
+                field.onChange(color);
               }}
             />
             <FormMessage />

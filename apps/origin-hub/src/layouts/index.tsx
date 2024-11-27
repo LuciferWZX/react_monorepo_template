@@ -2,12 +2,16 @@ import { Outlet } from "react-router-dom";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
 import { SettingsDialog } from "@/components";
+import { Toaster } from "@/components/ui/sonner.tsx";
+import useAppColor from "@/layouts/use-app-color.ts";
 
 const RootLayout = () => {
+  useAppColor();
   return (
     <div>
       <LocalSettingButton />
       <Outlet />
+      <Toaster />
     </div>
   );
 };
