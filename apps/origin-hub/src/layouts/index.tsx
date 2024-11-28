@@ -1,17 +1,27 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
 import { SettingsDialog } from "@/components";
 import { Toaster } from "@/components/ui/sonner.tsx";
 import useAppColor from "@/layouts/use-app-color.ts";
+import { useEffect } from "react";
+import { RouterManager } from "@/instances/RouterManager.ts";
 
 const RootLayout = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    RouterManager.setNavigate(navigate);
+  }, []);
   useAppColor();
   return (
     <div>
       <LocalSettingButton />
       <Outlet />
-      <Toaster />
+      <Toaster
+        position="top-center"
+        className="flex justify-center"
+        toastOptions={{ className: "w-fit" }}
+      />
     </div>
   );
 };

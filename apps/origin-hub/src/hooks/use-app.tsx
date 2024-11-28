@@ -4,12 +4,14 @@ import { match } from "ts-pattern";
 import { AuthStatusCode } from "@/types";
 import { useUserStore } from "@/stores";
 import { useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 export const useApp = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
+  const user = useUserStore(useShallow((state) => state.user));
   useLayoutEffect(() => {
     initialAuth()
-      .then(() => setLoading(false))
+      .then()
       .catch((reason) => {
         console.error("初始化数据失败:", reason);
         navigate("/login", { replace: true });
@@ -33,7 +35,8 @@ export const useApp = () => {
         //已登录，并且用户信息没有过期
         const user = _response.user;
         useUserStore.setState({ user });
+        setLoading(false);
       });
   };
-  return { loading };
+  return { loading, user };
 };

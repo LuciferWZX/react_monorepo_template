@@ -83,10 +83,7 @@ type SettingFormValues = z.infer<typeof settingFormSchema>;
 export function SettingsDialog(props: SettingsDialogProps) {
   const [open, setOpen] = useState(false);
   const [activeNav, setActiveNav] = useState<string>("");
-  const [user, isLogin] = useUserStore(
-    useShallow((state) => [state.user, !!state.user]),
-  );
-  console.log("user:", user);
+  const [isLogin] = useUserStore(useShallow((state) => [!!state.user]));
   const { theme } = useTheme();
   const mergedOpen = useMemo(() => {
     return props.open ?? open;

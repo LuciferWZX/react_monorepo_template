@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Outlet } from "react-router-dom";
 import { useApp } from "@/hooks";
+import { UserProvider } from "@/components";
 
 const AuthedBaseLayout = () => {
   return (
@@ -48,11 +49,18 @@ const AuthedBaseLayout = () => {
   );
 };
 const BaseLayout = () => {
-  const { loading } = useApp();
+  const { loading, user } = useApp();
   if (loading) {
     return <InitialAppLoading />;
   }
-  return <AuthedBaseLayout />;
+  if (!user) {
+    return "user is null";
+  }
+  return (
+    <UserProvider user={user}>
+      <AuthedBaseLayout />
+    </UserProvider>
+  );
   // return <InitialAppLoading />;
 };
 const InitialAppLoading = () => {

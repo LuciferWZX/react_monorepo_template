@@ -2,6 +2,8 @@ import { extend, ResponseError } from "umi-request";
 import { toast } from "sonner";
 import { AuthManager } from "@/instances/AuthManager.ts";
 import { match } from "ts-pattern";
+import { Message } from "@/components";
+import { RouterManager } from "@/instances/RouterManager.ts";
 export interface ServerError {
   data: null;
   message: string;
@@ -9,15 +11,27 @@ export interface ServerError {
 }
 
 const errorHandler = function (error: ResponseError<ServerError>) {
+  //从服务器返回的错误
+  const status = error.response.status;
   if (error.response) {
     console.log("error.data:", error.data);
     console.log("error.response", error.response);
     if (error.data) {
       //说明是服务器返回的
+      match(status).with(401, () => {
+        //重新定位到登录页面
+        RouterManager.navigate("/login");
+      });
+      toast.custom((t) => (
+        <Message
+          type={"error"}
+          handleClose={() => toast.dismiss(t)}
+          text={error.data.message}
+        />
+      ));
       return error.data;
     }
-    //从服务器返回的错误
-    const status = error.response.status;
+
     const statusText = error.response.statusText;
     match(status).with(500, () => {
       toast.error(`远程服务器出错：${statusText}`, {

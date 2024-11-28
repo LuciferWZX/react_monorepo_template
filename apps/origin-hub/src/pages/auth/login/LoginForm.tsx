@@ -18,9 +18,13 @@ import {
   FormMessage,
 } from "@/components/ui/form.tsx";
 import PasswordInput from "@/components/password-input";
-import { Button } from "@/components";
+import { Button, Message } from "@/components";
 import { useRequest } from "ahooks";
 import { ServiceManager } from "@/instances/ServiceManager.ts";
+import { ResponseCode } from "@/types";
+import { useUserStore } from "@/stores";
+import { toast } from "sonner";
+import { RouterManager } from "@/instances/RouterManager.ts";
 
 const formSchema = z.object({
   username: z
@@ -51,7 +55,23 @@ export function LoginForm() {
       username: values.username,
       password: values.password,
     });
-    console.log("response:", response);
+    if (response.code === ResponseCode.success) {
+      useUserStore.getState().login(response.data);
+      RouterManager.navigate("/home");
+      toast.custom((t) => (
+        <Message
+          type={"success"}
+          handleClose={() => toast.dismiss(t)}
+          text={
+            <span>
+              <span className={"text-primary"}>{response.data.nickname}</span>{" "}
+              登录成功
+            </span>
+          }
+        />
+      ));
+    }
+    console.log("[登录]:", response);
   }
   return (
     <Card className="mx-auto max-w-sm min-w-96">

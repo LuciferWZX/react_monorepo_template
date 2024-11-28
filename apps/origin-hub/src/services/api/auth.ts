@@ -1,4 +1,4 @@
-import request from "@/services/request.ts";
+import request from "@/services/request";
 import { AppUser, ResponseDataType } from "@/types";
 
 const PREFIX = "/api/auth";
