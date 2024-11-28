@@ -19,6 +19,7 @@ export const useApp = () => {
   }, []);
   const initialAuth = async () => {
     const response = await AuthManager.verifyAuth();
+    console.info("[获取用户信息]:", response);
     match(response)
       .with({ user: null }, (_response) => {
         //登录失败

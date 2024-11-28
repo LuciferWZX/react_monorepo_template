@@ -15,9 +15,12 @@ import {
 } from "@/components/ui/sidebar";
 import { Outlet } from "react-router-dom";
 import { useApp } from "@/hooks";
-import { UserProvider } from "@/components";
+import { UserProvider, useUser } from "@/components";
+import { useWuKong } from "@/hooks/use-wuKong.ts";
 
 const AuthedBaseLayout = () => {
+  const { user } = useUser();
+  useWuKong(user);
   return (
     <SidebarProvider>
       <AppSidebar />

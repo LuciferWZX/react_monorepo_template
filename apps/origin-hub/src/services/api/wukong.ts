@@ -2,25 +2,28 @@
 // import { ResponseDataType } from "@/types";
 // import { ChannelTypeGroup, ChannelTypePerson, Message } from "wukongimjssdk";
 // import { WKConversationType } from "@/types/chat.ts";
-// const PREFIX = "/api/wuKong";
+import { ResponseDataType } from "@/types";
+import request from "../request";
+
+const PREFIX = "/api/wuKong";
 // const REQUEST_URL = "http://127.0.0.1:5001";
-// /**
-//  * 获取wukongim的链接ip的信息
-//  */
-// export const getIp = async (params: {
-//   uid: string;
-// }): Promise<
-//   ResponseDataType<{
-//     tcp_addr: string;
-//     ws_addr: string;
-//     wss_addr: string;
-//   }>
-// > => {
-//   return request(`${PREFIX}/ip`, {
-//     method: "get",
-//     params: { uid: params.uid },
-//   });
-// };
+/**
+ * 获取wukongim的链接ip的信息
+ */
+export const getIPAddresses = async (params: {
+  uid: string;
+}): Promise<
+  ResponseDataType<{
+    tcp_addr: string;
+    ws_addr: string;
+    wss_addr: string;
+  }>
+> => {
+  return request(`${PREFIX}/ip`, {
+    method: "get",
+    params: { uid: params.uid },
+  });
+};
 // export const syncConversation = async (data: {
 //   uid: string; // 当前登录用户uid
 //   version: number; //  当前客户端的会话最大版本号(从保存的结果里取最大的version，如果本地没有数据则传0)，

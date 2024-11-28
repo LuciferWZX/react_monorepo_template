@@ -70,6 +70,7 @@
     "ts-pattern": "^5.3.1",
     "umi-request": "^1.4.0",
     "vaul": "^0.9.9",
+    "wukongimjssdk": "^1.2.10",
     "zod": "^3.23.8",
     "zustand": "^4.5.5"
   }
