@@ -19,7 +19,6 @@ export class AuthManager {
 
   /**
    * @description 验证用户是否有效
-   * @return {code,user,message}
    */
   public static async verifyAuth() {
     const token: string | null = store.get(ConstantManager.TOKEN);

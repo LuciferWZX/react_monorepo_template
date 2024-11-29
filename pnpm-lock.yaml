@@ -226,6 +226,12 @@ importers:
       ahooks:
         specifier: ^3.8.1
         version: 3.8.1(react@18.3.1)
+      bignumber.js:
+        specifier: ^9.1.2
+        version: 9.1.2
+      buffer:
+        specifier: ^6.0.3
+        version: 6.0.3
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -238,9 +244,15 @@ importers:
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13
       embla-carousel-react:
         specifier: ^8.5.1
         version: 8.5.1(react@18.3.1)
+      framer-motion:
+        specifier: ^11.11.10
+        version: 11.11.17(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       input-otp:
         specifier: ^1.4.1
         version: 1.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

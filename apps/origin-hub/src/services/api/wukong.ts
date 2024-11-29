@@ -2,13 +2,13 @@
 // import { ResponseDataType } from "@/types";
 // import { ChannelTypeGroup, ChannelTypePerson, Message } from "wukongimjssdk";
 // import { WKConversationType } from "@/types/chat.ts";
-import { ResponseDataType } from "@/types";
+import { ResponseDataType, WKConversationType } from "@/types";
 import request from "../request";
 
 const PREFIX = "/api/wuKong";
-// const REQUEST_URL = "http://127.0.0.1:5001";
+const REQUEST_URL = "http://127.0.0.1:5001";
 /**
- * 获取wukongim的链接ip的信息
+ * @description 获取wukongim的链接ip的信息
  */
 export const getIPAddresses = async (params: {
   uid: string;
@@ -24,17 +24,21 @@ export const getIPAddresses = async (params: {
     params: { uid: params.uid },
   });
 };
-// export const syncConversation = async (data: {
-//   uid: string; // 当前登录用户uid
-//   version: number; //  当前客户端的会话最大版本号(从保存的结果里取最大的version，如果本地没有数据则传0)，
-//   last_msg_seqs?: string; //   客户端所有频道会话的最后一条消息序列号拼接出来的同步串 格式： channelID:channelType:last_msg_seq|channelID:channelType:last_msg_seq  （此字段非必填，如果不填就获取全量数据，填写了获取增量数据，看你自己的需求。）
-//   msg_count: number; // 每个会话获取最大的消息数量，一般为app点进去第一屏的数据
-// }): Promise<WKConversationType[]> => {
-//   return request(`${REQUEST_URL}/conversation/sync`, {
-//     method: "post",
-//     data: data,
-//   });
-// };
+/**
+ * @description 同步会话列表
+ * @param data
+ */
+export const syncConversation = async (data: {
+  uid: string; // 当前登录用户uid
+  version: number; //  当前客户端的会话最大版本号(从保存的结果里取最大的version，如果本地没有数据则传0)，
+  last_msg_seqs?: string; //   客户端所有频道会话的最后一条消息序列号拼接出来的同步串 格式： channelID:channelType:last_msg_seq|channelID:channelType:last_msg_seq  （此字段非必填，如果不填就获取全量数据，填写了获取增量数据，看你自己的需求。）
+  msg_count: number; // 每个会话获取最大的消息数量，一般为app点进去第一屏的数据
+}): Promise<WKConversationType[]> => {
+  return request(`${REQUEST_URL}/conversation/sync`, {
+    method: "post",
+    data: data,
+  });
+};
 // export const syncMessages = async (data: {
 //   login_uid: string; // 当前登录用户uid
 //   channel_id: string; //  频道ID

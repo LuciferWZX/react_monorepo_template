@@ -8,11 +8,16 @@ import WKSDK, {
 } from "wukongimjssdk";
 import { match } from "ts-pattern";
 import { useWuKongStore } from "@/stores";
+import { ChatManager } from "@/instances/ChatManager.ts";
 
 export const useWuKong = (appUser: AppUser) => {
   useLayoutEffect(() => {
     initialWuKong(appUser).then();
   }, [appUser.access_token]);
+  /**
+   * @description 初始化悟空IM的连接与监听等事件
+   * @param user
+   */
   const initialWuKong = async (user: AppUser) => {
     const response = await ServiceManager.wuKongService.getIPAddressesIp({
       uid: user.id,
@@ -57,7 +62,7 @@ export const useWuKong = (appUser: AppUser) => {
     await match(status)
       .with(ConnectStatus.Connected, async () => {
         console.info("[连接成功]");
-        // await syncConversation();
+        await ChatManager.syncRecentConversations();
       })
       .with(ConnectStatus.Connecting, () => {
         console.info("[连接中]");

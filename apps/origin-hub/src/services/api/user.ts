@@ -1,8 +1,6 @@
-// import request from "@/services/request";
-// import { IUser, ResponseDataType } from "@/types";
-// import { FriendRequestRecord, RequestStatus } from "@/types/friend.ts";
-//
-// const PREFIX = "/api/user";
+import { AppUser, ResponseDataType } from "@/types";
+import request from "@/services/request.tsx";
+const PREFIX = "/api/user";
 // /**
 //  * 搜索用户
 //  * @param data
@@ -25,18 +23,23 @@
 //     method: "get",
 //   });
 // };
-// export const getUserSimpleInfo = async (
-//   uid: string,
-// ): Promise<
-//   ResponseDataType<Omit<
-//     IUser,
-//     "deletedAt" | "createAt" | "access_token"
-//   > | null>
-// > => {
-//   return request(`${PREFIX}/${uid}`, {
-//     method: "get",
-//   });
-// };
+
+/**
+ * @description 获取用户的详情
+ * @param uid
+ */
+export const getUserProfile = async (
+  uid: string,
+): Promise<
+  ResponseDataType<Omit<
+    AppUser,
+    "deletedAt" | "createAt" | "access_token"
+  > | null>
+> => {
+  return request(`${PREFIX}/${uid}`, {
+    method: "get",
+  });
+};
 // /**
 //  * 获取好友列表
 //  */
