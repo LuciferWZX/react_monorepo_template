@@ -19,6 +19,7 @@ const ConversationItem = (props: ConversationItemProps) => {
   const info = useMemo(() => {
     return conversation.channelInfo;
   }, [conversation.channelInfo]);
+
   return (
     <label
       className={cn(

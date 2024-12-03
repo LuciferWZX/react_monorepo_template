@@ -28,4 +28,13 @@ export class ChatManager {
       });
     return sender ? `${sender.name}：${content}` : content;
   }
+  public static getMessageContent = (message: Message) => {
+    return match(message.content)
+      .with(P.instanceOf(MessageText), (messageText) => {
+        return messageText.text;
+      })
+      .otherwise(() => {
+        return "";
+      });
+  };
 }

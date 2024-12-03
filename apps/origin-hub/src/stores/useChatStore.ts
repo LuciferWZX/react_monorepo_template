@@ -20,11 +20,11 @@ export const useChatStore = create(
     };
   }),
 );
-useChatStore.subscribe(
-  (state) => state.conversations,
-  (conversations) => {
-    if (!useChatStore.getState().conversation && conversations.length > 0) {
-      useChatStore.setState({ conversation: conversations[0] });
-    }
-  },
-);
+// useChatStore.subscribe(
+//   (state) => state.conversations,
+//   (conversations) => {
+//     if (!useChatStore.getState().conversation && conversations.length > 0) {
+//       useChatStore.setState({ conversation: conversations[0] });
+//     }
+//   },
+// );

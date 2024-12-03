@@ -3,6 +3,7 @@ import WKSDK, {
   ChannelInfo,
   ChannelTypePerson,
   Conversation,
+  SyncOptions,
 } from "wukongimjssdk";
 import { ServiceManager } from "@/instances/ServiceManager.ts";
 import { match } from "ts-pattern";
@@ -63,6 +64,29 @@ export const initDatasource = () => {
       .otherwise(() => {
         return info;
       });
+  };
+  /**
+   * @description 消息列表的数据源
+   * @param channel
+   * @param opts
+   */
+  WKSDK.shared().config.provider.syncMessagesCallback = async (
+    channel: Channel,
+    opts: SyncOptions,
+  ) => {
+    const uid = getUid();
+    const response = await ServiceManager.wuKongService.syncMessage({
+      login_uid: uid,
+      channel_id: channel.channelID,
+      channel_type: channel.channelType,
+      start_message_seq: opts.startMessageSeq,
+      end_message_seq: opts.endMessageSeq,
+      pull_mode: opts.pullMode,
+      limit: opts.limit,
+    });
+    return response.messages.map((res) => {
+      return Convert.toMessage(res);
+    });
   };
 };
 const getUid = () => {

@@ -7,12 +7,17 @@ const ConversationList = () => {
   const conversations = useChatStore(
     useShallow((state) => state.conversations),
   );
-  const conversation1 = useChatStore(useShallow((state) => state.conversation));
-  console.log(11111222, conversation1);
-  console.log(2222, conversations);
   return (
     <div className={"p-2.5 w-full"}>
-      <RadioGroup className={"w-full overflow-hidden gap-1"}>
+      <RadioGroup
+        onValueChange={(value) => {
+          const curConversation = conversations.find(
+            (conv) => conv.channel.channelID === value,
+          );
+          useChatStore.setState({ conversation: curConversation });
+        }}
+        className={"w-full overflow-hidden gap-1"}
+      >
         {conversations.map((conversation, index) => {
           return (
             <motion.div

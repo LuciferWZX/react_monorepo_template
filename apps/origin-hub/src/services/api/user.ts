@@ -1,4 +1,4 @@
-import { AppUser, ResponseDataType } from "@/types";
+import { BaseUser, ResponseDataType } from "@/types";
 import request from "@/services/request.tsx";
 const PREFIX = "/api/user";
 // /**
@@ -30,12 +30,7 @@ const PREFIX = "/api/user";
  */
 export const getUserProfile = async (
   uid: string,
-): Promise<
-  ResponseDataType<Omit<
-    AppUser,
-    "deletedAt" | "createAt" | "access_token"
-  > | null>
-> => {
+): Promise<ResponseDataType<BaseUser | null>> => {
   return request(`${PREFIX}/${uid}`, {
     method: "get",
   });
