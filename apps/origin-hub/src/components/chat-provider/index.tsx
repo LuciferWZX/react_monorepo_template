@@ -22,6 +22,7 @@ interface ChatProviderProps {
 export const ChatProvider = (props: ChatProviderProps) => {
   const [conversation, setConversation] = useState(props.conversation);
   const [users, setUsers] = useState<BaseUser[]>([]);
+
   useLayoutEffect(() => {
     setConversation(props.conversation);
     initUsers(props.conversation).then();

@@ -11,6 +11,9 @@ export interface ServerError {
 }
 
 const errorHandler = function (error: ResponseError<ServerError>) {
+  if (!error.response) {
+    throw error;
+  }
   //从服务器返回的错误
   const status = error.response.status;
   if (error.response) {

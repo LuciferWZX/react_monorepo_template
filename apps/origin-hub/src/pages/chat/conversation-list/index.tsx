@@ -3,19 +3,21 @@ import { useShallow } from "zustand/react/shallow";
 import ConversationItem from "@/pages/chat/conversation-list/ConversationItem.tsx";
 import { motion } from "framer-motion";
 import { RadioGroup } from "@/components/ui/radio-group.tsx";
+import { debounce } from "lodash-es";
 const ConversationList = () => {
   const conversations = useChatStore(
     useShallow((state) => state.conversations),
   );
+  const changeConversation = debounce((value: string) => {
+    const curConversation = conversations.find(
+      (conv) => conv.channel.channelID === value,
+    );
+    useChatStore.setState({ conversation: curConversation });
+  }, 200);
   return (
     <div className={"p-2.5 w-full"}>
       <RadioGroup
-        onValueChange={(value) => {
-          const curConversation = conversations.find(
-            (conv) => conv.channel.channelID === value,
-          );
-          useChatStore.setState({ conversation: curConversation });
-        }}
+        onValueChange={changeConversation}
         className={"w-full overflow-hidden gap-1"}
       >
         {conversations.map((conversation, index) => {

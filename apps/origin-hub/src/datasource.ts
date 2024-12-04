@@ -72,18 +72,23 @@ export const initDatasource = () => {
    */
   WKSDK.shared().config.provider.syncMessagesCallback = async (
     channel: Channel,
-    opts: SyncOptions,
+    opts: SyncOptions & {
+      signal?: AbortSignal;
+    },
   ) => {
     const uid = getUid();
-    const response = await ServiceManager.wuKongService.syncMessage({
-      login_uid: uid,
-      channel_id: channel.channelID,
-      channel_type: channel.channelType,
-      start_message_seq: opts.startMessageSeq,
-      end_message_seq: opts.endMessageSeq,
-      pull_mode: opts.pullMode,
-      limit: opts.limit,
-    });
+    const response = await ServiceManager.wuKongService.syncMessage(
+      {
+        login_uid: uid,
+        channel_id: channel.channelID,
+        channel_type: channel.channelType,
+        start_message_seq: opts.startMessageSeq,
+        end_message_seq: opts.endMessageSeq,
+        pull_mode: opts.pullMode,
+        limit: opts.limit,
+      },
+      opts?.signal,
+    );
     return response.messages.map((res) => {
       return Convert.toMessage(res);
     });

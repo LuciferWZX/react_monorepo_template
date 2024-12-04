@@ -9,6 +9,7 @@ import {
 import { ChatManager } from "@/instances/ChatManager.ts";
 import { cn } from "@/lib/utils.ts";
 import { getTimeStringAutoShort } from "@/lib/time.ts";
+import { motion } from "framer-motion";
 
 interface MessageBubbleProps {
   message: Message;
@@ -36,7 +37,10 @@ const MessageBubble = (props: MessageBubbleProps) => {
   }, [user?.avatar, user?.nickname]);
   const messageContent = useMemo(() => {
     return (
-      <div
+      <motion.div
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.2 }}
         className={cn("flex-1 flex group", {
           "flex-row-reverse": isAppUser,
         })}
@@ -67,18 +71,21 @@ const MessageBubble = (props: MessageBubbleProps) => {
             {content}
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   }, [user?.nickname]);
   return (
-    <div
-      className={cn("flex gap-2  px-2 ", {
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={cn("flex gap-2  px-2 pl-4", {
         "flex-row-reverse": isAppUser,
       })}
     >
       {avatar}
       {messageContent}
-    </div>
+    </motion.div>
   );
 };
 export default MessageBubble;
