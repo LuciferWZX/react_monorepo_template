@@ -10,11 +10,14 @@ import { ChatManager } from "@/instances/ChatManager.ts";
 import { cn } from "@/lib/utils.ts";
 import { getTimeStringAutoShort } from "@/lib/time.ts";
 import { motion } from "framer-motion";
+import PrevSlateEditor from "@zhixin/slate_rich_editor/src/core/editor/PrevSlateEditor.tsx";
+import { EditorManager } from "@zhixin/slate_rich_editor";
 
 interface MessageBubbleProps {
   message: Message;
   user: BaseUser | undefined;
   role: "app-user" | "base-user";
+  slateBubble?: boolean;
 }
 const MessageBubble = (props: MessageBubbleProps) => {
   const { message, user, role } = props;
@@ -64,11 +67,17 @@ const MessageBubble = (props: MessageBubbleProps) => {
             className={cn(
               "w-fit text-sm max-w-lg px-3 py-1 rounded-lg bg-muted",
               {
-                "bg-primary text-primary-foreground": isAppUser,
+                "bg-primary/30 text-primary-foreground": isAppUser,
               },
             )}
           >
-            {content}
+            {props.slateBubble === false ? (
+              content
+            ) : (
+              <PrevSlateEditor
+                initialValue={EditorManager.deserialize(content)}
+              />
+            )}
           </div>
         </div>
       </motion.div>

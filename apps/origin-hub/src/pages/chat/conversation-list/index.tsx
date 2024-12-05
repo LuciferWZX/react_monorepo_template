@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 import { RadioGroup } from "@/components/ui/radio-group.tsx";
 import { debounce } from "lodash-es";
 const ConversationList = () => {
-  const conversations = useChatStore(
-    useShallow((state) => state.conversations),
+  const [conversations] = useChatStore(
+    useShallow((state) => [state.conversations]),
   );
   const changeConversation = debounce((value: string) => {
     const curConversation = conversations.find(

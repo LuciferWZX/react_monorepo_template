@@ -24,7 +24,7 @@ const ChatContent = () => {
         users={users}
         getNextMessages={getNextMessages}
       />
-      <ChatInputArea />
+      <ChatInputArea users={users} />
     </div>
   );
 };

@@ -42,8 +42,9 @@ export function useWuKong() {
       WKSDK.shared().conversationManager.addConversationListener(
         conversationListener,
       );
+
       //监听CMD消息
-      WKSDK.shared().chatManager.addCMDListener(cmdListener); // 监听cmd消息
+      WKSDK.shared().chatManager.addCMDListener(cmdListener);
       WKSDK.shared().connectManager.connect();
       return () => {
         //取消监听连接状态
@@ -63,6 +64,7 @@ export function useWuKong() {
     useChatStore.setState({ conversations: latestConversations });
     console.info("同步完成");
   };
+
   // 监听cmd消息
   const cmdListener = (msg: Message) => {
     console.info("收到CMD：", msg);

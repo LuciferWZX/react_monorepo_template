@@ -1,10 +1,13 @@
 import WKSDK, {
   Conversation,
   Message,
+  MessageStatus,
   PullMode,
+  SendackPacket,
   SyncOptions,
 } from "wukongimjssdk";
 import { useLayoutEffect, useState } from "react";
+import { nanoid } from "nanoid";
 
 const useMessage = (
   conversation: Conversation,
@@ -35,6 +38,50 @@ const useMessage = (
     setHasMore(true);
     initMessage().then(() => {});
   }, [conversation.channel.channelID]);
+  useLayoutEffect(() => {
+    //监听消息信息列表
+    WKSDK.shared().chatManager.addMessageListener(messageListener);
+    WKSDK.shared().chatManager.addMessageStatusListener(messageStatusListener);
+    return () => {
+      //移除监听
+      WKSDK.shared().chatManager.removeMessageListener(messageListener);
+    };
+  }, [conversation.channel.channelID]);
+  /**
+   * @description 处理新消息
+   * @param message
+   */
+  const messageListener = (message: Message) => {
+    console.info("[新消息]", message);
+    if (message.channel.channelID === conversation.channel.channelID) {
+      setMessages((oldMessages) => {
+        message.messageID = nanoid(10);
+        return oldMessages.concat(message);
+      });
+      // if (msg.fromUID === WKSDK.shared().config.uid || ref.current?.bottom) {
+      //   //说明发送者是我自己，这时候应该滚到到最底部
+      //   requestAnimationFrame(() => {
+      //     setTimeout(() => {
+      //       ref.current?.scrollTo("bottom");
+      //     });
+      //   });
+      // }
+    }
+  };
+  const messageStatusListener = (packet: SendackPacket) => {
+    console.log("[发送状态]:", packet);
+    setMessages((oldMessages) => {
+      return oldMessages.map((message) => {
+        if (message.clientSeq === packet.clientSeq) {
+          message.status =
+            packet.reasonCode == 1 ? MessageStatus.Normal : MessageStatus.Fail;
+          message.messageID = packet.messageID.toString();
+          return message;
+        }
+        return message;
+      });
+    });
+  };
 
   /**
    * @description 初始化消息列表

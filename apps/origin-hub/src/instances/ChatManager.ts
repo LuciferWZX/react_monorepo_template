@@ -1,6 +1,7 @@
 import WKSDK, { Message, MessageText, Subscriber } from "wukongimjssdk";
 import { useChatStore } from "@/stores";
 import { match, P } from "ts-pattern";
+import { EditorManager } from "@zhixin/slate_rich_editor";
 
 export class ChatManager {
   public static async syncRecentConversations() {
@@ -18,7 +19,10 @@ export class ChatManager {
     const sender = subscribers?.find((sb) => sb.uid === message.fromUID);
     const content = match(message.content)
       .with(P.instanceOf(MessageText), (_text) => {
-        return _text.text;
+        if (_text.text) {
+          return EditorManager.getHtmlText(_text.text);
+        }
+        return "";
       })
       // .with(P.instanceOf(InviteContent), () => {
       //   return `[系统消息]`;

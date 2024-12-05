@@ -1,6 +1,7 @@
 import {
   Descendant,
   Editor,
+  Element as SlateElement,
   Node as SlateNode,
   Range as SlateRange,
   Text as SlateText,
@@ -22,6 +23,12 @@ export class EditorManager {
   // public static setCheckMentionConfig(config: CheckMentionConfig | undefined) {
   //   this.checkMentionConfig = config;
   // }
+  public static getText(nodes: Descendant[], pureText?: boolean) {
+    return this.serialize(nodes, { join: pureText ? "" : undefined });
+  }
+  public static getHtml(nodes: Descendant[]) {
+    return this.serialize(nodes, { type: "html" });
+  }
   public static getPrevCharacter(editor: Editor) {
     const { selection } = editor;
     if (selection && SlateRange.isCollapsed(selection)) {
@@ -34,6 +41,21 @@ export class EditorManager {
       }
     }
     return null;
+  }
+  public static getHtmlText(htmlStr: string) {
+    const nodes = this.deserialize(htmlStr);
+    return this.getText(nodes);
+  }
+  public static getNodesByType(editor: Editor, type: "mention" | "paragraph") {
+    const nodes = Editor.nodes(editor, {
+      at: [],
+      match: (n) => SlateElement.isElement(n) && n.type === type,
+    });
+    const mentions: MentionElement[] = [];
+    for (const [mention] of nodes) {
+      mentions.push(mention as MentionElement);
+    }
+    return mentions;
   }
   public static getPrevCharacterSelection(editor: Editor) {
     const { selection } = editor;
@@ -63,7 +85,7 @@ export class EditorManager {
       label: props.label,
       trigger: props.trigger,
       value: props.value,
-      children: [{ text: props.label }],
+      children: [{ text: `${props.trigger}${props.label}` }],
     };
     HistoryEditor.withMerging(editor, () => {
       const { selection } = editor;
@@ -93,17 +115,23 @@ export class EditorManager {
   /**
    * @description 序列化node节点 转为字符串文本或者是html字符串文本
    * @param nodes
-   * @param type
+   * @param config
    */
-  public static serialize(nodes: Descendant[], type?: "html") {
+  public static serialize(
+    nodes: Descendant[],
+    config?: {
+      type?: "html";
+      join?: string;
+    },
+  ) {
     return nodes
       .map((n) => {
-        if (type === "html") {
+        if (config?.type === "html") {
           return this._serializeToHtml(n);
         }
         return SlateNode.string(n);
       })
-      .join("\n");
+      .join(config?.join !== undefined ? config.join : "\n");
   }
   private static _serializeToHtml(node: Descendant): string {
     if (SlateText.isText(node)) {
@@ -132,7 +160,10 @@ export class EditorManager {
    * 将文本序列化成node节点
    * @param htmlStr
    */
-  public static deserialize(htmlStr: string) {
+  public static deserialize(htmlStr: string | undefined) {
+    if (!htmlStr || !(htmlStr.startsWith("<div") && htmlStr.endsWith("div>"))) {
+      htmlStr = `<div>${htmlStr}</div>`;
+    }
     const document = new DOMParser().parseFromString(htmlStr, "text/html");
     const nodes = this._deserialize(document.body);
     if (Array.isArray(nodes)) {
@@ -147,9 +178,10 @@ export class EditorManager {
    * @param config
    */
   public static clear(editor: Editor, config?: { withHistory?: boolean }) {
-    editor.removeNodes();
-    editor.children = this.initialValue;
-    editor.onChange();
+    editor.children.map(() => {
+      Transforms.delete(editor, { at: [0] });
+    });
+    Transforms.insertNodes(editor, this.initialValue);
     if (config?.withHistory !== false) {
       editor.history.redos = [];
       editor.history.undos = [];

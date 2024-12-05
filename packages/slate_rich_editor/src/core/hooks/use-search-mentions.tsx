@@ -48,6 +48,7 @@ export const useSearchMentions = (
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
+    strategy: "fixed",
     whileElementsMounted: (reference, floating) => {
       return autoUpdate(
         reference,
@@ -342,6 +343,7 @@ export const useSearchMentions = (
           if (hotKey.switchLine !== "Enter") {
             if (isHotkey("Enter", event.nativeEvent)) {
               event.preventDefault();
+              hotKey.onConfirm?.(editor.children);
             }
           }
           if (isHotkey(hotKey.switchLine, event.nativeEvent)) {
@@ -355,6 +357,7 @@ export const useSearchMentions = (
       highlightWords,
       activeValue,
       config?.enable,
+      hotKey,
       isOpen,
       target,
       mentions.length,

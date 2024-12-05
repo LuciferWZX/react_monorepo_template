@@ -7,7 +7,7 @@
     & li {
         list-style: none;
     }
-    @apply border border-border/15 rounded-lg shadow-md;
+    /*@apply border border-border/15 rounded-lg shadow-md;*/
 
 }
 .slate_rich_editor_menu_group_item{

@@ -1,6 +1,7 @@
 import { forwardRef, HTMLAttributes } from "react";
 import { MentionGroupItemType, MentionItemType } from "../../editor";
 import MentionItem from "./MentionItem.tsx";
+import cn from "classnames";
 interface MentionGroupItemProps extends HTMLAttributes<HTMLUListElement> {
   data: MentionGroupItemType;
   activeValue?: string;
@@ -12,12 +13,13 @@ const MentionGroupItem = forwardRef<HTMLUListElement, MentionGroupItemProps>(
     const { data, activeValue, highlightWords, onClickItem } = props;
     return (
       <ul
-        className={"slate_rich_editor_menu_group_item overflow-hidden"}
+        className={cn(
+          "slate_rich_editor_menu_group_item overflow-hidden",
+          data.className,
+        )}
         ref={ref}
       >
-        <label className={"text-black/40 text-sm leading-[18px] px-[8px]"}>
-          {data.label}
-        </label>
+        <label className={data.labelClassName}>{data.label}</label>
         <div className={"flex flex-col gap-[4px]"}>
           {data.children.map((item) => {
             return (

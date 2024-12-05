@@ -2,13 +2,17 @@ import { AppUser, ResponseCode } from "@/types";
 import { useLayoutEffect } from "react";
 import { ServiceManager } from "@/instances/ServiceManager.ts";
 import WKSDK, {
+  Channel,
+  CMDContent,
   ConnectStatus,
   Conversation,
   ConversationAction,
+  Message,
 } from "wukongimjssdk";
 import { match } from "ts-pattern";
-import { useWuKongStore } from "@/stores";
+import { useChatStore, useWuKongStore } from "@/stores";
 import { ChatManager } from "@/instances/ChatManager.ts";
+import { CMDType } from "@/instances/CMDType.ts";
 
 export const useWuKong = (appUser: AppUser) => {
   useLayoutEffect(() => {
@@ -28,7 +32,6 @@ export const useWuKong = (appUser: AppUser) => {
       WKSDK.shared().config.addr = ws_addr;
       WKSDK.shared().config.uid = user.id;
       WKSDK.shared().config.token = user.access_token;
-
       //监听连接状态
       WKSDK.shared().connectManager.addConnectStatusListener(
         connectStatusListener,
@@ -37,6 +40,8 @@ export const useWuKong = (appUser: AppUser) => {
       WKSDK.shared().conversationManager.addConversationListener(
         conversationListener,
       );
+      //监听CMD消息
+      WKSDK.shared().chatManager.addCMDListener(cmdListener); // 监听cmd消息
       //开始连接
       WKSDK.shared().connectManager.connect();
       return () => {
@@ -44,9 +49,42 @@ export const useWuKong = (appUser: AppUser) => {
         WKSDK.shared().connectManager.removeConnectStatusListener(
           connectStatusListener,
         );
+        //取消自定义消息的监听
+        WKSDK.shared().chatManager.removeCMDListener(cmdListener);
         //断开连接
         WKSDK.shared().connectManager.disconnect();
       };
+    }
+  };
+  /**
+   * @description 监听CMD消息
+   * @param msg
+   */
+  const cmdListener = (msg: Message) => {
+    console.info("[收到CMD]：", msg);
+    const cmdContent = msg.content as CMDContent;
+    match(cmdContent.cmd).with(CMDType.CLEAR_UNREAD, () => {
+      const contentParam = cmdContent.param as Channel;
+      const clearChannel = new Channel(
+        contentParam.channelID,
+        contentParam.channelType,
+      );
+      clearConversationUnread(clearChannel);
+    });
+  };
+  /**
+   * @description 清空未读数量
+   * @param channel
+   */
+  const clearConversationUnread = (channel: Channel) => {
+    const conversation =
+      WKSDK.shared().conversationManager.findConversation(channel);
+    if (conversation) {
+      conversation.unread = 0;
+      WKSDK.shared().conversationManager.notifyConversationListeners(
+        conversation,
+        ConversationAction.update,
+      );
     }
   };
   /**
@@ -94,19 +132,16 @@ export const useWuKong = (appUser: AppUser) => {
       })
       .with(ConversationAction.update, async () => {
         console.info("[更新最近会话]:", conversation, action);
-        // useChatStore.setState((oldChatStore) => {
-        //   return {
-        //     conversations: oldChatStore.conversations.map((oldCon) => {
-        //       if (oldCon.channel.channelID === conversation.channel.channelID) {
-        //         if (fid === conversation.channel.channelID) {
-        //           conversation.unread = 0;
-        //         }
-        //         return conversation;
-        //       }
-        //       return oldCon;
-        //     }),
-        //   };
-        // });
+        useChatStore.setState((oldChatStore) => {
+          return {
+            conversations: oldChatStore.conversations.map((oldCon) => {
+              if (oldCon.channel.channelID === conversation.channel.channelID) {
+                return conversation;
+              }
+              return oldCon;
+            }),
+          };
+        });
       })
       .with(ConversationAction.remove, () => {
         console.log("[删除最近会话]:", conversation, action);

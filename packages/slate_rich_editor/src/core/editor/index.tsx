@@ -16,16 +16,17 @@ import { EditorManager } from "../instants";
 import Element from "./Element.tsx";
 import MentionProvider from "../plugins/mention/provider.tsx";
 import Text from "../plugins/Text";
-// import { ReferenceType } from "@floating-ui/react";
-// import * as React from "react";
 
 export interface MentionItemType {
   value: string;
   label: string;
+  key: string;
   disabled?: boolean;
   icon?: ReactNode;
   className?: string;
+  activeClassName?: string;
   style?: CSSProperties;
+  render?: ReactNode;
 }
 export interface MentionGroupItemType {
   key: string;
@@ -33,6 +34,7 @@ export interface MentionGroupItemType {
   disabled?: boolean;
   children: MentionItemType[];
   className?: string;
+  labelClassName?: string;
   style?: CSSProperties;
 }
 export type MentionSelectItemType = MentionItemType | MentionGroupItemType;
@@ -63,6 +65,9 @@ export interface MentionConfig {
   loading?: boolean;
   classes?: {
     menu?: string;
+    menuGroup?: string;
+    menuItem?: string;
+    menuSelectedItem?: string;
   };
   styles?: {
     menu?: CSSProperties;
@@ -88,6 +93,7 @@ interface BaseEditorProps
 export interface EditorHotKeyConfig {
   switchLine?: "Enter" | "mod+Enter";
   confirm?: "Enter";
+  onConfirm?: (value: Descendant[]) => void;
 }
 export type SlateRichEditorRef = {
   // setReference: (node: ReferenceType | null) => void;
@@ -123,6 +129,10 @@ const BaseEditor = forwardRef<SlateRichEditorRef, BaseEditorProps>(
       ...editableProps
     } = props;
     const [editor] = useSlateEditor();
+
+    const mergedDisabled = useMemo(() => {
+      return props.disabled;
+    }, [props.disabled]);
     const {
       refs,
       floatElement,
@@ -155,9 +165,13 @@ const BaseEditor = forwardRef<SlateRichEditorRef, BaseEditorProps>(
     const mergedEditable = useMemo(() => {
       let editable = (
         <Editable
+          onDrop={(e) => {
+            e.preventDefault();
+          }}
           onError={(event) => {
             console.log("event:", event);
           }}
+          readOnly={mergedDisabled}
           className={"text-sm leading-[24px]"}
           onKeyDown={onKeyDown}
           renderElement={renderElement}
