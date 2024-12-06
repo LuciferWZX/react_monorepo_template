@@ -25,10 +25,11 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { ComponentProps, MouseEventHandler, useMemo } from "react";
-import { useUser } from "@/components";
+import { ComponentProps, MouseEventHandler, ReactNode, useMemo } from "react";
+import { SettingsDialog, useUser } from "@/components";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
+import { NavSecondary } from "@/layouts/base/base-side/nav-secondary.tsx";
 
 // This is sample data.
 const data = {
@@ -171,6 +172,7 @@ export type NavItem = {
   label: string;
   value: string;
   icon?: LucideIcon;
+  render?: (itemEle: ReactNode) => ReactNode;
   isActive?: boolean;
   count?: number;
   onClick?: MouseEventHandler<HTMLButtonElement>;
@@ -207,6 +209,22 @@ export function AppSidebar(props: AppSidebarProps) {
       },
     ];
   }, [location.pathname]);
+  const secondNav: NavItem[] = useMemo(() => {
+    return [
+      {
+        key: "setting",
+        value: "setting",
+        label: "设置",
+        icon: Settings2,
+        render: (itemEle) => {
+          return <SettingsDialog>{itemEle}</SettingsDialog>;
+        },
+        onClick: () => {
+          console.log(11111);
+        },
+      },
+    ];
+  }, []);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -217,6 +235,7 @@ export function AppSidebar(props: AppSidebarProps) {
           <NavMain items={sideMainNav} />
           <NavProjects projects={data.projects} />
         </ScrollArea>
+        <NavSecondary items={secondNav} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

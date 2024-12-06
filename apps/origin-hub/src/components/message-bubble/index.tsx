@@ -12,6 +12,8 @@ import { getTimeStringAutoShort } from "@/lib/time.ts";
 import { motion } from "framer-motion";
 import PrevSlateEditor from "@zhixin/slate_rich_editor/src/core/editor/PrevSlateEditor.tsx";
 import { EditorManager } from "@zhixin/slate_rich_editor";
+import ContextMenuDropdown from "@/components/context-menu";
+import { Copy } from "lucide-react";
 
 interface MessageBubbleProps {
   message: Message;
@@ -63,22 +65,39 @@ const MessageBubble = (props: MessageBubbleProps) => {
               {getTimeStringAutoShort(message.timestamp * 1000, true)}
             </span>
           </div>
-          <div
-            className={cn(
-              "w-fit text-sm max-w-lg px-3 py-1 rounded-lg bg-muted",
+          <ContextMenuDropdown
+            contentClassName={"w-30"}
+            items={[
               {
-                "bg-primary/30 text-primary-foreground": isAppUser,
+                key: "copy",
+                value: "copy",
+                label: "复制",
+                icon: Copy,
+                onClick: () => {
+                  navigator.clipboard.writeText(
+                    EditorManager.getHtmlText(content),
+                  );
+                },
               },
-            )}
+            ]}
           >
-            {props.slateBubble === false ? (
-              content
-            ) : (
-              <PrevSlateEditor
-                initialValue={EditorManager.deserialize(content)}
-              />
-            )}
-          </div>
+            <div
+              className={cn(
+                "w-fit text-sm max-w-lg px-3 py-1 rounded-lg bg-muted",
+                {
+                  "bg-primary/30 dark:text-primary-foreground": isAppUser,
+                },
+              )}
+            >
+              {props.slateBubble === false ? (
+                content
+              ) : (
+                <PrevSlateEditor
+                  initialValue={EditorManager.deserialize(content)}
+                />
+              )}
+            </div>
+          </ContextMenuDropdown>
         </div>
       </motion.div>
     );

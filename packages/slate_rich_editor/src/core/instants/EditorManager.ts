@@ -42,7 +42,10 @@ export class EditorManager {
     }
     return null;
   }
-  public static getHtmlText(htmlStr: string) {
+  public static getHtmlText(htmlStr: string | undefined) {
+    if (!htmlStr) {
+      return "";
+    }
     const nodes = this.deserialize(htmlStr);
     return this.getText(nodes);
   }
