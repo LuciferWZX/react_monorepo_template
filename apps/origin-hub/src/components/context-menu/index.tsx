@@ -21,7 +21,6 @@ interface ContextMenuDropdownProps {
   children?: ReactNode;
   items: ContextMenuItemType[];
   contentClassName?: string;
-  contentClassName;
 }
 interface ContextMenuGroupItem extends Omit<ContextMenuItem, "shortcut"> {
   contentClassName?: string;

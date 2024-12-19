@@ -1,12 +1,14 @@
-import { SchemaDataType } from "./types.ts";
+import { SchemaDataType } from "./index.ts";
 
 export interface StringSchemaType<T = never> {
+  uniqId: string;
   type: SchemaDataType.string;
-  value: string;
+  value: string | undefined;
+  required?: boolean | undefined;
   maxLength?: number | undefined;
   minLength?: number | undefined;
   pattern?: RegExp | undefined;
-  format?: ((value: string) => T) | undefined;
+  format?: ((value: string | undefined) => T) | undefined;
   // format:
   //   | "date-time" //日期和时间在一起，例如， 2018-11-13T20:20:39+00:00
   //   | "time" //draft7的时间，例如，20:20:39+00:00
