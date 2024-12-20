@@ -1,6 +1,6 @@
 import { StringSchemaType } from "../types/string.ts";
 import { isUndefined } from "../utils";
-import { getValidateKeys, validateRequired } from "./common.ts";
+import { getValidateKeys, validateRequired, validateValue } from "./common.ts";
 import { ErrorSchema } from "../types";
 import { match } from "ts-pattern";
 
@@ -9,7 +9,14 @@ export const stringValidator = (
   schema: StringSchemaType,
 ): ErrorSchema<StringSchemaType> | undefined => {
   let error: ErrorSchema<StringSchemaType> | undefined;
-  const keys = getValidateKeys(schema) as Array<keyof StringSchemaType>;
+  const validateKeys: Array<keyof StringSchemaType> = [
+    "value",
+    "required",
+    "pattern",
+    "minLength",
+    "maxLength",
+  ];
+  const keys = getValidateKeys(validateKeys, schema);
   for (let i = 0; i < keys.length; i++) {
     error = validate(keys[i], value, schema);
     if (error) {
@@ -25,6 +32,9 @@ const validate = (
   schema: StringSchemaType,
 ) => {
   return match(key)
+    .with("value", () => {
+      return validateValue(value, schema);
+    })
     .with("required", () => {
       return validateRequired(value, schema);
     })
@@ -49,7 +59,7 @@ function validatePattern(value: string | undefined, schema: StringSchemaType) {
     if (isUndefined(value)) {
       return error;
     }
-    const result = schema.pattern.test(value);
+    const result = new RegExp(schema.pattern).test(value);
     if (!result) {
       return error;
     }
@@ -71,7 +81,7 @@ function validateLength(
   }
   return match(type)
     .with("maxLength", () => {
-      if (schema.maxLength) {
+      if (!isUndefined(schema.maxLength)) {
         if (value.length > schema.maxLength) {
           error.reason = `长度超过了 ${schema.maxLength}`;
           return error;
@@ -80,7 +90,7 @@ function validateLength(
       return undefined;
     })
     .with("minLength", () => {
-      if (schema.minLength) {
+      if (!isUndefined(schema.minLength)) {
         if (value.length < schema.minLength) {
           error.reason = `长度小于 ${schema.minLength}`;
           return error;

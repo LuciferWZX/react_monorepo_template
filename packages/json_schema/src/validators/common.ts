@@ -1,9 +1,48 @@
-import { isArray, isString, isUndefined } from "../utils";
+import { isArray, isNumber, isString, isUndefined } from "../utils";
 import { ErrorSchema, JsonSchema, SchemaDataType } from "../types";
 import { match } from "ts-pattern";
-import { StringSchemaType } from "../types/string.ts";
-import { BaseNumberSchemaType } from "../types/number.ts";
 
+export function validateValue(value: any, schema: JsonSchema) {
+  if (isUndefined(value)) {
+    return undefined;
+  }
+  const error: ErrorSchema = {
+    id: schema.uniqId,
+    property: "value",
+    reason: `值类型错误`,
+  };
+  return match(schema)
+    .with({ type: SchemaDataType.string }, () => {
+      if (!isString(value)) {
+        error.reason = "值必须是字符串";
+        return error;
+      }
+    })
+    .with(
+      { type: SchemaDataType.integer },
+      { type: SchemaDataType.number },
+      (_schema) => {
+        if (!isNumber(value)) {
+          error.reason = "值必须是数字";
+          return error;
+        }
+        if (
+          _schema.type === SchemaDataType.integer &&
+          !Number.isInteger(value)
+        ) {
+          error.reason = "值必须是整数数字";
+          return error;
+        }
+      },
+    )
+    .otherwise(() => undefined);
+}
+
+/**
+ * 验证是否必填
+ * @param value
+ * @param schema
+ */
 export function validateRequired(
   value: any,
   schema: JsonSchema,
@@ -38,50 +77,21 @@ export function validateRequired(
 
 /**
  * @description 获取各个类型所需验证的key
+ * @param validateKeys
  * @param schema
  */
-export function getValidateKeys(schema: JsonSchema) {
-  return match(schema)
-    .with({ type: SchemaDataType.string }, (_schema) => {
-      const keys: Array<keyof StringSchemaType> = [];
-      if (!isUndefined(_schema.required)) {
-        keys.push("required");
-      }
-      if (!isUndefined(_schema.pattern)) {
-        keys.push("pattern");
-      }
-      if (!isUndefined(_schema.minLength)) {
-        keys.push("minLength");
-      }
-      if (!isUndefined(_schema.maxLength)) {
-        keys.push("maxLength");
-      }
-      return keys;
-    })
-    .with(
-      { type: SchemaDataType.integer },
-      { type: SchemaDataType.number },
-      (_schema) => {
-        const keys: Array<keyof BaseNumberSchemaType> = [];
-        if (!isUndefined(_schema.required)) {
-          keys.push("required");
-        }
-        if (!isUndefined(_schema.maximum)) {
-          keys.push("maximum");
-        }
-        if (!isUndefined(_schema.minimum)) {
-          keys.push("minimum");
-        }
-        if (!isUndefined(_schema.exclusiveMaximum)) {
-          keys.push("exclusiveMaximum");
-        }
-        if (!isUndefined(_schema.minimum)) {
-          keys.push("exclusiveMinimum");
-        }
-        return keys;
-      },
-    )
-    .otherwise(() => []);
+export function getValidateKeys<T = JsonSchema>(
+  validateKeys: Array<keyof T>,
+  schema: T,
+): Array<keyof T> {
+  const keys: Array<keyof T> = [];
+  for (let i = 0; i < validateKeys.length; i++) {
+    const key = validateKeys[i];
+    if (!isUndefined(schema[key])) {
+      keys.push(key);
+    }
+  }
+  return keys;
 }
 function isEmptyString(value: string) {
   return value === "";

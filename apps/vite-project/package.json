@@ -14,13 +14,16 @@
     "react-dom": "18.2.0"
   },
   "dependencies": {
-    "@zhixin/shadcn_lib": "workspace:*",
+    "@zhixin/json_schema": "workspace:*",
     "ahooks": "^3.8.1",
     "lucide-react": "^0.438.0",
     "react-router-dom": "^6.26.1",
     "storejs": "^2.1.0",
+    "tailwind-scrollbar": "^3.1.0",
+    "tailwindcss-animate": "^1.0.7",
     "ts-pattern": "^5.3.1",
     "umi-request": "^1.4.0",
+    "vanilla-jsoneditor": "^2.3.3",
     "zustand": "^4.5.5"
   },
   "devDependencies": {

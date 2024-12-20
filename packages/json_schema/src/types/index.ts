@@ -12,6 +12,10 @@ export enum SchemaDataType {
   null = "null",
 }
 
+// uniqId: string;
+// type: ;
+// value:;
+
 export type JsonSchema<T = never> =
   | StringSchemaType<T>
   | IntegerSchemaType<T>

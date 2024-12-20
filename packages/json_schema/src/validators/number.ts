@@ -6,14 +6,25 @@ import {
 } from "../types/number.ts";
 import { ErrorSchema } from "../types";
 import { isUndefined } from "../utils";
-import { getValidateKeys, validateRequired } from "./common.ts";
+import { getValidateKeys, validateRequired, validateValue } from "./common.ts";
+import Decimal from "decimal.js";
 
 export const integerValidator = (
   value: number | undefined,
   schema: IntegerSchemaType,
 ) => {
   let error: ErrorSchema<IntegerSchemaType> | undefined;
-  const keys = getValidateKeys(schema) as Array<keyof IntegerSchemaType>;
+  const validateKeys: Array<keyof IntegerSchemaType> = [
+    "value",
+    "required",
+    "maximum",
+    "exclusiveMaximum",
+    "minimum",
+    "exclusiveMinimum",
+    "multipleOf",
+  ];
+  const keys = getValidateKeys(validateKeys, schema);
+
   for (let i = 0; i < keys.length; i++) {
     error = validate(keys[i], value, schema);
     if (error) {
@@ -27,7 +38,16 @@ export const numberValidator = (
   schema: NumberSchemaType,
 ) => {
   let error: ErrorSchema<NumberSchemaType> | undefined;
-  const keys = getValidateKeys(schema) as Array<keyof NumberSchemaType>;
+  const validateKeys: Array<keyof NumberSchemaType> = [
+    "value",
+    "required",
+    "multipleOf",
+    "maximum",
+    "exclusiveMaximum",
+    "minimum",
+    "exclusiveMinimum",
+  ];
+  const keys = getValidateKeys(validateKeys, schema);
   for (let i = 0; i < keys.length; i++) {
     error = validate(keys[i], value, schema);
     if (error) {
@@ -42,6 +62,9 @@ const validate = (
   schema: IntegerSchemaType | NumberSchemaType,
 ) => {
   return match(key)
+    .with("value", () => {
+      return validateValue(value, schema);
+    })
     .with("required", () => {
       return validateRequired(value, schema);
     })
@@ -49,12 +72,18 @@ const validate = (
       return validateMultipleOf(value, schema);
     })
     .with("maximum", () => {
+      if (!isUndefined(schema.exclusiveMaximum)) {
+        return undefined;
+      }
       return validateNumberRange(value, "maximum", schema);
     })
     .with("exclusiveMaximum", () => {
       return validateNumberRange(value, "exclusiveMaximum", schema);
     })
     .with("minimum", () => {
+      if (!isUndefined(schema.exclusiveMinimum)) {
+        return undefined;
+      }
       return validateNumberRange(value, "minimum", schema);
     })
     .with("exclusiveMinimum", () => {
@@ -70,12 +99,12 @@ const validateMultipleOf = (
     let error: ErrorSchema<IntegerSchemaType | NumberSchemaType> = {
       id: schema.uniqId,
       property: "multipleOf",
-      reason: `${value} 必须是 ${schema.multipleOf} 的整数倍`,
+      reason: `值必须是 ${schema.multipleOf} 的整数倍`,
     };
     if (isUndefined(value)) {
       return error;
     }
-    const isInteger = Number.isInteger(schema.multipleOf / value);
+    const isInteger = new Decimal(value).div(schema.multipleOf).isInteger();
     if (!isInteger) {
       return error;
     }
@@ -99,7 +128,7 @@ const validateNumberRange = (
     .with("maximum", () => {
       if (!isUndefined(schema.maximum)) {
         if (value > schema.maximum) {
-          error.reason = `${value} 必须小于等于 ${schema.maximum}`;
+          error.reason = `值必须小于等于 ${schema.maximum}`;
           return error;
         }
       }
@@ -109,7 +138,7 @@ const validateNumberRange = (
     .with("minimum", () => {
       if (!isUndefined(schema.minimum)) {
         if (value < schema.minimum) {
-          error.reason = `${value} 必须大于等于 ${schema.maximum}`;
+          error.reason = `值必须大于等于 ${schema.minimum}`;
           return error;
         }
       }
@@ -118,7 +147,7 @@ const validateNumberRange = (
     .with("exclusiveMaximum", () => {
       if (!isUndefined(schema.exclusiveMaximum)) {
         if (value >= schema.exclusiveMaximum) {
-          error.reason = `${value} 必须小于 ${schema.exclusiveMaximum}`;
+          error.reason = `值必须小于 ${schema.exclusiveMaximum}`;
           return error;
         }
       }
@@ -127,7 +156,7 @@ const validateNumberRange = (
     .with("exclusiveMinimum", () => {
       if (!isUndefined(schema.exclusiveMinimum)) {
         if (value <= schema.exclusiveMinimum) {
-          error.reason = `${value} 必须大于 ${schema.exclusiveMaximum}`;
+          error.reason = `值必须大于 ${schema.exclusiveMinimum}`;
           return error;
         }
       }

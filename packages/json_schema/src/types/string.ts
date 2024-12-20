@@ -7,7 +7,7 @@ export interface StringSchemaType<T = never> {
   required?: boolean | undefined;
   maxLength?: number | undefined;
   minLength?: number | undefined;
-  pattern?: RegExp | undefined;
+  pattern?: string | undefined;
   format?: ((value: string | undefined) => T) | undefined;
   // format:
   //   | "date-time" //日期和时间在一起，例如， 2018-11-13T20:20:39+00:00
