@@ -1,7 +1,7 @@
 import { isArray, isNumber, isString, isUndefined } from "../utils";
 import { ErrorSchema, JsonSchema, SchemaDataType } from "../types";
 import { match } from "ts-pattern";
-
+import { intersection } from "lodash-es";
 export function validateValue(value: any, schema: JsonSchema) {
   if (isUndefined(value)) {
     return undefined;
@@ -77,16 +77,20 @@ export function validateRequired(
 
 /**
  * @description 获取各个类型所需验证的key
- * @param validateKeys
+ * @param properties
  * @param schema
  */
 export function getValidateKeys<T = JsonSchema>(
-  validateKeys: Array<keyof T>,
+  properties: Array<keyof T>,
   schema: T,
 ): Array<keyof T> {
   const keys: Array<keyof T> = [];
-  for (let i = 0; i < validateKeys.length; i++) {
-    const key = validateKeys[i];
+  const validateProperties = intersection(
+    Object.keys(schema as any),
+    properties as string[],
+  ) as unknown as Array<keyof T>;
+  for (let i = 0; i < validateProperties.length; i++) {
+    const key = validateProperties[i];
     if (!isUndefined(schema[key])) {
       keys.push(key);
     }

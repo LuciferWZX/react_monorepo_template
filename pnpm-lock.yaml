@@ -593,6 +593,9 @@ importers:
       decimal.js:
         specifier: ^10.4.3
         version: 10.4.3
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
       ts-pattern:
         specifier: ^5.3.1
         version: 5.5.0
@@ -600,6 +603,9 @@ importers:
       '@types/jest':
         specifier: ^29.5.14
         version: 29.5.14
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       '@types/mocha':
         specifier: ^10.0.10
         version: 10.0.10

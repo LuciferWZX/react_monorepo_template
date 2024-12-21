@@ -1,26 +1,21 @@
 import { useEffect, useState } from "react";
-import { ErrorSchema, SchemaValidators } from "@zhixin/json_schema";
+import { ErrorSchema, isArray, SchemaValidators } from "@zhixin/json_schema";
 import { match, P } from "ts-pattern";
 
 interface ValidateSchemaContentProps {
-  content: Record<string, any>;
+  content: Array<Record<string, any>> | Record<string, any>;
 }
 const ValidateSchemaContent = (props: ValidateSchemaContentProps) => {
   const { content } = props;
   const [isValidating, setIsValidating] = useState<boolean>(false);
-  const [error, setError] = useState<string | ErrorSchema | undefined>(
-    undefined,
-  );
+  const [errors, setErrors] = useState<Array<string | ErrorSchema>>([]);
 
   useEffect(() => {
     setIsValidating(true);
-    setError(undefined);
-    SchemaValidators.asyncValidate(content)
+    setErrors([]);
+    SchemaValidators.asyncValidateAll(isArray(content) ? content : [content])
       .then((result) => {
-        setError(result as ErrorSchema);
-      })
-      .catch((reason: string) => {
-        setError(reason);
+        setErrors(result);
       })
       .finally(() => {
         setIsValidating(false);
@@ -33,26 +28,33 @@ const ValidateSchemaContent = (props: ValidateSchemaContentProps) => {
   }
 
   return (
-    <div>
-      {match(error)
-        .with(P.string, (reason) => reason)
-        .with(undefined, () => "ok")
-        .otherwise((_error) => {
-          return (
-            <div className={"flex p-2"}>
-              <div className={"w-[200px] font-bold text-blue-600"}>
-                <div>id:</div>
-                <div>property:</div>
-                <div>reason:</div>
-              </div>
-              <div className={"flex-1"}>
-                <div>{_error.id}</div>
-                <div>{_error.property}</div>
-                <div>{_error.reason}</div>
-              </div>
-            </div>
-          );
-        })}
+    <div className={"flex p-2 flex-col gap-2"}>
+      {errors.map((err, index) => {
+        return (
+          <div key={index}>
+            {match(err)
+              .with(P.string, (reason) => (
+                <div className={"p-2 border"}>{reason}</div>
+              ))
+              .otherwise((_error) => {
+                return (
+                  <div className={"flex p-2 border"}>
+                    <div className={"w-[200px] font-bold text-blue-600"}>
+                      <div>id:</div>
+                      <div>property:</div>
+                      <div>reason:</div>
+                    </div>
+                    <div className={"flex-1"}>
+                      <div>{_error.id}</div>
+                      <div>{_error.property}</div>
+                      <div>{_error.reason}</div>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        );
+      })}
     </div>
   );
 };

@@ -16,6 +16,8 @@ export const stringValidator = (
     "minLength",
     "maxLength",
   ];
+  // const a = Object.fromEntries(Object.entries(schema));
+  // console.log(111, a);
   const keys = getValidateKeys(validateKeys, schema);
   for (let i = 0; i < keys.length; i++) {
     error = validate(keys[i], value, schema);
@@ -66,7 +68,7 @@ function validatePattern(value: string | undefined, schema: StringSchemaType) {
   }
 }
 function validateLength(
-  value: string | undefined,
+  value: string | undefined = "",
   type: "maxLength" | "minLength",
   schema: StringSchemaType,
 ) {
@@ -75,13 +77,17 @@ function validateLength(
     property: type,
     reason: "",
   };
-  if (isUndefined(value)) {
-    error.reason = `值为undefined`;
-    return error;
-  }
+  // if (isUndefined(value)) {
+  // error.reason = `值为undefined`;
+  // return error;
+  // }
   return match(type)
     .with("maxLength", () => {
       if (!isUndefined(schema.maxLength)) {
+        if (schema.maxLength < 0 || !Number.isInteger(schema.maxLength)) {
+          error.reason = `maxLength属性只能是正整数`;
+          return error;
+        }
         if (value.length > schema.maxLength) {
           error.reason = `长度超过了 ${schema.maxLength}`;
           return error;
@@ -91,6 +97,10 @@ function validateLength(
     })
     .with("minLength", () => {
       if (!isUndefined(schema.minLength)) {
+        if (schema.minLength < 0 || !Number.isInteger(schema.minLength)) {
+          error.reason = `minLength属性只能是正整数`;
+          return error;
+        }
         if (value.length < schema.minLength) {
           error.reason = `长度小于 ${schema.minLength}`;
           return error;

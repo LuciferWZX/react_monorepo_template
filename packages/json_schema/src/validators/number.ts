@@ -78,7 +78,7 @@ const validate = (
       return validateNumberRange(value, "maximum", schema);
     })
     .with("exclusiveMaximum", () => {
-      return validateNumberRange(value, "exclusiveMaximum", schema);
+      return validateNumberRange(value, "maximum", schema);
     })
     .with("minimum", () => {
       if (!isUndefined(schema.exclusiveMinimum)) {
@@ -87,7 +87,7 @@ const validate = (
       return validateNumberRange(value, "minimum", schema);
     })
     .with("exclusiveMinimum", () => {
-      return validateNumberRange(value, "exclusiveMinimum", schema);
+      return validateNumberRange(value, "minimum", schema);
     })
     .otherwise(() => undefined);
 };
@@ -112,7 +112,7 @@ const validateMultipleOf = (
 };
 const validateNumberRange = (
   value: number | undefined,
-  type: "maximum" | "minimum" | "exclusiveMaximum" | "exclusiveMinimum",
+  type: "maximum" | "minimum",
   schema: BaseNumberSchemaType | NumberSchemaType,
 ): ErrorSchema<BaseNumberSchemaType | NumberSchemaType> | undefined => {
   let error: ErrorSchema<BaseNumberSchemaType | NumberSchemaType> = {
@@ -124,43 +124,53 @@ const validateNumberRange = (
     error.reason = `值为undefined`;
     return error;
   }
-  return match(type)
-    .with("maximum", () => {
-      if (!isUndefined(schema.maximum)) {
-        if (value > schema.maximum) {
-          error.reason = `值必须小于等于 ${schema.maximum}`;
-          return error;
+  return (
+    match(type)
+      .with("maximum", () => {
+        if (!isUndefined(schema.maximum)) {
+          if (schema.exclusiveMaximum && value >= schema.maximum) {
+            error.reason = `值必须小于 ${schema.maximum}`;
+            return error;
+          }
+          if (value > schema.maximum) {
+            error.reason = `值必须小于等于 ${schema.maximum}`;
+            return error;
+          }
         }
-      }
 
-      return undefined;
-    })
-    .with("minimum", () => {
-      if (!isUndefined(schema.minimum)) {
-        if (value < schema.minimum) {
-          error.reason = `值必须大于等于 ${schema.minimum}`;
-          return error;
+        return undefined;
+      })
+      .with("minimum", () => {
+        if (!isUndefined(schema.minimum)) {
+          if (schema.exclusiveMinimum && value <= schema.minimum) {
+            error.reason = `值必须大于 ${schema.minimum}`;
+            return error;
+          }
+          if (value < schema.minimum) {
+            error.reason = `值必须大于等于 ${schema.minimum}`;
+            return error;
+          }
         }
-      }
-      return undefined;
-    })
-    .with("exclusiveMaximum", () => {
-      if (!isUndefined(schema.exclusiveMaximum)) {
-        if (value >= schema.exclusiveMaximum) {
-          error.reason = `值必须小于 ${schema.exclusiveMaximum}`;
-          return error;
-        }
-      }
-      return undefined;
-    })
-    .with("exclusiveMinimum", () => {
-      if (!isUndefined(schema.exclusiveMinimum)) {
-        if (value <= schema.exclusiveMinimum) {
-          error.reason = `值必须大于 ${schema.exclusiveMinimum}`;
-          return error;
-        }
-      }
-      return undefined;
-    })
-    .otherwise(() => undefined);
+        return undefined;
+      })
+      // .with("exclusiveMaximum", () => {
+      //   if (!isUndefined(schema.exclusiveMaximum)) {
+      //     if (isBoolean(schema.exclusiveMaximum)) {
+      //       error.reason = `值必须小于 ${schema.exclusiveMaximum}`;
+      //       return error;
+      //     }
+      //   }
+      //   return undefined;
+      // })
+      // .with("exclusiveMinimum", () => {
+      //   if (!isUndefined(schema.exclusiveMinimum)) {
+      //     if (value <= schema.exclusiveMinimum) {
+      //       error.reason = `值必须大于 ${schema.exclusiveMinimum}`;
+      //       return error;
+      //     }
+      //   }
+      //   return undefined;
+      // })
+      .otherwise(() => undefined)
+  );
 };

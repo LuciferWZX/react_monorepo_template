@@ -7,8 +7,8 @@ export interface BaseNumberSchemaType<T = never> {
   multipleOf?: number | undefined;
   minimum?: number | undefined;
   maximum?: number | undefined;
-  exclusiveMinimum?: number | undefined;
-  exclusiveMaximum?: number | undefined;
+  exclusiveMinimum?: boolean | undefined;
+  exclusiveMaximum?: boolean | undefined;
   format?: ((value: number) => T) | undefined;
 }
 export interface IntegerSchemaType<T = never> extends BaseNumberSchemaType<T> {

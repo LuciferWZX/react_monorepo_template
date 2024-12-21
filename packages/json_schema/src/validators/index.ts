@@ -1,4 +1,4 @@
-import { SchemaDataType } from "../types";
+import { ErrorSchema, SchemaDataType } from "../types";
 import { match } from "ts-pattern";
 import { StringSchemaType } from "../types/string.ts";
 import { stringValidator } from "./string.ts";
@@ -25,6 +25,34 @@ export class SchemaValidators {
         return this.validateNumber(_schema);
       })
       .otherwise(() => undefined);
+  }
+
+  /**
+   * 验证整个schema列表是否正确
+   * @param jsons
+   */
+  public static validateAll(jsons: any[]) {
+    const results: Array<ErrorSchema<any> | string> = [];
+    for (let i = 0; i < jsons.length; i++) {
+      try {
+        const result = this.validate(jsons[i]);
+        if (result) {
+          results.push(result);
+        }
+      } catch (e) {
+        results.push((e as any).message);
+      }
+    }
+    return results;
+  }
+
+  public static async asyncValidateAll(
+    json: any[],
+  ): Promise<ReturnType<typeof this.validateAll>> {
+    return new Promise((resolve) => {
+      const result = this.validateAll(json);
+      resolve(result);
+    });
   }
 
   /**

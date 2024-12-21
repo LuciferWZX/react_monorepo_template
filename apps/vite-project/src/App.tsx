@@ -12,10 +12,30 @@ const App = () => {
     //   ok: true,
     //   values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
     // },
-    json: {
-      type: "wzx",
-      uniqId: "aa",
-    },
+    json: [
+      {
+        type: "string",
+        uniqId: "001",
+        value: "1",
+        pattern: "dwdwdw",
+        maxLength: 2,
+        minLength: 2,
+      },
+      {
+        type: "integer",
+        uniqId: "002",
+        value: 2.1,
+        pattern: "dwdwdw",
+        maximum: 2,
+      },
+      {
+        type: "number",
+        uniqId: "003",
+        value: 2.1,
+        pattern: "dwdwdw",
+        maximum: 2,
+      },
+    ],
   });
   const mergedContent = useMemo(() => {
     const _content = content as any;

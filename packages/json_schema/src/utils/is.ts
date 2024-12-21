@@ -17,7 +17,9 @@ export function isUndefined(obj: any): obj is undefined {
 export function isObject(obj: any): obj is { [key: string]: any } {
   return opt.call(obj) === "[object Object]";
 }
-
+export function isBoolean(value: any): value is Boolean {
+  return typeof value === "boolean";
+}
 /**
  * 判断是否是正确的schema格式
  * @param obj
