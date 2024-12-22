@@ -26,7 +26,7 @@ const ValidateSchemaContent = (props: ValidateSchemaContentProps) => {
       <div className={"h-20 flex items-center justify-center"}>验证中...</div>
     );
   }
-
+  console.log("ERROR", errors);
   return (
     <div className={"flex p-2 flex-col gap-2"}>
       {errors.map((err, index) => {
@@ -48,6 +48,11 @@ const ValidateSchemaContent = (props: ValidateSchemaContentProps) => {
                       <div>{_error.id}</div>
                       <div>{_error.property}</div>
                       <div>{_error.reason}</div>
+                      {_error.objectErrors && (
+                        <div className={"p-2 border border-primary"}>
+                          {JSON.stringify(_error.objectErrors)}
+                        </div>
+                      )}
                     </div>
                   </div>
                 );

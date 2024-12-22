@@ -1,10 +1,11 @@
-import { ErrorSchema, SchemaDataType } from "../types";
+import { ErrorSchema, ObjectSchemaType, SchemaDataType } from "../types";
 import { match } from "ts-pattern";
-import { StringSchemaType } from "../types/string.ts";
+import { StringSchemaType } from "../types";
 import { stringValidator } from "./string.ts";
-import { IntegerSchemaType, NumberSchemaType } from "../types/number.ts";
+import { IntegerSchemaType, NumberSchemaType } from "../types";
 import { integerValidator, numberValidator } from "./number.ts";
 import { isSchema, isSchemaType } from "../utils";
+import { objectValidator } from "./object.ts";
 
 export class SchemaValidators {
   public static validate(json: any) {
@@ -17,6 +18,9 @@ export class SchemaValidators {
     return match(json)
       .with({ type: SchemaDataType.string }, (_schema) => {
         return this.validateString(_schema);
+      })
+      .with({ type: SchemaDataType.object }, (_schema) => {
+        return this.objectValidator(_schema);
       })
       .with({ type: SchemaDataType.integer }, (_schema) => {
         return this.validateInteger(_schema);
@@ -79,6 +83,9 @@ export class SchemaValidators {
    */
   private static validateString(schema: StringSchemaType) {
     return stringValidator(schema.value, schema);
+  }
+  private static objectValidator(schema: ObjectSchemaType) {
+    return objectValidator(schema.value, schema);
   }
 
   /**

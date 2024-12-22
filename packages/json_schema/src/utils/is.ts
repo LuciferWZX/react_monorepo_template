@@ -26,7 +26,8 @@ export function isBoolean(value: any): value is Boolean {
  */
 export function isSchema(obj: any): obj is JsonSchema {
   return (
-    isObject(obj) && !isUndefined(obj["uniqId"]) && !isUndefined(obj["type"])
+    // isObject(obj) && !isUndefined(obj["uniqId"]) && !isUndefined(obj["type"])
+    isObject(obj) && !isUndefined(obj["type"])
   );
 }
 

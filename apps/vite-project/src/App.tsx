@@ -4,6 +4,7 @@ import { VanillaJSONEditor } from "@/VanillaJSONEditor.tsx";
 import "vanilla-jsoneditor/themes/jse-theme-dark.css";
 import { Content } from "vanilla-jsoneditor";
 import ValidateSchemaContent from "@/ValidateSchemaContent.tsx";
+import { ObjectSchemaType } from "@zhixin/json_schema";
 const App = () => {
   const [content, setContent] = useState<Content>({
     // json: {
@@ -35,6 +36,42 @@ const App = () => {
         pattern: "dwdwdw",
         maximum: 2,
       },
+      {
+        type: "object",
+        uniqId: "004",
+        value: {
+          name: "wzx",
+          age: 18,
+          address: {
+            title: 11,
+          },
+        },
+        properties: {
+          name: {
+            uniqId: "xxx",
+            type: "string",
+            value: "wzx",
+          },
+          age: {
+            uniqId: "xxx2",
+            type: "integer",
+            value: 18.2,
+          },
+          address: {
+            uniqId: "adw",
+            type: "object",
+            properties: {
+              title: {
+                type: "number",
+                uniqId: "是的哇服务",
+              },
+            },
+          },
+        },
+        required: ["name"],
+        maxProperties: 5,
+        minProperties: 4,
+      } as ObjectSchemaType,
     ],
   });
   const mergedContent = useMemo(() => {

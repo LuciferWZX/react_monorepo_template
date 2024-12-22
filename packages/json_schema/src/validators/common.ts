@@ -1,4 +1,4 @@
-import { isArray, isNumber, isString, isUndefined } from "../utils";
+import { isArray, isNumber, isObject, isString, isUndefined } from "../utils";
 import { ErrorSchema, JsonSchema, SchemaDataType } from "../types";
 import { match } from "ts-pattern";
 import { intersection } from "lodash-es";
@@ -15,6 +15,12 @@ export function validateValue(value: any, schema: JsonSchema) {
     .with({ type: SchemaDataType.string }, () => {
       if (!isString(value)) {
         error.reason = "值必须是字符串";
+        return error;
+      }
+    })
+    .with({ type: SchemaDataType.object }, (_schema) => {
+      if (!isObject(value)) {
+        error.reason = "值必须是对象";
         return error;
       }
     })
