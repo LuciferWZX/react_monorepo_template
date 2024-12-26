@@ -37,3 +37,10 @@ export interface ErrorSchema<T = JsonSchema> {
   reason: string;
   objectErrors?: ErrorSchema<any> | undefined;
 }
+export interface ALLError<T = JsonSchema> {
+  id: string;
+  errors: Array<{
+    property: keyof T;
+    reason: string;
+  }>;
+}

@@ -69,8 +69,8 @@ const App = () => {
           },
         },
         required: ["name"],
-        maxProperties: 5,
-        minProperties: 4,
+        // maxProperties: 5,
+        // minProperties: 4,
       } as ObjectSchemaType,
     ],
   });

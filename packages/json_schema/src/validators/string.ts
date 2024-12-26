@@ -27,7 +27,29 @@ export const stringValidator = (
   }
   return undefined;
 };
-
+export const getAllStringErrors = (
+  value: string | undefined,
+  schema: StringSchemaType,
+): Array<ErrorSchema<StringSchemaType>> => {
+  let errors: ErrorSchema<StringSchemaType>[] = [];
+  const validateKeys: Array<keyof StringSchemaType> = [
+    "value",
+    "required",
+    "pattern",
+    "minLength",
+    "maxLength",
+  ];
+  // const a = Object.fromEntries(Object.entries(schema));
+  // console.log(111, a);
+  const keys = getValidateKeys(validateKeys, schema);
+  for (let i = 0; i < keys.length; i++) {
+    const error = validate(keys[i], value, schema);
+    if (error) {
+      errors.concat(error);
+    }
+  }
+  return errors;
+};
 const validate = (
   key: keyof StringSchemaType,
   value: string | undefined,

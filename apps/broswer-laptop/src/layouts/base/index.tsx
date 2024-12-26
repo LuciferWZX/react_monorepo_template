@@ -1,49 +1,19 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import { SToast, TooltipProvider } from "@zhixin/shadcn_lib";
-import { useEffect } from "react";
-import { APPManager } from "@/managers";
-import { useAppStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
-import NavMenu from "@/layouts/base/nav_menu";
+import { Outlet } from "react-router-dom";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar.tsx";
+import { AppSidebar } from "./app-sidebar";
+import AppHeader from "@/layouts/base/app-header.tsx";
 
-const AuthBaseLayout = () => {
-  return (
-    <TooltipProvider delayDuration={0}>
-      <div className={"h-screen w-screen flex"}>
-        <aside>
-          <NavMenu />
-        </aside>
-        <div className="flex-1 overflow-auto">
-          <Outlet />
-        </div>
-      </div>
-    </TooltipProvider>
-  );
-};
 const BaseLayout = () => {
-  const user = useAppStore(useShallow((state) => state.user));
-  useInitUser();
-  if (!user) {
-    return <div>loading</div>;
-  }
-  return <AuthBaseLayout />;
-};
-const useInitUser = () => {
-  const navigate = useNavigate();
-  useEffect(() => {
-    APPManager.shared
-      .initApp({
-        failed: (reason) => {
-          console.log(reason);
-          SToast.error(reason, {
-            position: "top-center",
-            id: "init",
-            duration: 1000,
-          });
-          navigate("/login");
-        },
-      })
-      .then();
-  }, []);
+  return (
+    <div className={"h-screen w-screen overflow-auto"}>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <AppHeader />
+          <Outlet />
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
+  );
 };
 export default BaseLayout;

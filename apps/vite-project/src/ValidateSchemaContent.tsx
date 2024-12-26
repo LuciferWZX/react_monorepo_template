@@ -13,6 +13,11 @@ const ValidateSchemaContent = (props: ValidateSchemaContentProps) => {
   useEffect(() => {
     setIsValidating(true);
     setErrors([]);
+    SchemaValidators.asyncGetAllErrors(
+      isArray(content) ? content : [content],
+    ).then((result) => {
+      console.log("ERROR:", result);
+    });
     SchemaValidators.asyncValidateAll(isArray(content) ? content : [content])
       .then((result) => {
         setErrors(result);
@@ -26,7 +31,6 @@ const ValidateSchemaContent = (props: ValidateSchemaContentProps) => {
       <div className={"h-20 flex items-center justify-center"}>验证中...</div>
     );
   }
-  console.log("ERROR", errors);
   return (
     <div className={"flex p-2 flex-col gap-2"}>
       {errors.map((err, index) => {

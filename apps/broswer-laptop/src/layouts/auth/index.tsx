@@ -2,7 +2,8 @@ import { Outlet } from "react-router-dom";
 
 const AuthLayout = () => {
   return (
-    <div className={"h-screen w-screen"}>
+    <div>
+      auth layout
       <Outlet />
     </div>
   );

@@ -33,6 +33,30 @@ export const integerValidator = (
   }
   return undefined;
 };
+export const getAllIntegerErrors = (
+  value: number | undefined,
+  schema: IntegerSchemaType,
+) => {
+  let errors: ErrorSchema<IntegerSchemaType>[] = [];
+  const validateKeys: Array<keyof IntegerSchemaType> = [
+    "value",
+    "required",
+    "maximum",
+    "exclusiveMaximum",
+    "minimum",
+    "exclusiveMinimum",
+    "multipleOf",
+  ];
+  const keys = getValidateKeys(validateKeys, schema);
+
+  for (let i = 0; i < keys.length; i++) {
+    const error = validate(keys[i], value, schema);
+    if (error) {
+      errors.push(error);
+    }
+  }
+  return errors;
+};
 export const numberValidator = (
   value: number | undefined,
   schema: NumberSchemaType,
@@ -55,6 +79,29 @@ export const numberValidator = (
     }
   }
   return undefined;
+};
+export const getAllNumberErrors = (
+  value: number | undefined,
+  schema: NumberSchemaType,
+) => {
+  let errors: ErrorSchema<NumberSchemaType>[] = [];
+  const validateKeys: Array<keyof NumberSchemaType> = [
+    "value",
+    "required",
+    "multipleOf",
+    "maximum",
+    "exclusiveMaximum",
+    "minimum",
+    "exclusiveMinimum",
+  ];
+  const keys = getValidateKeys(validateKeys, schema);
+  for (let i = 0; i < keys.length; i++) {
+    const error = validate(keys[i], value, schema);
+    if (error) {
+      errors.push(error);
+    }
+  }
+  return errors;
 };
 const validate = (
   key: keyof IntegerSchemaType | keyof NumberSchemaType,

@@ -12,7 +12,7 @@ export const objectValidator = (
   const validateKeys: Array<keyof ObjectSchemaType> = [
     "value",
     "required",
-    "additionalProperties",
+    // "additionalProperties",
     "minProperties",
     "properties",
     "maxProperties",
@@ -27,6 +27,30 @@ export const objectValidator = (
     }
   }
   return undefined;
+};
+export const getAllObjectErrors = (
+  value: Record<string, any> | undefined,
+  schema: ObjectSchemaType,
+): ErrorSchema<ObjectSchemaType>[] => {
+  let errors: ErrorSchema<ObjectSchemaType>[] = [];
+  const validateKeys: Array<keyof ObjectSchemaType> = [
+    "value",
+    "required",
+    // "additionalProperties",
+    "minProperties",
+    "properties",
+    "maxProperties",
+  ];
+  // const a = Object.fromEntries(Object.entries(schema));
+  // console.log(111, a);
+  const keys = getValidateKeys(validateKeys, schema);
+  for (let i = 0; i < keys.length; i++) {
+    const error = validate(keys[i], value, schema);
+    if (error) {
+      errors.push(error);
+    }
+  }
+  return errors;
 };
 
 const validate = (
