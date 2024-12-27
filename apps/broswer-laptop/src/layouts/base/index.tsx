@@ -8,9 +8,8 @@ const BaseLayout = () => {
     <div className={"h-screen w-screen overflow-auto"}>
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset>
-          <AppHeader />
-          <Outlet />
+        <SidebarInset className={"overflow-auto h-svh"}>
+          <Outlet context={{ header: AppHeader }} />
         </SidebarInset>
       </SidebarProvider>
     </div>
