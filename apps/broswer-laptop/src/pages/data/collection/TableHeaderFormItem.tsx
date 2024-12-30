@@ -16,11 +16,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip.tsx";
 import { Trash } from "lucide-react";
+import { TableHeaderConfig } from "@/lib/template.ts";
 
-export interface TableHeaderConfig {
-  title: string;
-  id: string;
-}
 interface TableHeaderFormItemProps {
   value?: TableHeaderConfig;
   onChange?: (headers: TableHeaderConfig) => void;

@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useEffect } from "react";
 import { z } from "zod";
 import {
   Form,
@@ -22,13 +22,20 @@ import {
 } from "@/components/ui/form.tsx";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components";
+import { Input, Message } from "@/components";
 import TableHeaderFormItem from "@/pages/data/collection/TableHeaderFormItem.tsx";
 import { nanoid } from "nanoid";
+import { FileManager } from "@/instances/FileManager.ts";
+import { DataFileType } from "@/lib/template.ts";
+import { BaseDirectory } from "@tauri-apps/api/path";
+import { AppManager } from "@/instances/AppManager.ts";
+import { toast } from "sonner";
 
 interface CollectionTemplateDialogProps extends PropsWithChildren {
   open?: boolean;
   onOpenChange: (open: boolean) => void;
+  refresh: () => void;
+  record: DataFileType | null;
 }
 
 const formSchema = z.object({
@@ -45,24 +52,79 @@ const formSchema = z.object({
   ),
 });
 const CollectionTemplateDialog = (props: CollectionTemplateDialogProps) => {
-  const { children, open, onOpenChange } = props;
+  const { children, open, record, refresh, onOpenChange } = props;
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      headers: [
-        { id: "001", title: "www" },
-        { id: "002", title: "www2" },
-      ],
+      name: record ? record.name : "",
+      headers: record ? record.headers : [],
     },
   });
   const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: "headers",
   });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  useEffect(() => {
+    if (open && record) {
+      form.setValue("name", record.name);
+      form.setValue("headers", record.headers);
+    }
+  }, [open]);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("values:", values);
+    let content: DataFileType = {
+      id: nanoid(10),
+      name: values.name,
+      headers: values.headers,
+      data: [],
+      createTime: new Date(),
+      updateTime: null,
+      creator: {
+        id: "system",
+        username: "tauri",
+        nickname: "TAURI系统",
+        avatar:
+          "https://img0.baidu.com/it/u=1418287440,1140841636&fm=253&app=120&size=w931&n=0&f=JPEG&fmt=auto?sec=1735664400&t=09fe6d27d89f57ae061f2cc3352aed78",
+      },
+    };
+    if (record) {
+      content = {
+        ...record,
+        name: values.name,
+        headers: values.headers,
+        updateTime: new Date(),
+        creator: {
+          id: "system",
+          username: "tauri",
+          nickname: "TAURI系统",
+          avatar:
+            "https://img0.baidu.com/it/u=1418287440,1140841636&fm=253&app=120&size=w931&n=0&f=JPEG&fmt=auto?sec=1735664400&t=09fe6d27d89f57ae061f2cc3352aed78",
+        },
+      };
+    }
+
+    try {
+      await FileManager.shared.writeBinaryFile(
+        `${AppManager.shared.COLLECTION_PATH}/${values.name}.tb`,
+        content,
+        BaseDirectory.AppData,
+      );
+      toast.custom((t) => (
+        <Message type={"success"} handleClose={() => toast.dismiss(t)}>
+          {record ? "修改成功" : "新增成功"}
+        </Message>
+      ));
+      refresh();
+    } catch (e) {
+      console.log("出错：", e);
+      toast.custom((t) => (
+        <Message type={"error"} handleClose={() => toast.dismiss(t)}>
+          {record ? "修改失败" : "新增失败"}
+        </Message>
+      ));
+    } finally {
+      onOpenChange(false);
+    }
   }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -134,42 +196,7 @@ const CollectionTemplateDialog = (props: CollectionTemplateDialogProps) => {
                           >
                             新增
                           </Button>
-                          {/*<FormField*/}
-                          {/*  control={form.control}*/}
-                          {/*  name="headers"*/}
-                          {/*  render={({ field }) => (*/}
-                          {/*    <FormItem>*/}
-                          {/*      <FormLabel>表头</FormLabel>*/}
-                          {/*      <FormControl>*/}
-                          {/*        <TableHeaderFormItem*/}
-                          {/*          onChange={(event) => {*/}
-                          {/*            console.log(22222, event);*/}
-                          {/*          }}*/}
-                          {/*          {...field}*/}
-                          {/*        />*/}
-                          {/*      </FormControl>*/}
-                          {/*      <FormDescription>*/}
-                          {/*        模板呈现的表头*/}
-                          {/*      </FormDescription>*/}
-                          {/*      <FormMessage />*/}
-                          {/*    </FormItem>*/}
-                          {/*  )}*/}
-                          {/*/>*/}
                         </div>
-
-                        {/*<div className="space-y-1">*/}
-                        {/*  <p>*/}
-                        {/*    <strong>排序</strong>*/}
-                        {/*  </p>*/}
-                        {/*  <p>*/}
-                        {/*    Users are responsible for maintaining the*/}
-                        {/*    confidentiality of their account credentials. Any*/}
-                        {/*    activities occurring under a user&lsquo;s account*/}
-                        {/*    are the sole responsibility of the account holder.*/}
-                        {/*    Users must notify the website administrators*/}
-                        {/*    immediately of any unauthorized account access.*/}
-                        {/*  </p>*/}
-                        {/*</div>*/}
                       </div>
                     </div>
                   </div>
