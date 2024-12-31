@@ -13,6 +13,7 @@ export const useCollections = () => {
       AppManager.shared.COLLECTION_PATH,
       BaseDirectory.AppData,
     );
+    console.log("entries", entries);
     if (!entries) {
       return templates;
     }

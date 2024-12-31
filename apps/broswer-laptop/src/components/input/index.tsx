@@ -10,7 +10,8 @@ import {
 } from "react";
 import { Input as SInput } from "@/components/ui/input.tsx";
 import { CircleX, type LucideIcon } from "lucide-react";
-interface InputProps extends ComponentPropsWithoutRef<typeof SInput> {
+interface InputProps
+  extends Omit<ComponentPropsWithoutRef<typeof SInput>, "value" | "onChange"> {
   prefixIcon?: LucideIcon;
   suffixIcon?: LucideIcon;
   allowClear?: boolean;
@@ -19,6 +20,8 @@ interface InputProps extends ComponentPropsWithoutRef<typeof SInput> {
   classes?: {
     input?: string;
   };
+  value?: string;
+  onChange?: (val: string) => void;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
@@ -30,6 +33,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     value,
     allowClear,
     onChange,
+
     overlapping,
     label,
     ...restProps
@@ -73,7 +77,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
         value={mergedValue}
         onChange={(event) => {
           if (onChange) {
-            onChange(event);
+            onChange(event.target.value);
           }
           setInputValue(event.target.value);
         }}
@@ -89,11 +93,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
         <button
           className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
           aria-label={allowClear ? "Clear input" : "Submit search"}
-          type="submit"
+          type="button"
           onClick={
             allowClear
               ? () => {
                   setInputValue("");
+                  onChange?.("");
                   if (inputRef.current) {
                     inputRef.current.focus();
                   }

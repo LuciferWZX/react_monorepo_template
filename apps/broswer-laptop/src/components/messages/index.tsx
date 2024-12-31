@@ -2,6 +2,7 @@ import { ReactNode, useMemo } from "react";
 import { match } from "ts-pattern";
 import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
+import { cn } from "@/lib/utils.ts";
 
 interface MessageProps {
   type?: "default" | "warning" | "info" | "success" | "error";
@@ -28,7 +29,9 @@ export const Message = (props: MessageProps) => {
         <p className="grow text-sm">
           {PreIcon && (
             <PreIcon
-              className="-mt-0.5 me-3 inline-flex text-red-500"
+              className={cn("-mt-0.5 me-3 inline-flex text-red-500", {
+                "text-green-500": type === "success",
+              })}
               size={16}
               strokeWidth={2}
               aria-hidden="true"

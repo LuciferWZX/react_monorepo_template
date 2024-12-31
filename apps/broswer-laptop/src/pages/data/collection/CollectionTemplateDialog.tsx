@@ -36,23 +36,27 @@ interface CollectionTemplateDialogProps extends PropsWithChildren {
   onOpenChange: (open: boolean) => void;
   refresh: () => void;
   record: DataFileType | null;
+  templates: DataFileType[];
 }
 
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(2, "模板名称至少2个字符")
-    .max(50, "模板名称最多50个字符")
-    .regex(/^\S*$/, "不能包含空格"),
-  headers: z.array(
-    z.object({
-      id: z.string(),
-      title: z.string().min(1, "名称不能为空"),
-    }),
-  ),
-});
 const CollectionTemplateDialog = (props: CollectionTemplateDialogProps) => {
-  const { children, open, record, refresh, onOpenChange } = props;
+  const { children, open, record, templates, refresh, onOpenChange } = props;
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(2, "模板名称至少2个字符")
+      .max(50, "模板名称最多50个字符")
+      .regex(/^\S*$/, "不能包含空格")
+      .refine((value) => {
+        return !templates.find((template) => template.name === value);
+      }, "名称不能重复"),
+    headers: z.array(
+      z.object({
+        id: z.string(),
+        title: z.string().min(1, "名称不能为空"),
+      }),
+    ),
+  });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -65,15 +69,21 @@ const CollectionTemplateDialog = (props: CollectionTemplateDialogProps) => {
     name: "headers",
   });
   useEffect(() => {
-    if (open && record) {
-      form.setValue("name", record.name);
-      form.setValue("headers", record.headers);
+    if (open) {
+      if (record) {
+        form.setValue("name", record.name);
+        form.setValue("headers", record.headers);
+      } else {
+        form.setValue("name", "");
+        form.setValue("headers", []);
+      }
     }
-  }, [open]);
+  }, [open, record]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("values:", values);
+    const fileId = nanoid(10);
     let content: DataFileType = {
-      id: nanoid(10),
+      id: fileId,
       name: values.name,
       headers: values.headers,
       data: [],
@@ -105,7 +115,7 @@ const CollectionTemplateDialog = (props: CollectionTemplateDialogProps) => {
 
     try {
       await FileManager.shared.writeBinaryFile(
-        `${AppManager.shared.COLLECTION_PATH}/${values.name}.tb`,
+        `${AppManager.shared.COLLECTION_PATH}/${fileId}.temp`,
         content,
         BaseDirectory.AppData,
       );

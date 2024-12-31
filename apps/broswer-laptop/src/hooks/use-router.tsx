@@ -7,6 +7,7 @@ import HomePage from "@/pages/home";
 import DataPage from "@/pages/data";
 import LoginPage from "@/pages/auth/login";
 import CollectionPage from "@/pages/data/collection";
+import DataTablePage from "@/pages/data/table";
 
 export function useRouter() {
   const router: RouteObject[] = [
@@ -26,6 +27,7 @@ export function useRouter() {
               children: [
                 { path: "", element: <Navigate to={"collection"} /> },
                 { path: "collection", element: <CollectionPage /> },
+                { path: "table", element: <DataTablePage /> },
               ],
             },
             { path: "*", element: <NotFoundPage /> },

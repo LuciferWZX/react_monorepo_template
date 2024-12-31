@@ -174,8 +174,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             isActive: pathname.startsWith("/data/collection"),
           },
           {
-            title: "Starred",
-            url: "#",
+            title: "数据表格",
+            url: "/data/table",
+            isActive: pathname.startsWith("/data/table"),
           },
           {
             title: "Settings",
