@@ -103,13 +103,6 @@ const CollectionTemplateDialog = (props: CollectionTemplateDialogProps) => {
         name: values.name,
         headers: values.headers,
         updateTime: new Date(),
-        creator: {
-          id: "system",
-          username: "tauri",
-          nickname: "TAURI系统",
-          avatar:
-            "https://img0.baidu.com/it/u=1418287440,1140841636&fm=253&app=120&size=w931&n=0&f=JPEG&fmt=auto?sec=1735664400&t=09fe6d27d89f57ae061f2cc3352aed78",
-        },
       };
     }
 
@@ -125,6 +118,7 @@ const CollectionTemplateDialog = (props: CollectionTemplateDialogProps) => {
         </Message>
       ));
       refresh();
+      onOpenChange(false);
     } catch (e) {
       console.log("出错：", e);
       toast.custom((t) => (
@@ -132,8 +126,6 @@ const CollectionTemplateDialog = (props: CollectionTemplateDialogProps) => {
           {record ? "修改失败" : "新增失败"}
         </Message>
       ));
-    } finally {
-      onOpenChange(false);
     }
   }
   return (

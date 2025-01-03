@@ -16,3 +16,11 @@ export type DataFileType = {
     avatar: string;
   };
 };
+export type DataTableFileType = {
+  id: string;
+  name: string;
+  createTime: Date;
+  data: Record<string, any>[];
+  updateTime: null | Date;
+  creatorId: string;
+};

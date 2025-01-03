@@ -9,6 +9,23 @@ export class FileManager {
       return await readDir(dirName, { dir: dir, recursive: true });
     }
   }
+  async exist(path: string, dir: BaseDirectory) {
+    if (window.__TAURI__) {
+      const { exists } = window.__TAURI__.fs;
+      return await exists(path, {
+        dir: dir,
+      });
+    }
+  }
+  async createDir(path: string, dir: BaseDirectory) {
+    if (window.__TAURI__) {
+      const { createDir } = window.__TAURI__.fs;
+      return await createDir(path, {
+        dir: dir,
+        recursive: true,
+      });
+    }
+  }
   async readBinaryFile(fileName: string, dir: BaseDirectory) {
     if (window.__TAURI__) {
       const { readBinaryFile } = window.__TAURI__.fs;
